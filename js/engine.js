@@ -1,4 +1,4 @@
-/* Işıkçı Robot - oyun motoru (Blockly'den bağımsız, saf JavaScript)
+/* afi kod - oyun motoru (Blockly'den bağımsız, saf JavaScript)
  * Harita karakterleri:
  *   ' ' boşluk (duvar)      o  yürünebilir zemin     S  başlangıç
  *   L   lamba karesi        D  kapalı kapı (açılınca zemin olur)

@@ -1,4 +1,4 @@
-/* Işıkçı Robot - blok tanımları ve kod üreteçleri (Blockly üzerine) */
+/* afi kod - blok tanımları ve kod üreteçleri (Blockly üzerine) */
 (function (root) {
   'use strict';
   var B = root.Blockly, JS = root.javascript.javascriptGenerator, PY = root.python.pythonGenerator;

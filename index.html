@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Işıkçı Robot</title>
+<title>afi kod</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,7 +20,7 @@
   --salon-a:#EBD6B8; --salon-b:#DDC39E; --koridor-a:#D9E2EE; --koridor-b:#C3D0E2; --mutfak-a:#F4F6F9; --mutfak-b:#DCE3EC;
   --sofa:#8B6FD6; --table:#B07A4A; --plant:#3E9B5F; --pot:#C46A3D; --counter:#8C99A8; --door:#9A5B2E;
   --code-bg:#F7F9FC; --kw:#9B3FC4; --fn:#2563C9; --num:#B7621A; --cm:#6F7B8E;
-  --scrim:rgba(14,20,32,.5);
+  --scrim:rgba(14,20,32,.5); --w-red:#E5484D; --w-gnd:#2A2F36;
   --f-display:"Fredoka","Nunito",ui-rounded,"Segoe UI",system-ui,sans-serif;
   --f-body:"Nunito","Segoe UI",system-ui,-apple-system,sans-serif;
   --f-mono:"JetBrains Mono",Consolas,ui-monospace,"Courier New",monospace;
@@ -36,7 +36,7 @@
   --salon-a:#4A3B2C; --salon-b:#3E3125; --koridor-a:#2A3547; --koridor-b:#233041; --mutfak-a:#2B3442; --mutfak-b:#222A36;
   --sofa:#7E68C8; --table:#8C6140; --plant:#3E8F5A; --pot:#A65A35; --counter:#566273; --door:#B47645;
   --code-bg:#121A24; --kw:#D09BF0; --fn:#7DB0FF; --num:#F2A65A; --cm:#8E9BB0;
-  --scrim:rgba(0,0,0,.6); color-scheme:dark}}
+  --scrim:rgba(0,0,0,.6); --w-red:#F0626A; --w-gnd:#C9D1DC; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0F151E; --panel:#171F2B; --panel-2:#1D2735; --line:#2B3747;
   --ink:#E7EDF5; --ink-2:#B3BFCE; --ink-3:#8E9BB0;
@@ -47,7 +47,7 @@
   --salon-a:#4A3B2C; --salon-b:#3E3125; --koridor-a:#2A3547; --koridor-b:#233041; --mutfak-a:#2B3442; --mutfak-b:#222A36;
   --sofa:#7E68C8; --table:#8C6140; --plant:#3E8F5A; --pot:#A65A35; --counter:#566273; --door:#B47645;
   --code-bg:#121A24; --kw:#D09BF0; --fn:#7DB0FF; --num:#F2A65A; --cm:#8E9BB0;
-  --scrim:rgba(0,0,0,.6); color-scheme:dark}
+  --scrim:rgba(0,0,0,.6); --w-red:#F0626A; --w-gnd:#C9D1DC; color-scheme:dark}
 
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -65,7 +65,9 @@ button{cursor:pointer}
 .top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
 .brand svg{flex:none}
-.brand h1{font-size:1.45rem;font-weight:700;line-height:1.1}
+.brand h1{font-size:1.6rem;font-weight:700;line-height:1;display:flex;align-items:baseline;gap:.28em}
+.w-afi{font-family:var(--f-display);font-weight:700;color:var(--accent);letter-spacing:.01em}
+.w-prod{font-family:var(--f-display);font-weight:500;color:var(--ink-2)}
 .brand p{margin:0;color:var(--ink-2);font-size:.82rem}
 .lessonbar{flex:1 1 380px;display:flex;align-items:center;gap:8px;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 6px 4px 14px}
 .lessonbar .where{min-width:0;flex:0 1 auto;display:flex;flex-direction:column;line-height:1.2}
@@ -207,6 +209,85 @@ body[data-code="blocks"] #codePanel .panel-h{border-bottom:0}
 .storyart svg{flex:none}
 .storytext{font-size:1.02rem;color:var(--ink)!important}
 
+/* Sensör kütüphanesi */
+.card.xwide{max-width:1040px}
+.sensorbody{display:flex;flex-direction:column;gap:14px}
+.sl-intro{display:flex;flex-direction:column;gap:10px}
+.basicbtn{text-align:left;border:1px solid var(--line);background:var(--accent-soft);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.basicbtn b{font-family:var(--f-display);font-weight:600;font-size:1.05rem}
+.basicbtn span{font-size:.85rem;color:var(--ink-2)}
+.basicbtn:hover{border-color:var(--accent)}
+.sl-cat{font-size:1rem;margin-top:4px}
+.sl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.stile{text-align:left;border:1px solid var(--line);background:var(--panel-2);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.stile:hover{border-color:var(--accent)}
+.stile b{font-family:var(--f-display);font-weight:600;font-size:1rem;line-height:1.25}
+.stile .sh{font-size:.84rem;color:var(--ink-2)}
+.model{font-family:var(--f-mono);font-size:.74rem;font-weight:600;color:var(--ink-3);letter-spacing:.02em}
+.model.big{font-size:.86rem}
+.outchip{align-self:flex-start;font-size:.72rem;font-weight:800;border-radius:999px;padding:2px 9px;background:var(--panel);border:1px solid var(--line);color:var(--ink-2)}
+.out-digital{background:var(--accent-soft);color:var(--ink)} .out-analog{background:var(--ok-soft);color:var(--ink)} .out-pulse,.out-i2c,.out-spi,.out-onewire{background:var(--lamp-soft);color:var(--ink)}
+.schapter{font-size:.78rem;font-weight:800;color:var(--ink-2)}
+.sd-head{display:flex;flex-direction:column;gap:4px}
+.sd-title{font-size:1.4rem}
+.sd-short{margin:0;color:var(--ink-2)}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.facts>div{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.facts p{margin:4px 0 0;color:var(--ink)}
+.sd-sec{display:flex;flex-direction:column;gap:8px}
+.sd-sec h4{margin:0;font-family:var(--f-display);font-weight:600;font-size:1.06rem}
+.sd-sec p{margin:0;color:var(--ink-2)}
+.sd-sec ul{margin:0;padding-left:20px;color:var(--ink-2)}
+.basics{display:flex;flex-direction:column;gap:14px;max-width:760px}
+.segs{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg{border:0;background:var(--panel-2);padding:6px 14px;font-weight:800;font-size:.85rem}
+.seg[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+svg.wiring{width:100%;max-width:640px;height:auto;display:block}
+.wbox{fill:var(--panel-2);stroke:var(--line);stroke-width:2}
+.wboard{fill:var(--accent-soft)}
+.wh{font-family:var(--f-display);font-weight:600;font-size:17px;fill:var(--ink)}
+.wl{font-family:var(--f-mono);font-size:14px;font-weight:600;fill:var(--ink)}
+.wdiv{fill:var(--lamp-soft);stroke:var(--lamp);stroke-width:2}
+.wdivt{font-family:var(--f-body);font-size:12px;font-weight:800;fill:var(--ink)}
+.wdot-nc{fill:none;stroke:var(--ink-3);stroke-width:2;stroke-dasharray:3 3}
+.wlegend{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;font-weight:700;color:var(--ink-2)}
+.wlegend i{display:inline-block;width:18px;height:6px;border-radius:3px;margin-right:6px;vertical-align:middle}
+.tscroll{overflow-x:auto}
+.ptable{border-collapse:collapse;width:100%;font-size:.88rem;min-width:520px}
+.ptable th{text-align:left;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);padding:6px 8px;border-bottom:1px solid var(--line)}
+.ptable td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink-2)}
+.ptable td b{color:var(--ink)}
+.mono{font-family:var(--f-mono);font-weight:600;color:var(--ink)!important;white-space:nowrap}
+.pdot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;vertical-align:middle;background:#F5A524}
+.pdot.r-vcc{background:var(--w-red)} .pdot.r-gnd{background:var(--w-gnd)} .pdot.r-nc{background:transparent;border:2px dashed var(--ink-3)}
+.compat{display:flex;flex-direction:column;gap:6px}
+.crow{display:grid;grid-template-columns:auto 110px minmax(0,1fr);gap:10px;align-items:baseline;font-size:.9rem;color:var(--ink-2)}
+.crow b{color:var(--ink)}
+.cst{font-size:.72rem;font-weight:800;border-radius:999px;padding:2px 9px;text-align:center;min-width:86px}
+.st-ok{background:var(--ok-soft);color:var(--ok)} .st-warn{background:var(--lamp-soft);color:var(--ink)} .st-no{background:var(--bad-soft);color:var(--bad)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.caution{background:var(--bad-soft);color:var(--ink);border-radius:12px;padding:10px 12px;font-size:.92rem}
+.caution b{color:var(--bad)}
+.note{font-size:.84rem;color:var(--ink-3)!important}
+pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;background:var(--code-bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;white-space:pre;color:var(--ink)}
+.simbox{border:1px dashed var(--accent);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--panel-2)}
+.simtog{align-self:flex-start;border:2px solid var(--line);background:var(--panel);border-radius:12px;padding:8px 14px;font-weight:800}
+.simtog[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.simrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-weight:700;font-size:.9rem}
+.simrow span{min-width:130px}
+.simrow input{flex:1 1 200px;accent-color:var(--accent)}
+.simout{font-size:.95rem;color:var(--ink);font-variant-numeric:tabular-nums;display:flex;flex-direction:column;gap:6px}
+.simout small{color:var(--ink-3)}
+.simout .code{font-family:var(--f-mono);font-size:.85rem}
+.hi{color:var(--ok)} .lo{color:var(--bad)}
+.bar{height:10px;border-radius:5px;background:var(--line);overflow:hidden;max-width:420px}
+.bar i{display:block;height:100%;background:var(--accent)}
+.minibtn[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.schips{display:flex;flex-wrap:wrap;gap:6px}
+.schip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:3px 10px;font-size:.78rem;font-weight:800;color:var(--ink)}
+.schip:hover{border-color:var(--accent)}
+@media (max-width:560px){.crow{grid-template-columns:auto minmax(0,1fr)}.crow span:last-child{grid-column:1 / -1}}
+
 @media (max-width:1100px){
   .main{grid-template-columns:minmax(280px,340px) minmax(0,1fr);gap:12px}
   .split{display:none}
@@ -235,7 +316,7 @@ body[data-code="blocks"] #codePanel .panel-h{border-bottom:0}
         <line x1="22" y1="12" x2="22" y2="5" stroke="var(--robot)" stroke-width="3" stroke-linecap="round"/>
         <circle cx="22" cy="5" r="4" fill="var(--lamp)"/>
       </svg>
-      <div><h1 id="appName">Işıkçı Robot</h1><p data-t="tagline"></p></div>
+      <div><h1 id="appName"><span class="w-afi">afi</span><span class="w-prod">kod</span></h1><p data-t="tagline"></p></div>
     </div>
 
     <nav class="lessonbar" aria-label="Ders">
@@ -247,6 +328,7 @@ body[data-code="blocks"] #codePanel .panel-h{border-bottom:0}
 
     <div class="tools">
       <button class="iconbtn" id="mapBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span data-t="map"></span></button>
+      <button class="iconbtn" id="sensorBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></svg><span data-t="sensors"></span></button>
       <div class="layoutgrp">
         <label for="layoutSel" data-t="layout"></label>
         <select class="sel" id="layoutSel"></select>
@@ -392,6 +474,14 @@ body[data-code="blocks"] #codePanel .panel-h{border-bottom:0}
   </div>
 </div>
 
+<!-- Sensör kütüphanesi -->
+<div class="modal" id="sensorModal" hidden>
+  <div class="card xwide" role="dialog" aria-modal="true" aria-labelledby="sensorTitle">
+    <div class="row" style="justify-content:space-between"><h2 id="sensorTitle"></h2><button class="btn btn-ghost btn-small" data-close data-t="close"></button></div>
+    <div id="sensorBody" class="sensorbody"></div>
+  </div>
+</div>
+
 <!-- Başarı -->
 <div class="modal" id="win" hidden>
   <div class="card center" role="dialog" aria-modal="true" aria-labelledby="winTitle">
@@ -417,6 +507,8 @@ body[data-code="blocks"] #codePanel .panel-h{border-bottom:0}
 <script src="js/i18n.js"></script>
 <script src="js/blocks.js"></script>
 <script src="js/levels.js"></script>
+<script src="js/sensors.js"></script>
+<script src="js/sensor-ui.js"></script>
 <script src="js/app.js"></script>
 
 </body>

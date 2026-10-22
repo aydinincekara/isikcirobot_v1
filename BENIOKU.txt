@@ -1,41 +1,43 @@
-IŞIKÇI ROBOT - Blok kodlama eğitim uygulaması (Aşama 1)
-=========================================================
+afi kod - afi'nin blok kodlama serüveni
+=======================================
 
-NASIL AÇILIR
-1. IsikciRobot.zip dosyasına sağ tıklayın ve "Tümünü ayıkla" deyin.
-   (Zip'in içinden doğrudan açarsanız uygulama çalışmaz; önce ayıklamak gerekir.)
-2. Ayıklanan IsikciRobot klasörüne girin.
-3. index.html dosyasına çift tıklayın. Uygulama Chrome, Edge veya Firefox'ta açılır.
+Canlı adres : https://aydinincekara.github.io/isikcirobot_v1/
+Öğretmen    : https://aydinincekara.github.io/isikcirobot_v1/#ogretmen
+Ayrıntılı bilgi, kurulum ve kullanım için: afi-kod-kilavuz.docx
+
+ÇEVRİMDIŞI (USB) KULLANIM
+1. Zip dosyasına sağ tıklayın ve "Tümünü ayıkla" deyin. Zip'in içinden doğrudan açarsanız çalışmaz.
+2. Ayıklanan klasördeki index.html dosyasına çift tıklayın (Chrome, Edge veya Firefox).
    Başka bir programla açılırsa: sağ tık > Birlikte aç > Google Chrome veya Microsoft Edge.
-
 Kurulum, internet, Python veya yönetici izni gerekmez.
-Sınıftaki bilgisayarlara dağıtmak için IsikciRobot klasörünü USB ile kopyalamanız yeterli.
 
 ÖĞRENCİ PROFİLLERİ
-- Açılışta öğrenci adını seçer ya da yeni ad ekler. İlerleme o bilgisayarda adıyla saklanır.
-- Başka bilgisayara geçerken: Ayarlar > "İlerleme kodum" kısmındaki kodu not alır,
-  yeni bilgisayarda "İlerleme kodum var" ile adını ve kodu yazar. Yıldızlar taşınır,
-  dizdiği bloklar eski bilgisayarda kalır.
+- Açılışta öğrenci adını seçer ya da yeni ad ekler. İlerleme o bilgisayarın tarayıcısında saklanır.
+- Başka bilgisayara geçerken Ayarlar > "İlerleme kodum" kısmındaki kodu not alır, yeni bilgisayarda
+  "İlerleme kodum var" ile adını ve kodu yazar. Yıldızlar taşınır, dizdiği bloklar eski bilgisayarda kalır.
 
 ÖĞRETMEN MODU
-- Tarayıcının adres çubuğunda index.html'in sonuna #ogretmen ekleyip Enter'a basın.
-  Örnek: file:///C:/Users/.../IsikciRobot/index.html#ogretmen
-- Her adımda "Çözümü yükle" düğmesi görünür. Öğrenciler bu adresi bilmezse düğmeyi görmez.
+- Adresin sonuna #ogretmen ekleyip Enter'a basın. Her adımda "Çözümü yükle" düğmesi görünür.
+
+SENSÖR KÜTÜPHANESİ
+- Üstteki "Sensörler" düğmesi 15 gerçek sensörü anlatır: ne işe yarar, nasıl çalışır, Arduino Uno ve
+  ESP32'ye hangi kablo nereye bağlanır, kaç volt ister, ne tür bilgi verir, çeşitleri, kullanım yerleri
+  ve ilk Arduino kodu. "Dene ve gör" kutusunda sensörün nasıl tepki verdiği denenebilir.
 
 YERLEŞİM VE GÖRÜNÜM
-- Paneller arasındaki dikey çizgileri sürükleyerek genişlikleri değiştirebilirsiniz.
-  Çizgiye çift tıklamak o paneli seçili düzenin genişliğine döndürür.
-- Üstteki "Yerleşim" menüsü: Varsayılan, Geniş blok alanı, Kod karşılaştırma, Sunum (akıllı tahta).
+- Paneller arasındaki dikey çizgileri sürükleyerek genişlikleri değiştirin; çift tık eski haline döndürür.
+- "Yerleşim" menüsü: Varsayılan, Geniş blok alanı, Kod karşılaştırma, Sunum (akıllı tahta).
   Kaydet düğmesi o anki düzeni "Kendi düzenim" olarak saklar.
 - Kod panelindeki menü: Sadece bloklar / Bloklar + Python / Bloklar + JavaScript / ikisi yan yana.
-
-DİL
-- Ayarlar > Dil: Türkçe veya English. Bloklar, metinler ve koddaki fonksiyon adları dile göre değişir.
+- Ayarlar > Dil: Türkçe veya English.
 
 DOSYALAR
-- index.html      : uygulama
-- js/levels.js    : bölümler, dersler ve adımlar (yeni adımlar SADECE sona eklenmeli)
-- js/engine.js    : oyun motoru
-- js/blocks.js    : bloklar ve kod üreteçleri
-- js/i18n.js      : Türkçe ve İngilizce metinler
-- lib/            : Blockly kütüphanesi (Apache 2.0 lisanslı)
+- index.html         : uygulama
+- js/levels.js       : bölümler, dersler ve adımlar (yeni adımlar SADECE sona eklenmeli)
+- js/sensors.js      : sensör kütüphanesi bilgileri
+- js/sensor-ui.js    : sensör kütüphanesi ekranı
+- js/engine.js       : oyun motoru
+- js/blocks.js       : bloklar ve kod üreteçleri
+- js/i18n.js         : Türkçe ve İngilizce metinler
+- js/app.js          : arayüz
+- lib/               : Blockly kütüphanesi (Apache 2.0 lisanslı)

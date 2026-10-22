@@ -1,4 +1,4 @@
-/* Işıkçı Robot - arayüz */
+/* afi kod - arayüz */
 (function () {
   'use strict';
   var B = window.Blockly, E = window.Engine, RB = window.RobotBlocks, C = window.COURSE, T = window.I18N;
@@ -39,7 +39,7 @@
   function saveSettings() { store.set('settings', settings); }
 
   var S = { lang: settings.lang, profile: null, pdata: null, gi: 0, vi: 0, running: false, cancel: false, teacher: false, failBlock: null };
-  var ws = null, grid = null, view = null;
+  var ws = null, grid = null, view = null, SUI = null;
 
   /* ---------- Metin yardımcıları ---------- */
   function t(k, p) {
@@ -59,7 +59,8 @@
     document.querySelectorAll('[data-t]').forEach(function (el) { el.textContent = t(el.getAttribute('data-t')); });
     document.querySelectorAll('[data-t-ph]').forEach(function (el) { el.placeholder = t(el.getAttribute('data-t-ph')); });
     document.querySelectorAll('[data-t-title]').forEach(function (el) { var v = t(el.getAttribute('data-t-title')); el.title = v; el.setAttribute('aria-label', v); });
-    $('appName').textContent = t('appName');
+    $('appName').innerHTML = '<span class="w-afi">afi</span><span class="w-prod">' + esc(t('prodWord')) + '</span>';
+    $('appName').setAttribute('aria-label', t('appName'));
     document.title = t('appName');
     $('langSel').value = S.lang;
     fillLayoutSel(); fillCodeMode(); fillTheme(); setRunBtn();
@@ -213,6 +214,8 @@
     B.Events.disable();
     try { ws.clear(); refreshToolbox(STEPS[S.gi].st); B.serialization.workspaces.load(json, ws); } finally { B.Events.enable(); }
     applyStatic(); renderAll(); setStatus(t('st_ready'));
+    if (!$('sensorModal').hidden) SUI.render();
+    if (!$('mapModal').hidden) renderMap();
     if (S.profile && S.profile.id === 'guest') { S.profile.name = GUEST[lang]; $('chipName').textContent = S.profile.name; }
   }
 
@@ -335,7 +338,8 @@
   function showConcept() {
     var cur = STEPS[S.gi];
     $('explain').innerHTML = '<div class="eyebrow">' + esc(t('thisTopic')) + '</div><h3>' + esc(L(cur.ch.concept)) + ' · ' + esc(L(cur.ls.title)) + '</h3>' +
-      '<p>' + esc(t('explainHint')) + '</p><div class="lifebox"><b>' + esc(t('inLife')) + '</b>' + esc(L(cur.ch.life)) + '</div>';
+      '<p>' + esc(t('explainHint')) + '</p><div class="lifebox"><b>' + esc(t('inLife')) + '</b>' + esc(L(cur.ch.life)) + '</div>' +
+      (SUI && cur.ch.sensors && cur.ch.sensors.length ? '<div class="eyebrow">' + esc(t('s_chapterSensors')) + '</div><div class="schips">' + SUI.chips(cur.ch.sensors) + '</div>' : '');
   }
   var ACTKEY = { robot_ileri: 'fwd', robot_sola: 'left', robot_saga: 'right', robot_isik: 'light', robot_kapi: 'door' };
   function snippets(b) {
@@ -555,7 +559,7 @@
   function canClose(id) { return id !== 'profileModal' || !!S.profile; }
   function showModal(id) { $(id).hidden = false; stack = stack.filter(function (x) { return x !== id; }); stack.push(id); }
   function closeModal(id) { $(id).hidden = true; stack = stack.filter(function (x) { return x !== id; }); }
-  ['profileModal', 'mapModal', 'settingsModal', 'storyModal', 'win'].forEach(function (id) {
+  ['profileModal', 'mapModal', 'settingsModal', 'storyModal', 'win', 'sensorModal'].forEach(function (id) {
     $(id).addEventListener('click', function (e) { if (e.target === $(id) && canClose(id)) closeModal(id); });
     $(id).querySelectorAll('[data-close]').forEach(function (b) { b.addEventListener('click', function () { closeModal(id); }); });
   });
@@ -585,10 +589,12 @@
         return '<div class="lrow"><div class="lt">' + ch.num + '.' + (li + 1) + ' ' + esc(L(ls.title)) + '</div><div class="bubbles" style="margin-left:0">' + bubs + '</div></div>';
       }).join('');
       return '<div class="chap' + (cur.ci === ci ? ' cur' : '') + '"><div class="hd"><div class="num">' + ch.num + '</div><div><b>' + esc(L(ch.name)) + '</b><span>' + esc(L(ch.concept)) + '</span></div>' +
-        '<div class="prog">' + esc(t('stepsDone', { d: done, t: steps.length })) + '</div></div>' + lessons + '</div>';
+        '<div class="prog">' + esc(t('stepsDone', { d: done, t: steps.length })) + '</div></div>' + lessons +
+        (ch.sensors && ch.sensors.length ? '<div class="schips">' + SUI.chips(ch.sensors) + '</div>' : '') + '</div>';
     }).join('') + C.soon.map(function (s) {
       return '<div class="chap soon"><div class="hd"><div class="num">' + s.num + '</div><div><b>' + esc(L(s.name)) + '</b><span>' + esc(L(s.concept)) + '</span></div></div>' +
-        '<p style="margin:0;font-size:.86rem;color:var(--ink-2)">' + esc(L(s.sensor)) + '</p><span class="soonchip">' + esc(t('soon')) + '</span></div>';
+        '<p style="margin:0;font-size:.86rem;color:var(--ink-2)">' + esc(L(s.sensor)) + '</p>' +
+        (s.sensors && s.sensors.length ? '<div class="schips">' + SUI.chips(s.sensors) + '</div>' : '') + '<span class="soonchip">' + esc(t('soon')) + '</span></div>';
     }).join('');
     $('mapgrid').innerHTML = html;
   }
@@ -607,7 +613,11 @@
     $('prevBtn').onclick = function () { goStep(S.gi - 1); };
     $('nextBtn').onclick = function () { goStep(S.gi + 1); };
     $('bubbles').addEventListener('click', function (e) { var b = e.target.closest('[data-gi]'); if (b) goStep(+b.getAttribute('data-gi')); });
-    $('mapgrid').addEventListener('click', function (e) { var b = e.target.closest('[data-gi]'); if (b) { closeModal('mapModal'); goStep(+b.getAttribute('data-gi')); } });
+    $('mapgrid').addEventListener('click', function (e) {
+      var sn = e.target.closest('[data-sensor]'); if (sn) { closeModal('mapModal'); SUI.open(sn.getAttribute('data-sensor')); return; }
+      var b = e.target.closest('[data-gi]'); if (b) { closeModal('mapModal'); goStep(+b.getAttribute('data-gi')); } });
+    $('explain').addEventListener('click', function (e) { var sn = e.target.closest('[data-sensor]'); if (sn) SUI.open(sn.getAttribute('data-sensor')); });
+    $('sensorBtn').onclick = function () { SUI.open(); };
     $('mapBtn').onclick = function () { renderMap(); showModal('mapModal'); };
     $('variantBtn').onclick = function () { if (S.running) return; var nv = E.variantsOf(STEPS[S.gi].st).length; S.vi = (S.vi + 1) % nv; renderVariant(); resetView(); };
     $('storyBtn').onclick = function () { openStory(STEPS[S.gi].ch); };
@@ -697,6 +707,8 @@
   }
 
   /* ---------- Başlangıç ---------- */
+  SUI = window.createSensorUI({ t: t, L: L, esc: esc, showModal: showModal, lang: function () { return S.lang; },
+    chapters: function () { return C.chapters.concat(C.soon); } });
   applyTheme();
   injectWs();
   applyStatic();
