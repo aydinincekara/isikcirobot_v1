@@ -1,0 +1,4 @@
+Blockly 11.2.2
+Copyright Google LLC / Raspberry Pi Foundation
+Lisans: Apache License 2.0 - https://www.apache.org/licenses/LICENSE-2.0
+Kaynak: https://github.com/RaspberryPiFoundation/blockly

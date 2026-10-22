@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Işıkçı Robot</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: üst şerit (ad · ders ilerlemesi · araçlar) / altında üç sürüklenebilir sütun: sahne | bloklar | kod + açıklama */
+:root{
+  --bg:#EEF2F6; --panel:#FFFFFF; --panel-2:#F5F7FA; --line:#D6DDE6;
+  --ink:#1A2230; --ink-2:#4A5568; --ink-3:#6F7B8E;
+  --lamp:#F5A524; --lamp-glow:#FFD36B; --lamp-soft:#FFF1D2;
+  --accent:#2563C9; --accent-ink:#FFFFFF; --accent-soft:#E2ECFB;
+  --ok:#1F8A5B; --ok-ink:#FFFFFF; --ok-soft:#DDF3E8; --bad:#C2413B; --bad-soft:#FBE3E1;
+  --wall:#D9E0E8; --robot:#2563C9; --robot-eye:#FFFFFF;
+  --salon-a:#EBD6B8; --salon-b:#DDC39E; --koridor-a:#D9E2EE; --koridor-b:#C3D0E2; --mutfak-a:#F4F6F9; --mutfak-b:#DCE3EC;
+  --sofa:#8B6FD6; --table:#B07A4A; --plant:#3E9B5F; --pot:#C46A3D; --counter:#8C99A8; --door:#9A5B2E;
+  --code-bg:#F7F9FC; --kw:#9B3FC4; --fn:#2563C9; --num:#B7621A; --cm:#6F7B8E;
+  --scrim:rgba(14,20,32,.5);
+  --f-display:"Fredoka","Nunito",ui-rounded,"Segoe UI",system-ui,sans-serif;
+  --f-body:"Nunito","Segoe UI",system-ui,-apple-system,sans-serif;
+  --f-mono:"JetBrains Mono",Consolas,ui-monospace,"Courier New",monospace;
+  --r:14px; --left:340px; --right:390px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F151E; --panel:#171F2B; --panel-2:#1D2735; --line:#2B3747;
+  --ink:#E7EDF5; --ink-2:#B3BFCE; --ink-3:#8E9BB0;
+  --lamp:#FFB938; --lamp-glow:#FFD76E; --lamp-soft:#3A2F17;
+  --accent:#6EA2F7; --accent-ink:#0F151E; --accent-soft:#1E2E48;
+  --ok:#4CC38A; --ok-ink:#0F151E; --ok-soft:#173528; --bad:#F07A73; --bad-soft:#3B1F1E;
+  --wall:#0B1118; --robot:#6EA2F7; --robot-eye:#0F151E;
+  --salon-a:#4A3B2C; --salon-b:#3E3125; --koridor-a:#2A3547; --koridor-b:#233041; --mutfak-a:#2B3442; --mutfak-b:#222A36;
+  --sofa:#7E68C8; --table:#8C6140; --plant:#3E8F5A; --pot:#A65A35; --counter:#566273; --door:#B47645;
+  --code-bg:#121A24; --kw:#D09BF0; --fn:#7DB0FF; --num:#F2A65A; --cm:#8E9BB0;
+  --scrim:rgba(0,0,0,.6); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F151E; --panel:#171F2B; --panel-2:#1D2735; --line:#2B3747;
+  --ink:#E7EDF5; --ink-2:#B3BFCE; --ink-3:#8E9BB0;
+  --lamp:#FFB938; --lamp-glow:#FFD76E; --lamp-soft:#3A2F17;
+  --accent:#6EA2F7; --accent-ink:#0F151E; --accent-soft:#1E2E48;
+  --ok:#4CC38A; --ok-ink:#0F151E; --ok-soft:#173528; --bad:#F07A73; --bad-soft:#3B1F1E;
+  --wall:#0B1118; --robot:#6EA2F7; --robot-eye:#0F151E;
+  --salon-a:#4A3B2C; --salon-b:#3E3125; --koridor-a:#2A3547; --koridor-b:#233041; --mutfak-a:#2B3442; --mutfak-b:#222A36;
+  --sofa:#7E68C8; --table:#8C6140; --plant:#3E8F5A; --pot:#A65A35; --counter:#566273; --door:#B47645;
+  --code-bg:#121A24; --kw:#D09BF0; --fn:#7DB0FF; --num:#F2A65A; --cm:#8E9BB0;
+  --scrim:rgba(0,0,0,.6); color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{font-size:15px}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:1rem;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 28px}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:.2px}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1680px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+
+/* ---------- Üst şerit ---------- */
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand svg{flex:none}
+.brand h1{font-size:1.45rem;font-weight:700;line-height:1.1}
+.brand p{margin:0;color:var(--ink-2);font-size:.82rem}
+.lessonbar{flex:1 1 380px;display:flex;align-items:center;gap:8px;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 6px 4px 14px}
+.lessonbar .where{min-width:0;flex:0 1 auto;display:flex;flex-direction:column;line-height:1.2}
+.lessonbar .where b{font-family:var(--f-display);font-weight:600;font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lessonbar .where span{font-size:.75rem;color:var(--ink-3);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bubbles{display:flex;gap:5px;flex-wrap:wrap;margin-left:auto}
+.bub{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);background:var(--panel-2);font-weight:800;font-size:.8rem;display:inline-flex;align-items:center;justify-content:center;color:var(--ink-2);padding:0}
+.bub.done{background:var(--lamp-soft);border-color:var(--lamp);color:var(--ink)}
+.bub.sug{border-color:var(--accent);border-style:dashed}
+.bub[aria-current="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.iconbtn{border:1px solid var(--line);background:var(--panel);border-radius:999px;height:36px;min-width:36px;padding:0 12px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-weight:800;font-size:.88rem}
+.iconbtn:hover{border-color:var(--accent)}
+.iconbtn svg{width:18px;height:18px;flex:none}
+.round{width:36px;padding:0}
+.tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.sel{height:36px;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:0 8px;font-weight:700;font-size:.88rem;max-width:100%}
+.layoutgrp{display:flex;align-items:center;gap:6px}
+.layoutgrp label{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.chip{display:inline-flex;align-items:center;gap:8px;height:36px;border-radius:999px;border:1px solid var(--line);background:var(--panel);padding:0 12px 0 4px;font-weight:800;font-size:.88rem;max-width:200px}
+.chip .av{width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:inline-flex;align-items:center;justify-content:center;font-family:var(--f-display);font-weight:700;flex:none}
+.chip span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.badge-teacher{font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:var(--lamp-soft);color:var(--ink);border-radius:999px;padding:3px 10px}
+
+/* ---------- Ana ızgara ---------- */
+.main{display:grid;grid-template-columns:var(--left) 10px minmax(340px,1fr) 10px var(--right);align-items:start;gap:0}
+.split{align-self:stretch;cursor:col-resize;display:flex;align-items:center;justify-content:center;touch-action:none;border-radius:6px}
+.split::before{content:"";width:4px;height:56px;border-radius:4px;background:var(--line);transition:background .15s}
+.split:hover::before,.split.drag::before,.split:focus-visible::before{background:var(--accent)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);min-width:0}
+.panel-h{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.panel-h h2{font-size:1rem;font-weight:600}
+.eyebrow{font-size:.72rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.col{display:flex;flex-direction:column;gap:12px;min-width:0}
+
+/* Görev kartı */
+.task{padding:14px;display:flex;flex-direction:column;gap:8px}
+.task .rowtop{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.concept{display:inline-flex;gap:6px;align-items:center;background:var(--lamp-soft);color:var(--ink);border-radius:999px;padding:2px 10px;font-size:.76rem;font-weight:800;letter-spacing:.03em}
+.task h2{font-size:1.22rem}
+.task p{margin:0;color:var(--ink-2)}
+.task .goal{color:var(--ink);font-weight:700}
+.mini{display:flex;gap:6px;flex-wrap:wrap}
+.minibtn{border:1px solid var(--line);background:var(--panel-2);border-radius:999px;padding:3px 10px;font-size:.8rem;font-weight:800;display:inline-flex;align-items:center;gap:5px}
+.minibtn svg{width:14px;height:14px}
+.minibtn:hover{border-color:var(--accent)}
+.variant{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;background:var(--accent-soft);border-radius:10px;padding:8px 10px;font-size:.86rem;font-weight:700;color:var(--ink)}
+.teacherbtn{align-self:flex-start;border:1px dashed var(--lamp);background:var(--lamp-soft);border-radius:10px;padding:6px 12px;font-weight:800;font-size:.85rem}
+
+/* Sahne */
+.stage-wrap{padding:12px;display:flex;flex-direction:column;gap:10px}
+canvas#stage{width:100%;aspect-ratio:1/1;max-width:100%;display:block;border-radius:10px;background:var(--wall)}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{border:0;border-radius:12px;padding:10px 16px;font-weight:800;font-size:.95rem;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn-run{background:var(--ok);color:var(--ok-ink);flex:1 1 auto;font-size:1.02rem}
+.btn-run[data-mode="stop"]{background:var(--bad);color:#fff}
+.btn-ghost{background:var(--panel-2);color:var(--ink);border:1px solid var(--line)}
+.btn-primary{background:var(--accent);color:var(--accent-ink)}
+.btn-small{padding:6px 12px;font-size:.85rem}
+.speed{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--ink-2);font-weight:700}
+.speed input{width:110px;accent-color:var(--accent)}
+.status{border-radius:10px;padding:10px 12px;font-weight:700;font-size:.92rem;background:var(--panel-2);color:var(--ink-2);min-height:44px}
+.status[data-kind="ok"]{background:var(--ok-soft);color:var(--ok)}
+.status[data-kind="bad"]{background:var(--bad-soft);color:var(--bad)}
+.meter{display:flex;justify-content:space-between;gap:8px;font-size:.85rem;color:var(--ink-2);font-variant-numeric:tabular-nums;flex-wrap:wrap}
+.meter b{color:var(--ink)} .meter .over{color:var(--bad)}
+
+/* Blok alanı */
+.blocks{display:flex;flex-direction:column;min-width:0}
+#blocklyDiv{height:calc(100vh - 150px);min-height:480px;max-height:900px;width:100%;border-radius:0 0 var(--r) var(--r);overflow:hidden}
+.hint{font-size:.82rem;color:var(--ink-3)}
+
+/* Kod */
+.codegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1px;background:var(--line);border-radius:0 0 var(--r) var(--r);overflow:hidden}
+.codebox{background:var(--code-bg);min-width:0;display:flex;flex-direction:column}
+.codebox .lang{font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);padding:8px 14px 0}
+.codebox .scroll{overflow-x:auto}
+.codebox pre{margin:0;padding:8px 14px 14px;font-family:var(--f-mono);font-size:.84rem;line-height:1.65;white-space:pre;min-height:160px;color:var(--ink);tab-size:4}
+.kw{color:var(--kw);font-weight:600} .fn{color:var(--fn)} .num{color:var(--num)} .cm{color:var(--cm);font-style:italic}
+.explain{padding:14px;display:flex;flex-direction:column;gap:10px}
+.explain h3{font-size:1.08rem}
+.explain p{margin:0;color:var(--ink-2)}
+.snippet{font-family:var(--f-mono);font-size:.82rem;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;overflow-x:auto;white-space:pre;color:var(--ink)}
+.pair{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 10px;align-items:start}
+.pair span{font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding-top:9px}
+.lifebox{background:var(--lamp-soft);border-radius:10px;padding:10px 12px;color:var(--ink)}
+.lifebox b{font-family:var(--f-display);font-weight:600}
+.term{font-weight:800;color:var(--ink)}
+body[data-code="blocks"] #codePanel .codegrid{display:none}
+body[data-code="blocks"] #codePanel .panel-h{border-bottom:0}
+
+/* ---------- Pencereler ---------- */
+.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:var(--scrim);z-index:30}
+.card{background:var(--panel);border-radius:18px;border:1px solid var(--line);padding:20px;width:100%;max-width:460px;max-height:100%;overflow:auto;display:flex;flex-direction:column;gap:12px}
+.card.wide{max-width:980px}
+.card h2{font-size:1.45rem}
+.card p{margin:0;color:var(--ink-2)}
+.card .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.card .row.end{justify-content:flex-end}
+.field{display:flex;flex-direction:column;gap:4px;flex:1 1 160px}
+.field label{font-size:.76rem;font-weight:800;color:var(--ink-3);letter-spacing:.05em;text-transform:uppercase}
+.input{height:40px;border:1px solid var(--line);border-radius:10px;background:var(--panel-2);padding:0 12px;min-width:0}
+.err{color:var(--bad);font-weight:700;font-size:.88rem}
+.stars{font-size:2rem;letter-spacing:6px;color:var(--lamp);text-align:center}
+.stars .off{color:var(--line)}
+.center{text-align:center}
+.plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.pbtn{border:2px solid var(--line);background:var(--panel-2);border-radius:14px;padding:12px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;font-weight:800;min-width:0}
+.pbtn:hover{border-color:var(--accent)}
+.pbtn .av{width:42px;height:42px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-size:1.3rem;font-weight:700}
+.pbtn .nm{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pbtn small{color:var(--ink-3);font-weight:700}
+.pwrap{position:relative;display:flex;flex-direction:column}
+.pdel{margin-top:4px;border:1px solid var(--bad);color:var(--bad);background:transparent;border-radius:999px;font-size:.78rem;font-weight:800;padding:2px 8px;align-self:center}
+.confirm{background:var(--bad-soft);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.confirm p{color:var(--bad);font-weight:700}
+.linkbtn{background:none;border:0;color:var(--accent);font-weight:800;padding:0;text-align:left}
+.codeout{font-family:var(--f-mono);font-size:1.2rem;font-weight:600;letter-spacing:.08em;background:var(--code-bg);border:1px dashed var(--line);border-radius:10px;padding:10px 12px;user-select:all;overflow-wrap:anywhere}
+.sep{height:1px;background:var(--line)}
+
+/* Harita */
+.mapgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.chap{border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--panel-2);min-width:0}
+.chap.cur{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.chap .hd{display:flex;align-items:center;gap:10px}
+.chap .num{width:34px;height:34px;border-radius:10px;background:var(--lamp-soft);font-family:var(--f-display);font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.chap .hd b{font-family:var(--f-display);font-weight:600;font-size:1.05rem;display:block;line-height:1.2}
+.chap .hd span{font-size:.8rem;color:var(--ink-3);font-weight:700}
+.chap .prog{margin-left:auto;font-size:.78rem;font-weight:800;color:var(--ink-2);white-space:nowrap;font-variant-numeric:tabular-nums}
+.lrow{display:flex;flex-direction:column;gap:5px}
+.lrow .lt{font-size:.82rem;font-weight:800;color:var(--ink-2)}
+.chap.soon{opacity:.75}
+.chap.soon .num{background:var(--line)}
+.soonchip{align-self:flex-start;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;border:1px dashed var(--ink-3);color:var(--ink-3);border-radius:999px;padding:2px 8px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;color:var(--ink-2);font-weight:700;align-items:center}
+.legend .bub{width:22px;height:22px;font-size:.7rem;pointer-events:none}
+
+/* Hikâye */
+.storyart{display:flex;gap:12px;align-items:center}
+.storyart svg{flex:none}
+.storytext{font-size:1.02rem;color:var(--ink)!important}
+
+@media (max-width:1100px){
+  .main{grid-template-columns:minmax(280px,340px) minmax(0,1fr);gap:12px}
+  .split{display:none}
+  #rightCol{grid-column:1 / -1;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));align-items:start}
+  #blocklyDiv{height:560px}
+}
+@media (max-width:760px){
+  .main{grid-template-columns:minmax(0,1fr)}
+  #blocklyDiv{height:460px;min-height:0}
+  canvas#stage{max-width:420px;margin:0 auto}
+  .lessonbar{border-radius:14px;flex-wrap:wrap;padding:8px 10px}
+  .bubbles{margin-left:0}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg width="40" height="40" viewBox="0 0 44 44" aria-hidden="true">
+        <rect x="6" y="12" width="32" height="26" rx="9" fill="var(--robot)"/>
+        <circle cx="28" cy="25" r="5" fill="var(--robot-eye)"/>
+        <line x1="22" y1="12" x2="22" y2="5" stroke="var(--robot)" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="22" cy="5" r="4" fill="var(--lamp)"/>
+      </svg>
+      <div><h1 id="appName">Işıkçı Robot</h1><p data-t="tagline"></p></div>
+    </div>
+
+    <nav class="lessonbar" aria-label="Ders">
+      <button class="iconbtn round" id="prevBtn" data-t-title="prevStep"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div class="where"><b id="whereTitle"></b><span id="whereSub"></span></div>
+      <div class="bubbles" id="bubbles"></div>
+      <button class="iconbtn round" id="nextBtn" data-t-title="nextStep"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+    </nav>
+
+    <div class="tools">
+      <button class="iconbtn" id="mapBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span data-t="map"></span></button>
+      <div class="layoutgrp">
+        <label for="layoutSel" data-t="layout"></label>
+        <select class="sel" id="layoutSel"></select>
+        <button class="iconbtn round" id="saveLayoutBtn" data-t-title="saveLayout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></svg></button>
+      </div>
+      <button class="iconbtn round" id="settingsBtn" data-t-title="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg></button>
+      <span class="badge-teacher" id="teacherBadge" data-t="teacher" hidden></span>
+      <button class="chip" id="profileChip" data-t-title="switchProfile"><span class="av" id="chipAv">?</span><span id="chipName"></span></button>
+    </div>
+  </header>
+
+  <main class="main" id="main">
+    <section class="col" id="leftCol">
+      <div class="panel task">
+        <div class="rowtop">
+          <span class="concept" id="concept"></span>
+          <div class="mini">
+            <button class="minibtn" id="storyBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M4 5c3-1.5 5.5-1.5 8 0v14c-2.5-1.5-5-1.5-8 0zM20 5c-3-1.5-5.5-1.5-8 0v14c2.5-1.5 5-1.5 8 0z"/></svg><span data-t="story"></span></button>
+            <button class="minibtn" id="readBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 010 7"/></svg><span data-t="read"></span></button>
+          </div>
+        </div>
+        <h2 id="taskTitle"></h2>
+        <p id="taskText"></p>
+        <p class="goal" id="taskGoal"></p>
+        <div class="variant" id="variantBox" hidden>
+          <span id="variantLabel"></span>
+          <button class="minibtn" id="variantBtn" data-t="variantBtn"></button>
+        </div>
+        <button class="teacherbtn" id="solutionBtn" data-t="showSolution" hidden></button>
+      </div>
+      <div class="panel stage-wrap">
+        <canvas id="stage" width="600" height="600"></canvas>
+        <div class="controls">
+          <button class="btn btn-run" id="runBtn" data-mode="run"></button>
+          <button class="btn btn-ghost" id="resetBtn"></button>
+        </div>
+        <div class="controls" style="justify-content:space-between">
+          <label class="speed" for="speed"><span data-t="speed"></span> <input type="range" id="speed" min="1" max="5" value="3"></label>
+          <button class="btn btn-ghost btn-small" id="clearBtn" data-t="clear"></button>
+        </div>
+        <div class="status" id="status" role="status"></div>
+        <div class="meter"><span><span data-t="used"></span>: <b id="used">0</b></span><span><span data-t="target"></span> <b id="maxB">0</b></span></div>
+      </div>
+    </section>
+
+    <div class="split" id="splitL" role="separator" aria-orientation="vertical" tabindex="0" aria-label="Sol panel genişliği"></div>
+
+    <section class="panel blocks" id="blocksCol">
+      <div class="panel-h"><h2 data-t="blocksTitle"></h2><span class="hint" data-t="blocksHint"></span></div>
+      <div id="blocklyDiv"></div>
+    </section>
+
+    <div class="split" id="splitR" role="separator" aria-orientation="vertical" tabindex="0" aria-label="Sağ panel genişliği"></div>
+
+    <section class="col" id="rightCol">
+      <div class="panel" id="codePanel">
+        <div class="panel-h">
+          <div class="eyebrow" data-t="codeTitle"></div>
+          <select class="sel" id="codeMode" aria-label="Görünüm"></select>
+        </div>
+        <div class="codegrid">
+          <div class="codebox" id="boxPy"><div class="lang">Python</div><div class="scroll"><pre id="codePy"></pre></div></div>
+          <div class="codebox" id="boxJs"><div class="lang">JavaScript</div><div class="scroll"><pre id="codeJs"></pre></div></div>
+        </div>
+      </div>
+      <div class="panel explain" id="explain"></div>
+    </section>
+  </main>
+</div>
+
+<!-- Kim kodluyor? -->
+<div class="modal" id="profileModal" hidden>
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
+    <h2 id="pmTitle" data-t="who"></h2>
+    <p data-t="whoHelp"></p>
+    <div class="plist" id="plist"></div>
+    <div class="confirm" id="delConfirm" hidden><p id="delText"></p><div class="row"><button class="btn btn-ghost btn-small" id="delNo" data-t="no"></button><button class="btn btn-small" style="background:var(--bad);color:#fff" id="delYes" data-t="yes"></button></div></div>
+    <form class="row" id="addForm" autocomplete="off">
+      <input class="input" id="newName" maxlength="24" style="flex:1 1 160px" data-t-ph="newName">
+      <button class="btn btn-primary btn-small" type="submit" data-t="add"></button>
+    </form>
+    <p class="err" id="addErr" hidden></p>
+    <div class="row" style="justify-content:space-between">
+      <button class="linkbtn" id="guestBtn" data-t="guest"></button>
+      <button class="linkbtn" id="manageBtn" data-t="manage"></button>
+    </div>
+    <div class="sep"></div>
+    <button class="linkbtn" id="haveCodeBtn" data-t="haveCode"></button>
+    <form id="codeForm" class="row" hidden autocomplete="off">
+      <div class="field"><label for="codeNameIn" data-t="codeName"></label><input class="input" id="codeNameIn" maxlength="24"></div>
+      <div class="field"><label for="codeIn" data-t="codeInput"></label><input class="input" id="codeIn" maxlength="40" style="font-family:var(--f-mono)"></div>
+      <button class="btn btn-primary btn-small" type="submit" data-t="codeContinue" style="align-self:flex-end"></button>
+      <p class="err" id="codeErr" hidden style="flex-basis:100%"></p>
+    </form>
+  </div>
+</div>
+
+<!-- Harita -->
+<div class="modal" id="mapModal" hidden>
+  <div class="card wide" role="dialog" aria-modal="true" aria-labelledby="mapTitle">
+    <div class="row" style="justify-content:space-between"><h2 id="mapTitle" data-t="mapTitle"></h2><button class="btn btn-ghost btn-small" data-close data-t="close"></button></div>
+    <p data-t="mapHelp"></p>
+    <div class="legend" id="legend"></div>
+    <div class="mapgrid" id="mapgrid"></div>
+  </div>
+</div>
+
+<!-- Ayarlar -->
+<div class="modal" id="settingsModal" hidden>
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="setTitle">
+    <div class="row" style="justify-content:space-between"><h2 id="setTitle" data-t="settings"></h2><button class="btn btn-ghost btn-small" data-close data-t="close"></button></div>
+    <div class="row">
+      <div class="field"><label for="langSel" data-t="language"></label>
+        <select class="sel" id="langSel"><option value="tr">Türkçe</option><option value="en">English</option></select></div>
+      <div class="field"><label for="themeSel" data-t="theme"></label><select class="sel" id="themeSel"></select></div>
+    </div>
+    <div class="sep"></div>
+    <div class="eyebrow" data-t="progressCode"></div>
+    <div class="codeout" id="myCode"></div>
+    <p data-t="progressHelp"></p>
+    <div class="row"><button class="btn btn-ghost btn-small" id="copyCode" data-t="copy"></button></div>
+    <form class="row" id="mergeForm" autocomplete="off">
+      <div class="field"><label for="mergeIn" data-t="enterCode"></label><input class="input" id="mergeIn" maxlength="40" style="font-family:var(--f-mono)"></div>
+      <button class="btn btn-primary btn-small" type="submit" data-t="load" style="align-self:flex-end"></button>
+    </form>
+    <p class="err" id="mergeMsg" hidden></p>
+    <div class="sep"></div>
+    <button class="btn btn-ghost" id="switchBtn" data-t="switchProfile"></button>
+  </div>
+</div>
+
+<!-- Hikâye -->
+<div class="modal" id="storyModal" hidden>
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="storyTitle">
+    <div class="eyebrow" id="storyEyebrow"></div>
+    <div class="storyart">
+      <svg width="64" height="64" viewBox="0 0 44 44" aria-hidden="true"><rect x="6" y="12" width="32" height="26" rx="9" fill="var(--robot)"/><circle cx="28" cy="25" r="5" fill="var(--robot-eye)"/><line x1="22" y1="12" x2="22" y2="5" stroke="var(--robot)" stroke-width="3" stroke-linecap="round"/><circle cx="22" cy="5" r="4" fill="var(--lamp)"/></svg>
+      <h2 id="storyTitle"></h2>
+    </div>
+    <p class="storytext" id="storyText"></p>
+    <div class="lifebox"><b data-t="life"></b><br><span id="storyLife"></span></div>
+    <div class="row end"><button class="btn btn-primary" id="storyStart" data-t="start"></button></div>
+  </div>
+</div>
+
+<!-- Başarı -->
+<div class="modal" id="win" hidden>
+  <div class="card center" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+    <div class="stars" id="winStars"></div>
+    <h2 id="winTitle" data-t="winTitle"></h2>
+    <p id="winText"></p>
+    <div class="row" style="justify-content:center">
+      <button class="btn btn-ghost" id="winStay" data-t="stay"></button>
+      <button class="btn btn-run" id="winNext" style="flex:0 0 auto"></button>
+    </div>
+  </div>
+</div>
+
+<script src="lib/blockly_compressed.js"></script>
+<script src="lib/blocks_compressed.js"></script>
+<script src="lib/javascript_compressed.js"></script>
+<script src="lib/python_compressed.js"></script>
+<script src="lib/msg/en.js"></script>
+<script>window.BLOCKLY_MSG = { en: Object.assign({}, Blockly.Msg) };</script>
+<script src="lib/msg/tr.js"></script>
+<script>window.BLOCKLY_MSG.tr = Object.assign({}, Blockly.Msg);</script>
+<script src="js/engine.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/blocks.js"></script>
+<script src="js/levels.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>

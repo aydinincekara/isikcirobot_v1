@@ -1,0 +1,41 @@
+IŞIKÇI ROBOT - Blok kodlama eğitim uygulaması (Aşama 1)
+=========================================================
+
+NASIL AÇILIR
+1. IsikciRobot.zip dosyasına sağ tıklayın ve "Tümünü ayıkla" deyin.
+   (Zip'in içinden doğrudan açarsanız uygulama çalışmaz; önce ayıklamak gerekir.)
+2. Ayıklanan IsikciRobot klasörüne girin.
+3. index.html dosyasına çift tıklayın. Uygulama Chrome, Edge veya Firefox'ta açılır.
+   Başka bir programla açılırsa: sağ tık > Birlikte aç > Google Chrome veya Microsoft Edge.
+
+Kurulum, internet, Python veya yönetici izni gerekmez.
+Sınıftaki bilgisayarlara dağıtmak için IsikciRobot klasörünü USB ile kopyalamanız yeterli.
+
+ÖĞRENCİ PROFİLLERİ
+- Açılışta öğrenci adını seçer ya da yeni ad ekler. İlerleme o bilgisayarda adıyla saklanır.
+- Başka bilgisayara geçerken: Ayarlar > "İlerleme kodum" kısmındaki kodu not alır,
+  yeni bilgisayarda "İlerleme kodum var" ile adını ve kodu yazar. Yıldızlar taşınır,
+  dizdiği bloklar eski bilgisayarda kalır.
+
+ÖĞRETMEN MODU
+- Tarayıcının adres çubuğunda index.html'in sonuna #ogretmen ekleyip Enter'a basın.
+  Örnek: file:///C:/Users/.../IsikciRobot/index.html#ogretmen
+- Her adımda "Çözümü yükle" düğmesi görünür. Öğrenciler bu adresi bilmezse düğmeyi görmez.
+
+YERLEŞİM VE GÖRÜNÜM
+- Paneller arasındaki dikey çizgileri sürükleyerek genişlikleri değiştirebilirsiniz.
+  Çizgiye çift tıklamak o paneli seçili düzenin genişliğine döndürür.
+- Üstteki "Yerleşim" menüsü: Varsayılan, Geniş blok alanı, Kod karşılaştırma, Sunum (akıllı tahta).
+  Kaydet düğmesi o anki düzeni "Kendi düzenim" olarak saklar.
+- Kod panelindeki menü: Sadece bloklar / Bloklar + Python / Bloklar + JavaScript / ikisi yan yana.
+
+DİL
+- Ayarlar > Dil: Türkçe veya English. Bloklar, metinler ve koddaki fonksiyon adları dile göre değişir.
+
+DOSYALAR
+- index.html      : uygulama
+- js/levels.js    : bölümler, dersler ve adımlar (yeni adımlar SADECE sona eklenmeli)
+- js/engine.js    : oyun motoru
+- js/blocks.js    : bloklar ve kod üreteçleri
+- js/i18n.js      : Türkçe ve İngilizce metinler
+- lib/            : Blockly kütüphanesi (Apache 2.0 lisanslı)
