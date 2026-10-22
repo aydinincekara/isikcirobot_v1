@@ -153,6 +153,8 @@
   /* ---- İlerleme kodu: her adım için 0-3 yıldız, 2 bit ---- */
   var ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   function encodeProgress(stars) {
+    var last = -1; stars.forEach(function (s, i) { if (s > 0) last = i; });
+    stars = stars.slice(0, last + 1);   /* sondaki boş adımlar yazılmaz; kısa kod, okurken 0 sayılır */
     var bits = '';
     stars.forEach(function (s) { s = Math.max(0, Math.min(3, s | 0)); bits += (s >> 1) + '' + (s & 1); });
     while (bits.length % 5) bits += '0';
@@ -164,7 +166,7 @@
   }
   function decodeProgress(code, count) {
     var s = String(code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-    if (s.length < 3 || s[0] !== 'A') return null;
+    if (s.length < 2 || s[0] !== 'A') return null;
     for (var k = 0; k < s.length; k++) if (ALPHA.indexOf(s[k]) < 0) return null;
     var body = s.slice(0, -1), chk = s.slice(-1), sum = 0;
     for (var j = 0; j < body.length; j++) sum = (sum + ALPHA.indexOf(body[j]) * (j + 1)) % 32;

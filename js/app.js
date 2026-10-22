@@ -24,12 +24,19 @@
       ls.steps.forEach(function (st, si) { STEPS.push({ ch: ch, ci: ci, ls: ls, li: li, si: si, st: st, gi: STEPS.length }); });
     });
   });
+  /* İlerleme kodu adımların sabit numarasına (n) göre yazılır; görünen sıra değişse de eski kodlar doğru okunur */
+  var CODE_N = 0;
+  STEPS.forEach(function (s) { if (s.st.n == null) s.st.n = s.gi; CODE_N = Math.max(CODE_N, s.st.n + 1); });
+  function codeStars() { var a = []; for (var i = 0; i < CODE_N; i++) a.push(0); STEPS.forEach(function (s) { a[s.st.n] = starsOf(s.gi); }); return a; }
+  var IC = window.ic, ICT = window.icTier, RI = window.ROOM_ICON;
+  function roomIc(ch) { return IC(RI[ch.id] || RI[ch.num] || 'home'); }
+  function tierChip(tr) { tr = tr || 'easy'; var tt = (C.tiers && C.tiers[tr]) || { tr: tr, en: tr }; return '<span class="tier tier-' + tr + '">' + ICT(tr) + esc(L(tt)) + '</span>'; }
 
   var PRESETS = {
-    default: { left: 340, right: 390, code: 'py', scale: 0.9, ui: 15 },
-    wide: { left: 290, right: 290, code: 'blocks', scale: 1, ui: 15 },
-    compare: { left: 300, right: 600, code: 'both', scale: 0.85, ui: 15 },
-    present: { left: 420, right: 420, code: 'py', scale: 1.15, ui: 18 }
+    default: { left: 340, right: 390, code: 'py', scale: 0.9, ui: 15, lc: false, rc: false, bh: null },
+    wide: { left: 300, right: 290, code: 'py', scale: 1, ui: 15, lc: false, rc: true, bh: null },
+    compare: { left: 300, right: 600, code: 'both', scale: 0.85, ui: 15, lc: false, rc: false, bh: null },
+    present: { left: 420, right: 420, code: 'py', scale: 1.15, ui: 18, lc: false, rc: false, bh: null }
   };
   var GUEST = { tr: 'Misafir', en: 'Guest' };
 
@@ -66,6 +73,9 @@
     fillLayoutSel(); fillCodeMode(); fillTheme(); setRunBtn();
     $('resetBtn').textContent = '↺ ' + t('reset');
     if (!('speechSynthesis' in window)) $('readBtn').hidden = true;
+    document.querySelectorAll('[data-ic]').forEach(function (el) { el.innerHTML = IC(el.getAttribute('data-ic')); });
+    $('openL').innerHTML = IC('chevR'); $('openR').innerHTML = IC('chevL'); $('railRun').innerHTML = IC('play');
+    applyWidths();
   }
 
   /* ---------- Tema ---------- */
@@ -108,18 +118,34 @@
     $('codeMode').value = settings.layout.code;
     $('codeMode').setAttribute('aria-label', t('view'));
   }
+  var RAIL = 46, MID = 300, GUT = 32;
   function effectiveWidths() {
     var l = settings.layout, W = $('main').clientWidth || window.innerWidth;
-    var left = l.left, right = l.right, need = left + right + 20 + 340;
-    if (W > 0 && need > W) { var k = Math.max(0.55, (W - 360) / (left + right)); left = Math.round(left * k); right = Math.round(right * k); }
+    var left = l.lc ? RAIL : l.left, right = l.rc ? RAIL : l.right;
+    if (W > 0 && left + right + GUT + MID > W) {
+      var fixed = (l.lc ? RAIL : 0) + (l.rc ? RAIL : 0), flex = (l.lc ? 0 : left) + (l.rc ? 0 : right);
+      if (flex > 0) { var k = Math.max(0.5, (W - GUT - MID - fixed) / flex); if (!l.lc) left = Math.round(left * k); if (!l.rc) right = Math.round(right * k); }
+    }
     return { left: left, right: right };
   }
   function applyWidths() {
-    var w = effectiveWidths(), m = $('main');
+    var l = settings.layout, w = effectiveWidths(), m = $('main');
     m.style.setProperty('--left', w.left + 'px'); m.style.setProperty('--right', w.right + 'px');
+    if (l.lc) document.body.setAttribute('data-lc', ''); else document.body.removeAttribute('data-lc');
+    if (l.rc) document.body.setAttribute('data-rc', ''); else document.body.removeAttribute('data-rc');
+    var bd = $('blocklyDiv');
+    if (l.bh) { bd.style.height = l.bh + 'px'; bd.style.maxHeight = 'none'; } else { bd.style.height = ''; bd.style.maxHeight = ''; }
+    var tl = t(l.lc ? 'expandL' : 'collapseL'), tr = t(l.rc ? 'expandR' : 'collapseR'), both = l.lc && l.rc;
+    $('colL').innerHTML = IC(l.lc ? 'chevR' : 'chevL'); $('colL').title = tl; $('colL').setAttribute('aria-label', tl);
+    $('colR').innerHTML = IC(l.rc ? 'chevL' : 'chevR'); $('colR').title = tr; $('colR').setAttribute('aria-label', tr);
+    $('maxBtn').innerHTML = IC(both ? 'shrink' : 'expand') + '<span>' + esc(t(both ? 'restoreBlocks' : 'maxBlocks')) + '</span>';
+    if (ws) B.svgResize(ws);
+    requestAnimationFrame(function () { if (ws) B.svgResize(ws); draw(); });
   }
+  function setCollapsed(side, v) { if (side === 'L') settings.layout.lc = v; else settings.layout.rc = v; applyWidths(); saveSettings(); }
   function applyLayout() {
     var l = settings.layout;
+    if (l.lc == null) { l.lc = false; l.rc = false; }
     applyWidths();
     document.body.setAttribute('data-code', l.code);
     $('boxPy').hidden = !(l.code === 'py' || l.code === 'both');
@@ -137,29 +163,50 @@
   }
   function initSplit(el, side) {
     el.addEventListener('pointerdown', function (e) {
-      if (e.button !== 0) return;
+      if (e.button !== 0 || e.target.closest('.splitbtn')) return;
       e.preventDefault(); el.setPointerCapture(e.pointerId); el.classList.add('drag');
       var rect = $('main').getBoundingClientRect();
       function mv(ev) {
-        var l = settings.layout, avail = rect.width - 20 - 340;
-        if (side === 'L') l.left = clamp(Math.round(ev.clientX - rect.left - 5), 240, Math.max(240, avail - l.right));
-        else l.right = clamp(Math.round(rect.right - ev.clientX - 5), 240, Math.max(240, avail - l.left));
+        var l = settings.layout, other = side === 'L' ? (l.rc ? RAIL : l.right) : (l.lc ? RAIL : l.left);
+        var max = Math.max(200, rect.width - GUT - MID - other), v = side === 'L' ? ev.clientX - rect.left - 8 : rect.right - ev.clientX - 8;
+        var col = v < 150;
+        if (side === 'L') { l.lc = col; if (!col) l.left = clamp(Math.round(v), 200, max); }
+        else { l.rc = col; if (!col) l.right = clamp(Math.round(v), 200, max); }
         applyWidths();
       }
       function up() { el.classList.remove('drag'); el.removeEventListener('pointermove', mv); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up); saveSettings(); }
       el.addEventListener('pointermove', mv); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
     });
     el.addEventListener('keydown', function (e) {
+      if (e.target.closest('.splitbtn')) return;
       var d = e.key === 'ArrowLeft' ? -20 : e.key === 'ArrowRight' ? 20 : 0; if (!d) return;
-      e.preventDefault(); var l = settings.layout, avail = $('main').clientWidth - 20 - 340;
-      if (side === 'L') l.left = clamp(l.left + d, 240, Math.max(240, avail - l.right)); else l.right = clamp(l.right - d, 240, Math.max(240, avail - l.left));
+      e.preventDefault(); var l = settings.layout, grow = side === 'L' ? d : -d, key = side === 'L' ? 'left' : 'right', ck = side === 'L' ? 'lc' : 'rc';
+      if (l[ck]) { if (grow > 0) l[ck] = false; }
+      else { l[key] = clamp(l[key] + grow, 120, 1400); if (l[key] < 150) { l[ck] = true; l[key] = 200; } }
       applyWidths(); saveSettings();
     });
-    el.addEventListener('dblclick', function () {
+    el.addEventListener('dblclick', function (e) {
+      if (e.target.closest('.splitbtn')) return;
       var base = (settings.layoutName === 'custom' ? settings.custom : PRESETS[settings.layoutName]) || PRESETS.default;
-      if (side === 'L') settings.layout.left = base.left; else settings.layout.right = base.right;
+      if (side === 'L') { settings.layout.left = base.left; settings.layout.lc = false; } else { settings.layout.right = base.right; settings.layout.rc = false; }
       applyWidths(); saveSettings();
     });
+  }
+  function initHGrip() {
+    var g = $('hgrip');
+    g.addEventListener('pointerdown', function (e) {
+      if (e.button !== 0) return;
+      e.preventDefault(); g.setPointerCapture(e.pointerId); g.classList.add('drag');
+      var y0 = e.clientY, h0 = $('blocklyDiv').getBoundingClientRect().height;
+      function mv(ev) { settings.layout.bh = clamp(Math.round(h0 + ev.clientY - y0), 320, 2400); applyWidths(); }
+      function up() { g.classList.remove('drag'); g.removeEventListener('pointermove', mv); g.removeEventListener('pointerup', up); g.removeEventListener('pointercancel', up); saveSettings(); }
+      g.addEventListener('pointermove', mv); g.addEventListener('pointerup', up); g.addEventListener('pointercancel', up);
+    });
+    g.addEventListener('keydown', function (e) {
+      var d = e.key === 'ArrowUp' ? -40 : e.key === 'ArrowDown' ? 40 : 0; if (!d) return;
+      e.preventDefault(); settings.layout.bh = clamp(Math.round($('blocklyDiv').getBoundingClientRect().height + d), 320, 2400); applyWidths(); saveSettings();
+    });
+    g.addEventListener('dblclick', function () { settings.layout.bh = null; applyWidths(); saveSettings(); });
   }
 
   /* ---------- Blockly ---------- */
@@ -289,18 +336,18 @@
   }
   function renderTop() {
     var cur = STEPS[S.gi], sug = suggestedIdx();
-    $('whereTitle').textContent = t('chapter') + ' ' + cur.ch.num + ' · ' + L(cur.ch.name) + ' — ' + L(cur.ls.title);
-    $('whereSub').textContent = t('lesson') + ' ' + cur.ch.num + '.' + (cur.li + 1) + ' · ' + t('step') + ' ' + (cur.si + 1) + ' / ' + cur.ls.steps.length;
+    $('whereTitle').innerHTML = roomIc(cur.ch) + esc(t('chapter') + ' ' + cur.ch.num + ' · ' + L(cur.ch.name) + ' — ' + L(cur.ls.title));
+    $('whereSub').textContent = t('lesson') + ' ' + cur.ch.num + '.' + (cur.li + 1) + ' · ' + L((C.tiers || {})[cur.ls.tier || 'easy'] || { tr: '' }) + ' · ' + t('step') + ' ' + (cur.si + 1) + ' / ' + cur.ls.steps.length;
     $('bubbles').innerHTML = STEPS.filter(function (s) { return s.ci === cur.ci && s.li === cur.li; }).map(function (s) { return bubbleHTML(s, sug); }).join('');
     $('prevBtn').disabled = S.gi === 0;
     $('nextBtn').disabled = S.gi === STEPS.length - 1;
   }
   function renderTask() {
     var cur = STEPS[S.gi], st = cur.st;
-    $('concept').textContent = t('chapter') + ' ' + cur.ch.num + ' · ' + L(cur.ch.concept);
-    $('taskTitle').textContent = L(cur.ls.title) + ' · ' + t('step') + ' ' + (cur.si + 1);
-    $('taskText').textContent = L(st.text);
-    $('taskGoal').textContent = L(st.goal);
+    $('concept').innerHTML = roomIc(cur.ch) + esc(t('chapter') + ' ' + cur.ch.num + ' · ' + L(cur.ch.concept));
+    $('taskTitle').innerHTML = esc(L(cur.ls.title) + ' · ' + t('step') + ' ' + (cur.si + 1)) + ' ' + tierChip(cur.ls.tier);
+    $('taskText').innerHTML = IC('chat') + esc(L(st.text));
+    $('taskGoal').innerHTML = IC('target') + esc(L(st.goal));
     $('maxB').textContent = st.max;
     renderVariant();
     $('solutionBtn').hidden = !S.teacher;
@@ -337,9 +384,9 @@
   /* ---------- Açıklama paneli ---------- */
   function showConcept() {
     var cur = STEPS[S.gi];
-    $('explain').innerHTML = '<div class="eyebrow">' + esc(t('thisTopic')) + '</div><h3>' + esc(L(cur.ch.concept)) + ' · ' + esc(L(cur.ls.title)) + '</h3>' +
-      '<p>' + esc(t('explainHint')) + '</p><div class="lifebox"><b>' + esc(t('inLife')) + '</b>' + esc(L(cur.ch.life)) + '</div>' +
-      (SUI && cur.ch.sensors && cur.ch.sensors.length ? '<div class="eyebrow">' + esc(t('s_chapterSensors')) + '</div><div class="schips">' + SUI.chips(cur.ch.sensors) + '</div>' : '');
+    $('explain').innerHTML = '<div class="eyebrow">' + IC('bulb') + esc(t('thisTopic')) + '</div><h3>' + esc(L(cur.ch.concept)) + ' · ' + esc(L(cur.ls.title)) + '</h3>' +
+      '<p>' + esc(t('explainHint')) + '</p><div class="lifebox">' + IC('home') + '<b>' + esc(t('inLife')) + '</b>' + esc(L(cur.ch.life)) + '</div>' +
+      (SUI && cur.ch.sensors && cur.ch.sensors.length ? '<div class="eyebrow">' + IC('chip') + esc(t('s_chapterSensors')) + '</div><div class="schips">' + SUI.chips(cur.ch.sensors) + '</div>' : '');
   }
   var ACTKEY = { robot_ileri: 'fwd', robot_sola: 'left', robot_saga: 'right', robot_isik: 'light', robot_kapi: 'door' };
   function snippets(b) {
@@ -363,10 +410,10 @@
     if (!info) { showConcept(); return; }
     var sn = snippets(b), cond = '';
     if (b.type === 'robot_if' || b.type === 'robot_ifelse') cond = '<p>' + t('condNote', { q: esc(B.Msg['ROBOT_C_' + b.getFieldValue('COND')] || '') }) + '</p>';
-    $('explain').innerHTML = '<div class="eyebrow">' + esc(t('selected')) + '</div><h3>' + esc(info.name) + '</h3>' +
+    $('explain').innerHTML = '<div class="eyebrow">' + IC('code') + esc(t('selected')) + '</div><h3>' + esc(info.name) + '</h3>' +
       '<div class="pair"><span>Python</span><div class="snippet">' + colorize(sn.py, 'py') + '</div>' +
       '<span>JS</span><div class="snippet">' + colorize(sn.js, 'js') + '</div></div>' +
-      '<p>' + info.text + '</p>' + cond + '<div class="lifebox"><b>' + esc(t('inLife')) + '</b>' + esc(info.life) + '</div>';
+      '<p>' + info.text + '</p>' + cond + '<div class="lifebox">' + IC('home') + '<b>' + esc(t('inLife')) + '</b>' + esc(info.life) + '</div>';
   }
 
   /* ---------- Sahne çizimi ---------- */
@@ -481,7 +528,11 @@
   if (window.ResizeObserver) new ResizeObserver(function () { draw(); }).observe(cv);
 
   /* ---------- Çalıştırma ---------- */
-  function setStatus(txt, kind) { var s = $('status'); s.textContent = txt; if (kind) s.setAttribute('data-kind', kind); else s.removeAttribute('data-kind'); }
+  function setStatus(txt, kind) {
+    var s = $('status'), icn = kind === 'ok' ? 'check' : kind === 'bad' ? 'alert' : S.running ? 'play' : 'info';
+    s.innerHTML = IC(icn) + '<span>' + esc(txt) + '</span>';
+    if (kind) s.setAttribute('data-kind', kind); else s.removeAttribute('data-kind');
+  }
   function setRunBtn() { var b = $('runBtn'); b.textContent = S.running ? '■ ' + t('stop') : '▶ ' + t('run'); b.setAttribute('data-mode', S.running ? 'stop' : 'run'); }
   function speedMs() { return [0, 620, 440, 300, 190, 100][+$('speed').value] || 300; }
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -569,7 +620,7 @@
   });
 
   function openStory(ch) {
-    $('storyEyebrow').textContent = t('chapter') + ' ' + ch.num + ' · ' + L(ch.concept);
+    $('storyEyebrow').innerHTML = IC('book') + esc(t('chapter') + ' ' + ch.num + ' · ' + L(ch.concept));
     $('storyTitle').textContent = L(ch.name);
     $('storyText').textContent = L(ch.story);
     $('storyLife').textContent = L(ch.life);
@@ -584,15 +635,20 @@
       '<span><span class="bub sug">1</span> ' + esc(t('suggested')) + '</span>';
     var html = C.chapters.map(function (ch, ci) {
       var steps = STEPS.filter(function (s) { return s.ci === ci; }), done = steps.filter(function (s) { return starsOf(s.gi); }).length;
-      var lessons = ch.lessons.map(function (ls, li) {
-        var bubs = steps.filter(function (s) { return s.li === li; }).map(function (s) { return bubbleHTML(s, sug); }).join('');
-        return '<div class="lrow"><div class="lt">' + ch.num + '.' + (li + 1) + ' ' + esc(L(ls.title)) + '</div><div class="bubbles" style="margin-left:0">' + bubs + '</div></div>';
+      var lessons = ['easy', 'mid', 'hard'].map(function (tr) {
+        var lis = []; ch.lessons.forEach(function (ls, li) { if ((ls.tier || 'easy') === tr) lis.push([ls, li]); });
+        if (!lis.length) return '';
+        var ts = steps.filter(function (s) { return (s.ls.tier || 'easy') === tr; }), td = ts.filter(function (s) { return starsOf(s.gi); }).length;
+        return '<div class="tierhd">' + tierChip(tr) + '<small>' + td + ' / ' + ts.length + '</small></div>' + lis.map(function (x) {
+          var bubs = steps.filter(function (s) { return s.li === x[1]; }).map(function (s) { return bubbleHTML(s, sug); }).join('');
+          return '<div class="lrow"><div class="lt">' + ch.num + '.' + (x[1] + 1) + ' ' + esc(L(x[0].title)) + '</div><div class="bubbles" style="margin-left:0">' + bubs + '</div></div>';
+        }).join('');
       }).join('');
-      return '<div class="chap' + (cur.ci === ci ? ' cur' : '') + '"><div class="hd"><div class="num">' + ch.num + '</div><div><b>' + esc(L(ch.name)) + '</b><span>' + esc(L(ch.concept)) + '</span></div>' +
+      return '<div class="chap' + (cur.ci === ci ? ' cur' : '') + '"><div class="hd"><div class="num">' + ch.num + '</div><div><b>' + roomIc(ch) + esc(L(ch.name)) + '</b><span>' + esc(L(ch.concept)) + '</span></div>' +
         '<div class="prog">' + esc(t('stepsDone', { d: done, t: steps.length })) + '</div></div>' + lessons +
         (ch.sensors && ch.sensors.length ? '<div class="schips">' + SUI.chips(ch.sensors) + '</div>' : '') + '</div>';
     }).join('') + C.soon.map(function (s) {
-      return '<div class="chap soon"><div class="hd"><div class="num">' + s.num + '</div><div><b>' + esc(L(s.name)) + '</b><span>' + esc(L(s.concept)) + '</span></div></div>' +
+      return '<div class="chap soon"><div class="hd"><div class="num">' + s.num + '</div><div><b>' + roomIc(s) + esc(L(s.name)) + '</b><span>' + esc(L(s.concept)) + '</span></div></div>' +
         '<p style="margin:0;font-size:.86rem;color:var(--ink-2)">' + esc(L(s.sensor)) + '</p>' +
         (s.sensors && s.sensors.length ? '<div class="schips">' + SUI.chips(s.sensors) + '</div>' : '') + '<span class="soonchip">' + esc(t('soon')) + '</span></div>';
     }).join('');
@@ -600,7 +656,7 @@
   }
 
   function openSettings() {
-    $('myCode').textContent = E.encodeProgress(STEPS.map(function (s) { return starsOf(s.gi); }));
+    $('myCode').textContent = E.encodeProgress(codeStars());
     $('mergeIn').value = ''; $('mergeMsg').hidden = true; $('copyCode').textContent = t('copy');
     showModal('settingsModal');
   }
@@ -640,7 +696,13 @@
       settings.custom = Object.assign({}, settings.layout); settings.layoutName = 'custom'; saveSettings(); fillLayoutSel(); setStatus(t('layoutSaved'), 'ok');
     };
     $('codeMode').onchange = function () { settings.layout.code = this.value; saveSettings(); applyLayout(); };
-    initSplit($('splitL'), 'L'); initSplit($('splitR'), 'R');
+    initSplit($('splitL'), 'L'); initSplit($('splitR'), 'R'); initHGrip();
+    $('colL').onclick = function () { setCollapsed('L', !settings.layout.lc); };
+    $('colR').onclick = function () { setCollapsed('R', !settings.layout.rc); };
+    $('openL').onclick = function () { setCollapsed('L', false); };
+    $('openR').onclick = function () { setCollapsed('R', false); };
+    $('railRun').onclick = function () { setCollapsed('L', false); run(); };
+    $('maxBtn').onclick = function () { var l = settings.layout, both = l.lc && l.rc; l.lc = !both; l.rc = !both; applyWidths(); saveSettings(); };
     window.addEventListener('resize', function () { applyWidths(); B.svgResize(ws); draw(); });
 
     $('settingsBtn').onclick = openSettings;
@@ -653,13 +715,13 @@
     };
     $('mergeForm').addEventListener('submit', function (e) {
       e.preventDefault();
-      var arr = E.decodeProgress($('mergeIn').value, STEPS.length), msg = $('mergeMsg');
+      var arr = E.decodeProgress($('mergeIn').value, CODE_N), msg = $('mergeMsg');
       msg.hidden = false;
       if (!arr) { msg.className = 'err'; msg.textContent = t('badCode'); return; }
-      arr.forEach(function (v, i) { var id = STEPS[i].st.id; if (v > (S.pdata.stars[id] || 0)) S.pdata.stars[id] = v; });
+      STEPS.forEach(function (s) { var v = arr[s.st.n] || 0, id = s.st.id; if (v > (S.pdata.stars[id] || 0)) S.pdata.stars[id] = v; });
       savePdata(); renderTop();
       msg.className = 'status'; msg.setAttribute('data-kind', 'ok'); msg.textContent = t('loaded');
-      $('myCode').textContent = E.encodeProgress(STEPS.map(function (s) { return starsOf(s.gi); }));
+      $('myCode').textContent = E.encodeProgress(codeStars());
     });
     $('switchBtn').onclick = function () { closeModal('settingsModal'); saveWs(); openProfiles(); };
     $('profileChip').onclick = function () { saveWs(); openProfiles(); };
@@ -690,14 +752,14 @@
     $('haveCodeBtn').onclick = function () { $('codeForm').hidden = !$('codeForm').hidden; if (!$('codeForm').hidden) $('codeNameIn').focus(); };
     $('codeForm').addEventListener('submit', function (e) {
       e.preventDefault();
-      var name = $('codeNameIn').value.trim(), arr = E.decodeProgress($('codeIn').value, STEPS.length), err = $('codeErr');
+      var name = $('codeNameIn').value.trim(), arr = E.decodeProgress($('codeIn').value, CODE_N), err = $('codeErr');
       if (!name) { err.textContent = t('needName'); err.hidden = false; return; }
       if (!arr) { err.textContent = t('badCode'); err.hidden = false; return; }
       var p = { id: newId(), name: name.slice(0, 24) }, list = profiles(), data = blankData();
-      arr.forEach(function (v, i) { if (v) data.stars[STEPS[i].st.id] = v; });
-      var sug = -1; for (var i = 0; i < STEPS.length; i++) if (!arr[i]) { sug = i; break; }
+      STEPS.forEach(function (s) { var v = arr[s.st.n]; if (v) data.stars[s.st.id] = v; });
+      var sug = -1; for (var i = 0; i < STEPS.length; i++) if (!arr[STEPS[i].st.n]) { sug = i; break; }
       data.last = STEPS[sug >= 0 ? sug : STEPS.length - 1].st.id;
-      C.chapters.forEach(function (ch, ci) { if (STEPS.some(function (s) { return s.ci === ci && arr[s.gi]; })) data.seen[ch.id] = true; });
+      C.chapters.forEach(function (ch, ci) { if (STEPS.some(function (s) { return s.ci === ci && arr[s.st.n]; })) data.seen[ch.id] = true; });
       list.push(p); store.set('profiles', list); store.set('p:' + p.id, data);
       openProfile(p);
     });

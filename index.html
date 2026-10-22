@@ -20,7 +20,7 @@
   --salon-a:#EBD6B8; --salon-b:#DDC39E; --koridor-a:#D9E2EE; --koridor-b:#C3D0E2; --mutfak-a:#F4F6F9; --mutfak-b:#DCE3EC;
   --sofa:#8B6FD6; --table:#B07A4A; --plant:#3E9B5F; --pot:#C46A3D; --counter:#8C99A8; --door:#9A5B2E;
   --code-bg:#F7F9FC; --kw:#9B3FC4; --fn:#2563C9; --num:#B7621A; --cm:#6F7B8E;
-  --scrim:rgba(14,20,32,.5); --w-red:#E5484D; --w-gnd:#2A2F36;
+  --scrim:rgba(14,20,32,.5); --w-red:#E5484D; --w-gnd:#2A2F36; --mid-ink:#8A5300;
   --f-display:"Fredoka","Nunito",ui-rounded,"Segoe UI",system-ui,sans-serif;
   --f-body:"Nunito","Segoe UI",system-ui,-apple-system,sans-serif;
   --f-mono:"JetBrains Mono",Consolas,ui-monospace,"Courier New",monospace;
@@ -36,7 +36,7 @@
   --salon-a:#4A3B2C; --salon-b:#3E3125; --koridor-a:#2A3547; --koridor-b:#233041; --mutfak-a:#2B3442; --mutfak-b:#222A36;
   --sofa:#7E68C8; --table:#8C6140; --plant:#3E8F5A; --pot:#A65A35; --counter:#566273; --door:#B47645;
   --code-bg:#121A24; --kw:#D09BF0; --fn:#7DB0FF; --num:#F2A65A; --cm:#8E9BB0;
-  --scrim:rgba(0,0,0,.6); --w-red:#F0626A; --w-gnd:#C9D1DC; color-scheme:dark}}
+  --scrim:rgba(0,0,0,.6); --w-red:#F0626A; --w-gnd:#C9D1DC; --mid-ink:#FFC86B; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0F151E; --panel:#171F2B; --panel-2:#1D2735; --line:#2B3747;
   --ink:#E7EDF5; --ink-2:#B3BFCE; --ink-3:#8E9BB0;
@@ -47,7 +47,7 @@
   --salon-a:#4A3B2C; --salon-b:#3E3125; --koridor-a:#2A3547; --koridor-b:#233041; --mutfak-a:#2B3442; --mutfak-b:#222A36;
   --sofa:#7E68C8; --table:#8C6140; --plant:#3E8F5A; --pot:#A65A35; --counter:#566273; --door:#B47645;
   --code-bg:#121A24; --kw:#D09BF0; --fn:#7DB0FF; --num:#F2A65A; --cm:#8E9BB0;
-  --scrim:rgba(0,0,0,.6); --w-red:#F0626A; --w-gnd:#C9D1DC; color-scheme:dark}
+  --scrim:rgba(0,0,0,.6); --w-red:#F0626A; --w-gnd:#C9D1DC; --mid-ink:#FFC86B; color-scheme:dark}
 
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -92,10 +92,41 @@ button{cursor:pointer}
 .badge-teacher{font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:var(--lamp-soft);color:var(--ink);border-radius:999px;padding:3px 10px}
 
 /* ---------- Ana ızgara ---------- */
-.main{display:grid;grid-template-columns:var(--left) 10px minmax(340px,1fr) 10px var(--right);align-items:start;gap:0}
-.split{align-self:stretch;cursor:col-resize;display:flex;align-items:center;justify-content:center;touch-action:none;border-radius:6px}
-.split::before{content:"";width:4px;height:56px;border-radius:4px;background:var(--line);transition:background .15s}
-.split:hover::before,.split.drag::before,.split:focus-visible::before{background:var(--accent)}
+.main{display:grid;grid-template-columns:var(--left) 16px minmax(300px,1fr) 16px var(--right);align-items:start;gap:0}
+.split{position:relative;align-self:stretch;cursor:col-resize;display:flex;align-items:center;justify-content:center;touch-action:none;border-radius:8px}
+.split::before{content:"";width:6px;height:96px;border-radius:6px;background:var(--line);background-image:radial-gradient(circle,var(--ink-3) 1.2px,transparent 1.6px);background-size:6px 9px;background-position:center;transition:background-color .15s}
+.split:hover,.split.drag{background:var(--accent-soft)}
+.split:hover::before,.split.drag::before,.split:focus-visible::before{background-color:var(--accent)}
+.splitbtn{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:24px;height:24px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--ink-2);display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;z-index:2}
+.splitbtn:hover{border-color:var(--accent);color:var(--accent)}
+.splitbtn .ic{width:14px;height:14px}
+.rail{display:none;flex-direction:column;align-items:center;gap:10px;padding:10px 0;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);min-height:260px}
+.railbtn{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--panel-2);color:var(--ink);display:flex;align-items:center;justify-content:center;padding:0}
+.railbtn:hover{border-color:var(--accent)}
+.railbtn.run{background:var(--ok);color:var(--ok-ink);border:0}
+.railtxt{writing-mode:vertical-rl;transform:rotate(180deg);font-weight:800;font-size:.8rem;color:var(--ink-3);letter-spacing:.04em}
+.hgrip{height:16px;cursor:row-resize;display:flex;align-items:center;justify-content:center;touch-action:none;border-top:1px solid var(--line);border-radius:0 0 var(--r) var(--r)}
+.hgrip span{width:72px;height:5px;border-radius:5px;background:var(--line)}
+.hgrip:hover span,.hgrip.drag span,.hgrip:focus-visible span{background:var(--accent)}
+@media (min-width:1101px){
+  body[data-lc] #leftCol>:not(.rail){display:none}
+  body[data-lc] #railL{display:flex}
+  body[data-rc] #rightCol>:not(.rail){display:none}
+  body[data-rc] #railR{display:flex}
+}
+.ic{width:1.1em;height:1.1em;vertical-align:-.18em;flex:none}
+.tier{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:800;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.tier-easy{background:var(--ok-soft);color:var(--ok)} .tier-mid{background:var(--lamp-soft);color:var(--mid-ink)} .tier-hard{background:var(--bad-soft);color:var(--bad)}
+.tierhd{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px;padding-top:8px;border-top:1px dashed var(--line)}
+.tierhd small{font-size:.75rem;font-weight:800;color:var(--ink-3);font-variant-numeric:tabular-nums}
+#taskText .ic{color:var(--accent);margin-right:4px} #taskGoal .ic{color:var(--lamp);margin-right:4px}
+.status{display:flex;gap:8px;align-items:flex-start} .status .ic{margin-top:.15em}
+.lifebox .ic{color:var(--lamp);margin-right:4px}
+.eyebrow .ic{margin-right:5px}
+.where b .ic{color:var(--accent);margin-right:5px}
+.chap .hd b .ic{color:var(--accent);margin-right:5px}
+.wintrophy{display:flex;justify-content:center;color:var(--lamp)} .wintrophy .ic{width:44px;height:44px}
+h2 .ic{color:var(--accent);margin-right:6px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);min-width:0}
 .panel-h{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
 .panel-h h2{font-size:1rem;font-weight:600}
@@ -136,7 +167,7 @@ canvas#stage{width:100%;aspect-ratio:1/1;max-width:100%;display:block;border-rad
 
 /* Blok alanı */
 .blocks{display:flex;flex-direction:column;min-width:0}
-#blocklyDiv{height:calc(100vh - 150px);min-height:480px;max-height:900px;width:100%;border-radius:0 0 var(--r) var(--r);overflow:hidden}
+#blocklyDiv{height:calc(100vh - 166px);min-height:480px;max-height:900px;width:100%;overflow:hidden}
 .hint{font-size:.82rem;color:var(--ink-3)}
 
 /* Kod */
@@ -217,7 +248,7 @@ body[data-code="blocks"] #codePanel .panel-h{border-bottom:0}
 .basicbtn b{font-family:var(--f-display);font-weight:600;font-size:1.05rem}
 .basicbtn span{font-size:.85rem;color:var(--ink-2)}
 .basicbtn:hover{border-color:var(--accent)}
-.sl-cat{font-size:1rem;margin-top:4px}
+.sl-cat{font-size:1rem;margin-top:4px} .sl-cat .ic,.sd-sec h4 .ic,.basicbtn b .ic,.facts .eyebrow .ic,.simbox .eyebrow .ic{color:var(--accent)} .caution .ic{color:var(--bad)}
 .sl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
 .stile{text-align:left;border:1px solid var(--line);background:var(--panel-2);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:5px;min-width:0}
 .stile:hover{border-color:var(--accent)}
@@ -342,6 +373,7 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
 
   <main class="main" id="main">
     <section class="col" id="leftCol">
+      <div class="rail" id="railL"><button class="railbtn" id="openL" type="button" data-t-title="expandL"></button><button class="railbtn run" id="railRun" type="button" data-t-title="run"></button><span class="railtxt" data-t="railLeft"></span></div>
       <div class="panel task">
         <div class="rowtop">
           <span class="concept" id="concept"></span>
@@ -374,16 +406,18 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
       </div>
     </section>
 
-    <div class="split" id="splitL" role="separator" aria-orientation="vertical" tabindex="0" aria-label="Sol panel genişliği"></div>
+    <div class="split" id="splitL" role="separator" aria-orientation="vertical" tabindex="0" data-t-title="splitHint"><button class="splitbtn" id="colL" type="button"></button></div>
 
     <section class="panel blocks" id="blocksCol">
-      <div class="panel-h"><h2 data-t="blocksTitle"></h2><span class="hint" data-t="blocksHint"></span></div>
+      <div class="panel-h"><h2 data-t="blocksTitle"></h2><span class="hint" data-t="blocksHint"></span><button class="minibtn" id="maxBtn" type="button"></button></div>
       <div id="blocklyDiv"></div>
+      <div class="hgrip" id="hgrip" role="separator" aria-orientation="horizontal" tabindex="0" data-t-title="hgrip"><span></span></div>
     </section>
 
-    <div class="split" id="splitR" role="separator" aria-orientation="vertical" tabindex="0" aria-label="Sağ panel genişliği"></div>
+    <div class="split" id="splitR" role="separator" aria-orientation="vertical" tabindex="0" data-t-title="splitHint"><button class="splitbtn" id="colR" type="button"></button></div>
 
     <section class="col" id="rightCol">
+      <div class="rail" id="railR"><button class="railbtn" id="openR" type="button" data-t-title="expandR"></button><span class="railtxt" data-t="railRight"></span></div>
       <div class="panel" id="codePanel">
         <div class="panel-h">
           <div class="eyebrow" data-t="codeTitle"></div>
@@ -402,7 +436,7 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
 <!-- Kim kodluyor? -->
 <div class="modal" id="profileModal" hidden>
   <div class="card" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
-    <h2 id="pmTitle" data-t="who"></h2>
+    <h2 id="pmTitle"><span data-ic="users"></span><span data-t="who"></span></h2>
     <p data-t="whoHelp"></p>
     <div class="plist" id="plist"></div>
     <div class="confirm" id="delConfirm" hidden><p id="delText"></p><div class="row"><button class="btn btn-ghost btn-small" id="delNo" data-t="no"></button><button class="btn btn-small" style="background:var(--bad);color:#fff" id="delYes" data-t="yes"></button></div></div>
@@ -419,7 +453,7 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
     <button class="linkbtn" id="haveCodeBtn" data-t="haveCode"></button>
     <form id="codeForm" class="row" hidden autocomplete="off">
       <div class="field"><label for="codeNameIn" data-t="codeName"></label><input class="input" id="codeNameIn" maxlength="24"></div>
-      <div class="field"><label for="codeIn" data-t="codeInput"></label><input class="input" id="codeIn" maxlength="40" style="font-family:var(--f-mono)"></div>
+      <div class="field"><label for="codeIn" data-t="codeInput"></label><input class="input" id="codeIn" maxlength="64" style="font-family:var(--f-mono)"></div>
       <button class="btn btn-primary btn-small" type="submit" data-t="codeContinue" style="align-self:flex-end"></button>
       <p class="err" id="codeErr" hidden style="flex-basis:100%"></p>
     </form>
@@ -429,7 +463,7 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
 <!-- Harita -->
 <div class="modal" id="mapModal" hidden>
   <div class="card wide" role="dialog" aria-modal="true" aria-labelledby="mapTitle">
-    <div class="row" style="justify-content:space-between"><h2 id="mapTitle" data-t="mapTitle"></h2><button class="btn btn-ghost btn-small" data-close data-t="close"></button></div>
+    <div class="row" style="justify-content:space-between"><h2 id="mapTitle"><span data-ic="map"></span><span data-t="mapTitle"></span></h2><button class="btn btn-ghost btn-small" data-close data-t="close"></button></div>
     <p data-t="mapHelp"></p>
     <div class="legend" id="legend"></div>
     <div class="mapgrid" id="mapgrid"></div>
@@ -439,7 +473,7 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
 <!-- Ayarlar -->
 <div class="modal" id="settingsModal" hidden>
   <div class="card" role="dialog" aria-modal="true" aria-labelledby="setTitle">
-    <div class="row" style="justify-content:space-between"><h2 id="setTitle" data-t="settings"></h2><button class="btn btn-ghost btn-small" data-close data-t="close"></button></div>
+    <div class="row" style="justify-content:space-between"><h2 id="setTitle"><span data-ic="gear"></span><span data-t="settings"></span></h2><button class="btn btn-ghost btn-small" data-close data-t="close"></button></div>
     <div class="row">
       <div class="field"><label for="langSel" data-t="language"></label>
         <select class="sel" id="langSel"><option value="tr">Türkçe</option><option value="en">English</option></select></div>
@@ -451,7 +485,7 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
     <p data-t="progressHelp"></p>
     <div class="row"><button class="btn btn-ghost btn-small" id="copyCode" data-t="copy"></button></div>
     <form class="row" id="mergeForm" autocomplete="off">
-      <div class="field"><label for="mergeIn" data-t="enterCode"></label><input class="input" id="mergeIn" maxlength="40" style="font-family:var(--f-mono)"></div>
+      <div class="field"><label for="mergeIn" data-t="enterCode"></label><input class="input" id="mergeIn" maxlength="64" style="font-family:var(--f-mono)"></div>
       <button class="btn btn-primary btn-small" type="submit" data-t="load" style="align-self:flex-end"></button>
     </form>
     <p class="err" id="mergeMsg" hidden></p>
@@ -485,6 +519,7 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
 <!-- Başarı -->
 <div class="modal" id="win" hidden>
   <div class="card center" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+    <div class="wintrophy" data-ic="trophy"></div>
     <div class="stars" id="winStars"></div>
     <h2 id="winTitle" data-t="winTitle"></h2>
     <p id="winText"></p>
@@ -507,6 +542,8 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
 <script src="js/i18n.js"></script>
 <script src="js/blocks.js"></script>
 <script src="js/levels.js"></script>
+<script src="js/levels-extra.js"></script>
+<script src="js/icons.js"></script>
 <script src="js/sensors.js"></script>
 <script src="js/sensor-ui.js"></script>
 <script src="js/app.js"></script>

@@ -31,7 +31,7 @@
   var SIGCOL = ['#F5A524', '#3B82F6', '#22A06B', '#8E4EC6', '#F97316', '#0EA5E9'];
 
   root.createSensorUI = function (api) {
-    var SL = root.SENSORS, t = api.t, L = api.L, esc = api.esc;
+    var SL = root.SENSORS, t = api.t, L = api.L, esc = api.esc, IC = root.ic, CATIC = { move: 'radar', env: 'thermo', input: 'hand' };
     var $ = function (id) { return document.getElementById(id); };
     var st = { view: 'grid', id: null, board: 'uno', sim: {} };
 
@@ -47,11 +47,11 @@
     /* ---- Liste ---- */
     function gridHTML() {
       var h = '<div class="sl-intro"><p>' + esc(t('sensorHelp')) + '</p>' +
-        '<button class="basicbtn" type="button" data-basics><b>' + esc(L(SL.basics.title)) + '</b><span>' +
+        '<button class="basicbtn" type="button" data-basics><b>' + IC('bulb') + ' ' + esc(L(SL.basics.title)) + '</b><span>' +
         esc(SL.basics.items.slice(0, 4).map(function (i) { return L(i.h); }).join(' · ')) + ' …</span></button></div>';
       SL.cats.forEach(function (c) {
         var items = SL.list.filter(function (s) { return s.cat === c.id; });
-        h += '<h3 class="sl-cat">' + esc(L(c.name)) + '</h3><div class="sl-grid">' + items.map(function (s) {
+        h += '<h3 class="sl-cat">' + IC(CATIC[c.id] || 'chip') + ' ' + esc(L(c.name)) + '</h3><div class="sl-grid">' + items.map(function (s) {
           return '<button class="stile" type="button" data-sensor="' + s.id + '"><span class="model">' + esc(s.model) + '</span>' +
             '<b>' + esc(L(s.name)) + '</b><span class="sh">' + esc(L(s.short)) + '</span>' +
             '<span class="outchip out-' + s.out + '">' + esc(t('out_' + s.out)) + '</span></button>';
@@ -111,7 +111,7 @@
           return '<button class="minibtn" type="button" data-card="' + i + '" aria-pressed="' + (v.card === i) + '">' + esc(L(cd.name)) + '</button>'; }).join('') +
           '<button class="minibtn" type="button" data-card="-1" aria-pressed="' + (v.card == null || v.card < 0) + '">' + esc(t('sim_none')) + '</button></div>';
       }
-      return '<div class="simbox"><div class="eyebrow">' + esc(t('s_try')) + '</div>' + inner + '<div class="simout" id="simOut" aria-live="polite"></div></div>';
+      return '<div class="simbox"><div class="eyebrow">' + IC('hand') + esc(t('s_try')) + '</div>' + inner + '<div class="simout" id="simOut" aria-live="polite"></div></div>';
     }
     function simOut(s) {
       var c = SIM[s.id], v = st.sim, el = $('simOut'); if (!c || !el) return;
@@ -156,18 +156,18 @@
       return '<button class="linkbtn" type="button" data-back>' + esc(t('s_back')) + '</button>' +
         '<div class="sd-head"><span class="model big">' + esc(s.model) + '</span><h3 class="sd-title">' + esc(L(s.name)) + '</h3>' +
         '<p class="sd-short">' + esc(L(s.short)) + '</p><div class="row"><span class="outchip out-' + s.out + '">' + esc(t('out_' + s.out)) + '</span>' + story + '</div></div>' +
-        '<div class="facts"><div><span class="eyebrow">' + esc(t('s_volt')) + '</span><p>' + esc(L(s.volt)) + '</p></div>' +
-        '<div><span class="eyebrow">' + esc(t('s_output')) + '</span><p>' + esc(L(s.output)) + '</p></div></div>' +
-        '<section class="sd-sec"><h4>' + esc(t('s_how')) + '</h4><p>' + esc(L(s.how)) + '</p></section>' +
-        '<section class="sd-sec"><div class="row" style="justify-content:space-between"><h4>' + esc(t('s_wiring')) + '</h4><div class="segs" role="group">' + boardBtns + '</div></div>' +
+        '<div class="facts"><div><span class="eyebrow">' + IC('bolt') + esc(t('s_volt')) + '</span><p>' + esc(L(s.volt)) + '</p></div>' +
+        '<div><span class="eyebrow">' + IC('signal') + esc(t('s_output')) + '</span><p>' + esc(L(s.output)) + '</p></div></div>' +
+        '<section class="sd-sec"><h4>' + IC('gear') + ' ' + esc(t('s_how')) + '</h4><p>' + esc(L(s.how)) + '</p></section>' +
+        '<section class="sd-sec"><div class="row" style="justify-content:space-between"><h4>' + IC('plug') + ' ' + esc(t('s_wiring')) + '</h4><div class="segs" role="group">' + boardBtns + '</div></div>' +
         wiring(s, b) + '<div class="wlegend"><span><i style="background:var(--w-red)"></i>VCC</span><span><i style="background:var(--w-gnd)"></i>GND</span><span><i style="background:' + SIGCOL[0] + '"></i>' + esc(t('s_signal')) + '</span></div>' +
         table + '<p class="note">' + esc(t('s_pinNote')) + '</p></section>' +
-        '<section class="sd-sec"><h4>' + esc(t('s_react')) + '</h4><p>' + esc(L(s.react)) + '</p>' + simHTML(s) + '</section>' +
-        '<section class="sd-sec"><h4>' + esc(t('s_boards')) + '</h4><div class="compat">' + compat + '</div></section>' +
-        '<div class="two"><section class="sd-sec"><h4>' + esc(t('s_types')) + '</h4><ul>' + s.types.map(function (x) { return '<li>' + esc(L(x)) + '</li>'; }).join('') + '</ul></section>' +
-        '<section class="sd-sec"><h4>' + esc(t('s_uses')) + '</h4><ul>' + s.uses.map(function (x) { return '<li>' + esc(L(x)) + '</li>'; }).join('') + '</ul></section></div>' +
-        '<div class="caution"><b>' + esc(t('s_caution')) + ': </b>' + esc(L(s.caution)) + '</div>' +
-        '<section class="sd-sec"><div class="row" style="justify-content:space-between"><h4>' + esc(t('s_code')) + '</h4><button class="minibtn" type="button" data-copycode>' + esc(t('copy')) + '</button></div>' +
+        '<section class="sd-sec"><h4>' + IC('wave') + ' ' + esc(t('s_react')) + '</h4><p>' + esc(L(s.react)) + '</p>' + simHTML(s) + '</section>' +
+        '<section class="sd-sec"><h4>' + IC('chip') + ' ' + esc(t('s_boards')) + '</h4><div class="compat">' + compat + '</div></section>' +
+        '<div class="two"><section class="sd-sec"><h4>' + IC('layers') + ' ' + esc(t('s_types')) + '</h4><ul>' + s.types.map(function (x) { return '<li>' + esc(L(x)) + '</li>'; }).join('') + '</ul></section>' +
+        '<section class="sd-sec"><h4>' + IC('home') + ' ' + esc(t('s_uses')) + '</h4><ul>' + s.uses.map(function (x) { return '<li>' + esc(L(x)) + '</li>'; }).join('') + '</ul></section></div>' +
+        '<div class="caution">' + IC('alert') + ' <b>' + esc(t('s_caution')) + ': </b>' + esc(L(s.caution)) + '</div>' +
+        '<section class="sd-sec"><div class="row" style="justify-content:space-between"><h4>' + IC('code') + ' ' + esc(t('s_code')) + '</h4><button class="minibtn" type="button" data-copycode>' + esc(t('copy')) + '</button></div>' +
         (s.lib ? '<p class="note"><b>' + esc(t('s_lib')) + '</b>' + esc(L(s.lib)) + '</p>' : '') +
         '<div class="tscroll"><pre class="acode" id="sensorCode">' + esc(L(s.code)) + '</pre></div><p class="note">' + esc(t('s_codeNote')) + '</p></section>';
     }
@@ -177,7 +177,7 @@
       if (st.view === 'detail' && s) { body.innerHTML = detailHTML(s); simOut(s); }
       else if (st.view === 'basics') body.innerHTML = basicsHTML();
       else { st.view = 'grid'; body.innerHTML = gridHTML(); }
-      $('sensorTitle').textContent = t('sensorLib');
+      $('sensorTitle').innerHTML = IC('chip') + esc(t('sensorLib'));
     }
     function open(id) {
       if (id && byId(id)) { st.view = 'detail'; st.id = id; st.sim = {}; } else { st.view = 'grid'; st.id = null; }
