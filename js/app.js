@@ -93,7 +93,9 @@
     $('chipAv').innerHTML = '<img src="' + R.avatar(S.robot, 64) + '" alt="">';
   }
   function setRobot(k) {
+    var eski = S.profile ? { ad: S.profile.name, robot: S.robot } : null;
     k = R.valid(k); S.robot = k;
+    if (window.SINIF && eski && eski.robot !== k) setTimeout(function () { SINIF.kimlikDegisti(eski); }, 0);
     if (S.profile) {
       if (S.profile.id === 'guest') { settings.guestRobot = k; saveSettings(); }
       else { var list = profiles(); list.forEach(function (p) { if (p.id === S.profile.id) p.robot = k; }); store.set('profiles', list); S.profile.robot = k; }
@@ -335,6 +337,7 @@
     if (S.failBlock) { ws.highlightBlock(null); S.failBlock = null; }
     updateCode();
     if (!S.running) saveWsSoon();
+    if (window.SINIF) SINIF.calismaDegisti();
     var sel = B.getSelected && B.getSelected();
     if (sel && sel.type && e.type === B.Events.BLOCK_CHANGE) showBlock(sel.isShadow() && sel.getParent() ? sel.getParent() : sel);
   }
@@ -357,12 +360,13 @@
   /* ---------- Profiller ---------- */
   function profiles() { return store.get('profiles', []); }
   function blankData() { return { stars: {}, ws: {}, seen: {}, last: null }; }
-  function savePdata() { if (S.profile) store.set('p:' + S.profile.id, S.pdata); }
+  function savePdata() { if (S.profile) { store.set('p:' + S.profile.id, S.pdata); if (window.SINIF) SINIF.kaydedildi(); } }
   function openProfile(p) {
     S.profile = p;
     S.pdata = Object.assign(blankData(), store.get('p:' + p.id, {}));
     settings.lastProfile = p.id; saveSettings();
     S.robot = robotOf(p); setChip();
+    if (window.SINIF) setTimeout(function () { SINIF.profilAcildi(); }, 0);
     closeModal('profileModal');
     var gi = S.pdata.last != null ? idxOf(S.pdata.last) : suggestedIdx();
     goStep(gi >= 0 ? gi : 0, {});
@@ -896,7 +900,7 @@
     setStatus(results.length > 1 ? t('st_successAll', { m: results.length }) : t('st_success'), 'ok');
     openWin(n, stars, st.max, had);
   }
-  function failFx() { SND.play('fail'); SND.say(sayOne('sayFail'), S.lang, 450); }
+  function failFx() { SND.play('fail'); SND.say(sayOne('sayFail'), S.lang, 450); if (window.SINIF) SINIF.olay('hata', { mesaj: $('status').textContent.slice(0, 200) }); }
   function confetti() {
     if (reduce) return;
     var box = document.createElement('div'), cols = ['#F5A524', '#2563C9', '#22A06B', '#E5484D', '#8B6FD6', '#FF8FB1'];
@@ -911,6 +915,7 @@
     document.body.appendChild(box); setTimeout(function () { box.remove(); }, 4200);
   }
   function openWin(n, stars, max, had) {
+    if (window.SINIF) SINIF.olay('basari', { yildiz: stars, blok: n });
     var wk = kindOf(STEPS[S.gi].st);
     $('winTitle').textContent = wk ? t(wk.winKey) : isHome(STEPS[S.gi].st) ? t('winTitleHome') : t('winTitle');
     $('winStars').innerHTML = [1, 2, 3].map(function (k) { return k <= stars ? '★' : '<span class="off">★</span>'; }).join('');
@@ -1115,8 +1120,9 @@
       openProfile(p);
     });
 
-    function checkTeacher() { S.teacher = /^#(ogretmen|teacher)$/i.test(location.hash); $('solutionBtn').hidden = !S.teacher; $('teacherBadge').hidden = !S.teacher; }
+    function checkTeacher() { S.teacher = window.SINIF && SINIF.aktif() ? SINIF.ogretmen() : /^#(ogretmen|teacher)$/i.test(location.hash); $('solutionBtn').hidden = !S.teacher; $('teacherBadge').hidden = !S.teacher; }
     window.addEventListener('hashchange', checkTeacher); checkTeacher();
+    S.checkTeacher = checkTeacher;
   }
 
   /* ---------- Başlangıç ---------- */
@@ -1132,5 +1138,20 @@
   openProfiles();
   setTimeout(function () { B.svgResize(ws); draw(); }, 60);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { B.svgResize(ws); draw(); });
+  /* Sınıf modu: öğretmen bilgisayarındaki sunucudan ya da öğrenci istemcisinden açıldıysa */
+  if (window.SINIF) SINIF.baglan({
+    lang: function () { return S.lang; }, profil: function () { return S.profile; }, robot: function () { return S.robot; },
+    pdata: function () { return S.pdata; },
+    pdataYaz: function (v) { S.pdata = Object.assign(blankData(), v); store.set('p:' + S.profile.id, S.pdata); renderTop(); goStep(S.gi, { noSave: true, noStory: true }); },
+    adim: function () {
+      var cur = STEPS[S.gi], top = 0, done = 0, k = $('status').getAttribute('data-kind');
+      STEPS.forEach(function (s) { var v = starsOf(s.gi); top += v; if (v) done++; });
+      return { id: cur.st.id, ad: t('chapter') + ' ' + cur.ch.num + ' · ' + L(cur.ch.name) + ' · ' + L(cur.ls.title) + ' · ' + t('step') + ' ' + (cur.si + 1),
+        durum: S.running ? (S.paused ? 'duraklatildi' : 'calisiyor') : k === 'ok' ? 'basarili' : k === 'bad' ? 'hata' : 'hazir', yildiz: top, biten: done };
+    },
+    kod: function () { return $('codePy').textContent || ''; },
+    kaydet: function () { saveWs(); },
+    ogretmenDegisti: function () { if (S.checkTeacher) S.checkTeacher(); }
+  });
   window.__isikci = { S: S, STEPS: STEPS, goStep: goStep, setLang: setLang, chooseLayout: chooseLayout, settings: settings, run: run, ws: function () { return ws; } };
 })();

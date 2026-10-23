@@ -38,6 +38,14 @@ ROBOT VE SESLER
 ÖĞRETMEN MODU
 - Adresin sonuna #ogretmen ekleyip Enter'a basın. Her adımda "Çözümü yükle" düğmesi görünür.
 
+SINIF SÜRÜMÜ (AĞDA, ÖĞRETMEN BİLGİSAYARINDA SUNUCU)
+- İndirme ve kurulum: https://aydinincekara.github.io/isikcirobot_offline/
+- Öğretmen bilgisayarında afi-sunucu.exe çalışır; panelden öğrenciler canlı izlenir, mesaj gönderilir,
+  güncellemeler tek tuşla yapılır. Öğrenciler tarayıcıda http://ÖĞRETMEN-PC:8000 adresini açar ya da
+  bilgisayarlarına afi-istemci.exe kurulur (ağ yokken de çalışır, sunucuyu kendisi bulur).
+- Sınıfa bağlıyken üst şeritte "Sınıfa bağlı" yazar. İlerleme sunucuda tutulur: öğrenci başka bilgisayarda
+  aynı adı ve robotu seçince kaldığı yerden devam eder. "Çözümü yükle" yalnızca panele giriş yapmış öğretmende görünür.
+
 SENSÖR KÜTÜPHANESİ
 - Üstteki "Sensörler" düğmesi 15 gerçek sensörü anlatır: ne işe yarar, nasıl çalışır, Arduino Uno ve
   ESP32'ye hangi kablo nereye bağlanır, kaç volt ister, ne tür bilgi verir, çeşitleri, kullanım yerleri
@@ -83,5 +91,6 @@ DOSYALAR
 - js/blocks.js       : bloklar ve kod üreteçleri
 - js/i18n.js         : Türkçe ve İngilizce metinler
 - js/app.js          : arayüz
+- js/sinif.js        : sınıf modu (sunucuya bağlanma, ilerleme eşitleme, öğretmen mesajları)
 - lib/               : Blockly kütüphanesi (Apache 2.0 lisanslı) ve simgeleri (lib/media)
 - tools/             : içerik üretici ve testler (sadece geliştirme için; Node.js gerekir)

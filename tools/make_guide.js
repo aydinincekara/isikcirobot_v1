@@ -106,7 +106,7 @@ add(TABLE(['Tarih', 'Yapılan', 'Sonuç'], [
   ['23 Ekim 2026', 'Bölüm 4–10 tamamlandı: akıllı ev motoru, kontrol paneli ve zaman çizelgesi, olay/değişken/karşılaştırma/fonksiyon blokları, Arduino (.ino) ve Python (.py) dışa aktarma, 210 yeni adım. Her adım otomatik doğrulandı. Kılavuz yeniden yazıldı.', 'Sürüm 2.0 (300 adım)'],
   ['23 Ekim 2026', 'Robot seçimi (6 robot), sesli tepkiler, blok alanında çöp kutusu, sayılabilir zemin karoları, yeni eşya çizimleri, AFİ KOD logosu, çark dişli ayar ikonu; ilerleme kodu yazılırken tireler kendiliğinden ekleniyor ve yeni sürüm her bilgisayarda kesin yükleniyor.', 'Sürüm 2.1'],
   ['23 Ekim 2026', 'Sürüm numarası slogan yanında; sol sütun katlanabilir ve sabit; fare tekerleğiyle yakınlaştırma kapatıldı; Duraklat düğmesi; "Kim kodluyor?" penceresine Kapat. Yeni "sürekli tekrarla" bloğu (mBlock\'taki gibi, Arduino loop()). Yeni bölümler (10\'ar adım): Arduino II, ESP32 akıllı ev, Python Turtle, Python oyun tasarımı, Python yapay zekâ. Turtle, oyun ve yapay zekâ için üç yeni motor; oyunlar tarayıcıda klavyeyle oynanabilir.', 'Sürüm 2.2 (' + STEPS.length + ' adım)'],
-  ['23 Ekim 2026', 'Sınıf sürümü planı: öğretmen bilgisayarında yerel sunucu (NetSupport benzeri canlı takip, öğretmen/admin girişi, ağ aralığına göre öğrenciler, GitHub\'dan tek tuşla güncelleme). Ayrı depo: isikcirobot_offline.', 'Planlandı']
+  ['23 Ekim 2026', 'Sınıf sürümü: öğretmen bilgisayarında afi sınıf sunucusu (admin/öğretmen girişi, ağ aralığına göre canlı öğrenci takibi, şu anki blokları görme, mesaj, Excel çıktısı, GitHub\'dan tek tuşla güncelleme ve geri alma) ve öğrenci bilgisayarları için afi istemci (ağ yokken de çalışır, sunucuyu kendisi bulur, güncellemeyi sunucudan alır). Uygulamaya sınıf modu eklendi. Ayrı depo: isikcirobot_offline.', 'Sürüm 2.3 · platform 1.0.0']
 ], [15, 60, 25]));
 add(H2('2.2 Alınan kararlar'));
 add(TABLE(['Konu', 'Karar', 'Neden'], [
@@ -254,12 +254,25 @@ add(B1('Her öğrenci ilk derste kendi adıyla profil açar. Aynı bilgisayarı 
 add(B1('Profil silmek için "Kim kodluyor?" penceresinde Düzenle\'ye, sonra Sil\'e basılır; onay istenir.'));
 add(B1('Dönem sonunda öğrencilerin ilerleme kodları toplanarak kimin hangi adımda olduğu kaydedilebilir.'));
 add(B1('Tarayıcı verilerini silmek profilleri de siler. Sınıf bilgisayarlarında gizli pencere kullanılmamalıdır.'));
+add(B1('Sınıfta ağ varsa **sınıf sürümü** kullanılabilir (5.5): ilerleme sunucuda tutulur, öğrenci hangi bilgisayara oturursa otursun adını ve robotunu seçince kaldığı yerden devam eder; ilerleme kodu gerekmez.'));
 add(H2('5.4 Önerilen ders akışı'));
 add(...NUM(['Bölümün hikâyesini tahtada birlikte okuyun (Sunum yerleşimi).', 'İlk adımı birlikte çözün; kod panelinde blokların Python karşılığını gösterin.',
   'Akıllı ev bölümlerinde Çalıştır\'a basmadan önce zaman çizelgesine birlikte bakın: "Hareket ne zaman oluyor? Lamba ne zaman yanmalı?"',
   'Öğrenciler kalan adımları kendi hızlarında çözsün; hızlı öğrencileri Orta ve Zor düzeye yönlendirin.',
   'Ders sonunda bir bloğa tıklayıp açıklama panelindeki "Gerçek hayatta" örneğini konuşun ve ilgili sensörü sensör kütüphanesinden gösterin.']));
-add(H2('5.5 Bölümlerin kavram sırası'));
+add(H2('5.5 Sınıf sürümü: öğretmen paneli'));
+add(P('Sınıf sürümünde öğretmen bilgisayarında **afi-sunucu.exe** çalışır. Öğrenciler AFİ KOD\'u ya bu sunucudan (tarayıcıda `http://ÖĞRETMEN-PC:8000`) ya da kendi bilgisayarlarına kurulan **afi-istemci.exe** ile açar. Uygulama sınıfa bağlı olduğunu kendisi anlar; üst şeritte **Sınıfa bağlı** etiketi görünür. Kurulum adımları 7.5\'tedir.'));
+add(TABLE(['Panel bölümü', 'Ne yapar?'], [
+  ['Sınıf', 'Öğrenciler kart olarak görünür: robotu, adı, bilgisayarı, şu an hangi adımda olduğu, durumu (çalışıyor / başarılı / hata), yıldızı ve bitirdiği adım sayısı. Yeşil nokta şu an bağlı demektir. Karta tıklayınca bölüm bölüm ilerleme, öğrencinin **şu anki blokları** (salt okunur), Python kodu ve son olaylar açılır.'],
+  ['Mesaj', '"Herkese mesaj" gördüğünüz bütün öğrencilerin ekranına birkaç saniye içinde düşer; öğrenci kartından tek öğrenciye mesaj gönderilir.'],
+  ['Excel (CSV)', 'Sınıf listesini ilerlemeyle birlikte indirir; Excel\'de açılır.'],
+  ['Öğretmenler (admin)', 'Öğretmen hesabı açılır. Her öğretmene **ağ aralığı** verilir (ör. `192.168.1.0/24` ya da `192.168.137.2-192.168.137.40`); öğretmen yalnızca o aralıktan bağlanan öğrencileri görür. Boş bırakılırsa herkesi görür.'],
+  ['Güncelleme (admin)', '"Güncellemeleri denetle" GitHub\'daki isikcirobot_offline sitesine bakar; yeni sürüm indirilir, doğrulama özeti (SHA-256) kontrol edilir ve kurulur. Öğrencilere "Yeni sürüm hazır" bildirimi gider; istemciler yeni paketi sunucudan kendileri alır. Sorun olursa eski sürüme tek tuşla dönülür. İnternet yoksa paket USB ile getirilip yüklenir.'],
+  ['Ayarlar', 'Öğrencilerin açacağı adresler, parola değiştirme, sunucunun adı, veritabanı yedeği, dönem sonunda öğrenci verilerini silme.']
+], [24, 76]));
+add(B1('"Çözümü yükle" düğmesi sınıf sürümünde yalnızca panele giriş yapmış öğretmenin tarayıcısında görünür; `#ogretmen` öğrencilere çözüm açmaz.'));
+add(B1('Öğrenci kimliği **ad + robot**tur (büyük/küçük harf ve I/İ/ı farkı gözetilmez). Öğrenci başka bilgisayarda aynı adı ve robotu seçince yıldızları ve dizdiği bloklar gelir. Robotunu değiştirirse kaydı yeni kimliğe taşınır.'));
+add(H2('5.6 Bölümlerin kavram sırası'));
 const SEEN = new Set();
 add(TABLE(['Bölüm', 'Kavram', 'Yeni bloklar', 'Sensörler'], COURSE.chapters.map(ch => {
   const tools = new Set(); ch.lessons.forEach(ls => ls.steps.forEach(st => (st.tools || []).forEach(t => tools.add(typeof t === 'string' ? t.split(':')[0] : t))));
@@ -324,7 +337,22 @@ add(...NUM(['Depo sayfasında yeşil Code düğmesine, sonra Download ZIP\'e bas
 add(P('İnternetsiz sürümde yazı tipleri bilgisayarın kendi yazı tipleriyle gösterilir; Blockly\'nin simgeleri lib/media klasöründen yüklenir, uygulama aynı şekilde çalışır.'));
 add(H2('7.4 Güncelleme yükleme'));
 add(...NUM(['Depoda Add file > Upload files\'a tıkla.', 'Değişen dosyaları aynı klasör yapısıyla sürükle; aynı adlı dosyaların üzerine yazılır.', 'Commit changes\'e bas, 1–2 dakika bekle.', 'Sitede eski sürüm görünüyorsa tarayıcıda Ctrl + F5 ile sayfayı önbelleksiz yenile.']));
-add(H2('7.5 Bu projenin yayını'));
+add(H2('7.5 Sınıf sürümü kurulumu'));
+add(P('İndirme sayfası: ' + 'https://aydinincekara.github.io/isikcirobot_offline/' + ' (Python gerekmez; Windows 8.1, 10 ve 11).'));
+add(H3('Öğretmen bilgisayarı'));
+add(...NUM(['**afi-sunucu.exe** dosyasını indirip kalıcı bir klasöre koyun (ör. `C:\\afi-sinif`). Veriler yanındaki `afi-sunucu-veri` klasöründe tutulur.',
+  'Çift tıklayın. Windows "bilgisayarınızı korudu" derse **Ek bilgi → Yine de çalıştır**. Güvenlik duvarı sorarsa **Özel ağlar** kutusu işaretliyken **Erişime izin ver** deyin (bu bir kez yönetici izni ister).',
+  'Siyah pencerede öğrencilerin açacağı adresler yazar; panel tarayıcıda kendiliğinden açılır. İlk açılışta **admin** hesabı oluşturun (yalnızca bu bilgisayardan yapılabilir).',
+  'Öğretmenler sekmesinden öğretmen hesaplarını ve ağ aralıklarını girin.',
+  'Ders boyunca siyah pencere açık kalmalıdır; kapatılınca sunucu durur.']));
+add(H3('Öğrenci bilgisayarları (iki yol)'));
+add(B1('**Kurulumsuz:** öğrenci tarayıcıda `http://ÖĞRETMEN-PC:8000` adresini açar (ÖĞRETMEN-PC yerine öğretmen bilgisayarının adı ya da siyah pencerede yazan IP adresi). Ağ koparsa sayfa çalışmaya devam eder ama yeni sayfa açılamaz.'));
+add(B1('**Kurulumlu (önerilen):** **afi-istemci.exe** USB\'den bir kez çift tıklanır; yönetici izni istemez. Kendini öğrencinin klasörüne kurar, masaüstüne **AFİ KOD** kısayolu koyar ve Windows açılışında arka planda başlar. AFİ KOD bu bilgisayardan açılır (`http://127.0.0.1:8100`); öğretmen sunucusu kapalıyken ya da ağ yokken de çalışır, kayıtlar bekletilir ve bağlantı gelince gönderilir. Sunucuyu kendisi bulur: son bilinen adres → bilgisayar adı → yerel ağ taraması; öğretmen bilgisayarının IP\'si değişse de bağlanır. Üst şeritteki **Sınıfa bağlı / Sınıf bağlantısı yok** etiketine tıklanınca bağlantı ayarları açılır; sunucu adresi elle de yazılabilir.'));
+add(B1('İstemcinin yeni sürümü için yeni afi-istemci.exe aynı şekilde çift tıklanır; eskisini kapatıp üzerine kurar. AFİ KOD içeriğinin güncellemeleri ise sunucudan kendiliğinden gelir.'));
+add(NOTE('Windows\'un "Mobil etkin nokta" özelliği (192.168.137.x) en fazla 8 cihaz bağlar; kalabalık sınıflarda okulun ağı ya da ayrı bir Wi-Fi modem kullanılmalıdır.', 'FFF4DC', 'E89B12'));
+add(H3('Python ile çalıştırmak (isteğe bağlı)'));
+add(P('Python 3.8 veya yenisi kuruluysa exe yerine kaynak koddan da çalışır. isikcirobot_offline klasöründe Komut İstemi açılıp teker teker yazılır: `python --version` (sürümü gösterir), sonra öğretmen bilgisayarında `python afi-sunucu.py`, öğrenci bilgisayarında `python afi-istemci.py`. Yönetici izni gerekmez.'));
+add(H2('7.6 Bu projenin yayını'));
 add(TABLE(['Bilgi', 'Değer'], [['Depo', REPO], ['Dal (branch)', 'main, kök klasör (/)'], ['Canlı adres', SITE], ['Güncelleme', 'Değişiklikler depoya yüklendiğinde GitHub Pages siteyi 1–2 dakika içinde günceller.'],
   ['Depo adını değiştirmek', 'Settings > General > Repository name. Adres de değişir (örnek: …github.io/afi-kod/); eski bağlantılar çalışmaz, öğrencilere yeni adres verilmelidir. Öğrenci kayıtları adrese bağlı olduğu için yeni adreste ilerleme kodu ile devam edilir.']], [25, 75]));
 
@@ -429,19 +457,17 @@ SENSORS.list.forEach(s => {
 add(H1('11. Yol haritası ve bilinen sınırlar'), H2('11.1 Tamamlananlar'));
 add(B1('15 bölüm: sıralama, döngüler, koşullar, olaylar, değişken ve karşılaştırma, eşik değerler, fonksiyonlar, proje, Arduino atölyesi, Python atölyesi, Arduino II, ESP32 akıllı ev, Python Turtle, Python oyun tasarımı, Python yapay zekâ.'));
 add(B1('Bölüm 1–10\'da Başlangıç / Orta / Zor, Bölüm 11–15\'te şimdilik Başlangıç; toplam ' + STEPS.length + ' adım.'));
-add(B1('Arduino (.ino, Uno ve ESP32) ve Python (.py) dışa aktarma; sensör kütüphanesi; TR/EN; öğretmen modu; çevrimdışı kullanım.'));
+add(B1('Arduino (.ino, Uno ve ESP32) ve Python (.py) dışa aktarma; sensör kütüphanesi; TR/EN; öğretmen modu; çevrimdışı kullanım; sınıf sürümü (öğretmen sunucusu, öğrenci istemcisi, canlı takip, uzaktan güncelleme).'));
 add(H2('11.2 Bilinen sınırlar'));
 add(B1('İlerleme kodu sadece yıldızları taşır; dizilen bloklar bilgisayarda kalır.'));
 add(B1('Python ve Arduino kodları tarayıcıda çalıştırılmaz; tarayıcıdaki benzetim JavaScript ile yapılır ve indirilen dosyalar aynı mantıkla çalışır.'));
 add(B1('Arduino kodundaki "bekle" `delay()` olduğu için gerçek kartta bekleme sırasında başka olaylar dinlenmez; benzetimde olaylar beklemeden çalışır.'));
 add(B1('Olay blokları yalnızca o adımda tanımlı sensörlerin olaylarını gösterir; sensör değerleri senaryodan gelir (gerçek karta bağlı canlı veri yoktur).'));
 add(H2('11.3 Gelecek fikirleri'));
-add(B1('**Sınıf sürümü (planlandı):** öğretmen bilgisayarında yerel sunucu; admin ve öğretmen girişi, öğretmenin kendi ağ aralığındaki öğrencileri canlı izlemesi (hangi adımda, kaç yıldız, şu anki blokları), öğrencilere mesaj, "Çözümü yükle" yalnızca öğretmene, GitHub\'daki isikcirobot_offline deposundan tek tuşla güncelleme, Python kurmadan çalışan .exe. Öğrenci bilgisayarlarına kurulum gerekmez; öğrenciler sunucunun adresini açar.'));
-add(NOTE('Windows\'un "Mobil etkin nokta" özelliği (192.168.137.x) en fazla 8 cihaz bağlar; kalabalık sınıflarda sınıfın kendi ağı ya da ayrı bir Wi-Fi modem kullanılmalıdır.', 'FFF4DC', 'E89B12'));
+add(B1('**Sınıf sürümü:** öğretmen bilgisayarı için afi-sunucu.exe ve öğrenci bilgisayarları için afi-istemci.exe hazır (5.5, 7.5). Sıradaki adımlar: istemci programının kendini de güncellemesi, öğretmenin öğrenci ekranını kilitlemesi ya da herkesi aynı adıma yönlendirmesi, başka dersler için yeni içerik paketleri.'));
 add(B1('Bölüm 11–15 için Orta ve Zor düzeyleri.'));
 add(B1('ESP32 ile Wi-Fi bölümü: telefondan bildirim, web sayfasından lamba açma.'));
 add(B1('Öğrencinin bloklarını da taşıyan dışa/içe aktarma (dosya olarak).'));
-add(B1('Öğretmen için sınıf ilerleme özeti (ilerleme kodlarını toplu okuma).'));
 add(H1('12. Sorun giderme'));
 add(TABLE(['Sorun', 'Neden', 'Çözüm'], [
   ['Sayfa boş ya da bloklar gelmiyor', 'Zip\'in içinden açıldı ya da dosyalar eksik.', 'Zip\'i ayıkla; index.html\'in yanında js ve lib klasörleri olduğundan emin ol.'],
@@ -457,6 +483,10 @@ add(TABLE(['Sorun', 'Neden', 'Çözüm'], [
   ['.py dosyası açılınca hemen kapanıyor', 'Dosyaya çift tıklandı.', 'Komut İstemi\'nden `python dosya.py` ile çalıştır.'],
   ['Arduino: "No such file DHT.h"', 'Kütüphane yüklü değil.', 'Araçlar > Kütüphaneleri Yönet\'ten dosyanın başında yazan kütüphaneyi yükle.'],
   ['Arduino: Port görünmüyor', 'USB kablosu sadece şarj kablosu ya da sürücü eksik.', 'Veri kablosu kullan; CH340 sürücüsünü yükle (klon kartlarda).'],
+  ['Öğrenciler sunucu adresini açamıyor', 'Güvenlik duvarı izin vermedi, öğrenci başka ağda ya da adres yanlış.', 'Öğretmen bilgisayarında Windows Güvenlik Duvarı > Uygulamaya izin ver > afi-sunucu için Özel kutusunu işaretle. Siyah pencerede yazan adresi kullan; okul ağı "Ortak" görünüyorsa ağ ayarından "Özel" yap.'],
+  ['"Sınıf bağlantısı yok"', 'Öğretmen sunucusu kapalı, ağ kopuk ya da istemci sunucuyu bulamadı.', 'Öğrenci çalışmaya devam edebilir; kayıtlar bekletilir. Etikete tıklayıp sunucu adresini elle yaz (ör. 192.168.1.20:8000) ya da "Şimdi ara".'],
+  ['Panel: "Port kullanımda"', 'Sunucu zaten açık ya da başka bir program 8000 portunu kullanıyor.', 'Açık olan pencereyi bul; ya da `afi-sunucu.exe --port 8001` ile başlat (istemciler bilgisayar adından yine bulur).'],
+  ['Windows "bilgisayarınızı korudu" diyor', 'Program imzalı değil.', 'Ek bilgi > Yine de çalıştır. Programlar yalnızca GitHub\'daki isikcirobot_offline sayfasından indirilmeli.'],
   ['Seri Monitör\'de anlamsız harfler', 'Hız uyuşmuyor.', 'Uno için 9600, ESP32 için 115200 seç.'],
   ['Sensör değeri hep 0 ya da hep 100', 'Kablo yanlış pine ya da kalibrasyon.', 'Dosyanın başındaki bağlantı listesine göre kontrol et; toprak nemi için KURU/ISLAK sayılarını ölçüp değiştir.']
 ], [26, 32, 42], true));
