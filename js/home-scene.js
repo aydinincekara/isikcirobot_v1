@@ -159,15 +159,11 @@
       c.stroke();
     }
   }
+  var ROBOT = 'afi';
   function drawAfi(c, x, y, s, K, glow) {
-    c.save();
-    if (glow > 0) { c.fillStyle = K.accentSoft; c.globalAlpha = glow; c.beginPath(); c.arc(x, y, s * 0.75, 0, 7); c.fill(); c.globalAlpha = 1; }
-    c.strokeStyle = K.robot; c.lineWidth = s * 0.08; c.lineCap = 'round';
-    c.beginPath(); c.moveTo(x, y - s * 0.36); c.lineTo(x, y - s * 0.55); c.stroke();
-    c.fillStyle = K.lamp; c.beginPath(); c.arc(x, y - s * 0.6, s * 0.1, 0, 7); c.fill();
+    var R = (typeof window !== 'undefined' ? window : this).ROBOTS;
+    if (R) { R.draw(c, ROBOT, x, y + s * 0.02, s * 1.15, { glow: glow, glowColor: K.accentSoft, flash: glow > 0.5 ? glow - 0.3 : 0 }); return; }
     c.fillStyle = K.robot; rr(c, x - s * 0.45, y - s * 0.38, s * 0.9, s * 0.74, s * 0.24); c.fill();
-    c.fillStyle = K.eye; c.beginPath(); c.arc(x - s * 0.17, y - s * 0.03, s * 0.11, 0, 7); c.fill(); c.beginPath(); c.arc(x + s * 0.17, y - s * 0.03, s * 0.11, 0, 7); c.fill();
-    c.restore();
   }
 
   /* Sahnenin en/boy oranı: satır sayısı arttıkça biraz uzar */
@@ -180,6 +176,7 @@
    * m: { step, nsc, res, chk, tm, K, lang, t, anim, vi, nv, marks }
    */
   function draw(c, W, Hh, m) {
+    ROBOT = m.robot || 'afi';
     var K = m.K, st = m.step, lang = m.lang, t = m.t, nsc = m.nsc, dur = nsc.dur, tm = Math.max(0, Math.min(dur, m.tm));
     var u = W / 330, pad = 10 * u;
     c.clearRect(0, 0, W, Hh);

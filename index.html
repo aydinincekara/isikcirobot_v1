@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>afi kod</title>
+<title>AFİ KOD</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +18,7 @@
   --ok:#1F8A5B; --ok-ink:#FFFFFF; --ok-soft:#DDF3E8; --bad:#C2413B; --bad-soft:#FBE3E1;
   --wall:#D9E0E8; --robot:#2563C9; --robot-eye:#FFFFFF;
   --salon-a:#EBD6B8; --salon-b:#DDC39E; --koridor-a:#D9E2EE; --koridor-b:#C3D0E2; --mutfak-a:#F4F6F9; --mutfak-b:#DCE3EC;
-  --sofa:#8B6FD6; --table:#B07A4A; --plant:#3E9B5F; --pot:#C46A3D; --counter:#8C99A8; --door:#9A5B2E;
+  --sofa:#8B6FD6; --table:#B07A4A; --plant:#3E9B5F; --pot:#C46A3D; --counter:#8C99A8; --door:#9A5B2E; --room-edge:#9AA8BA; --trash-bg:rgba(238,242,246,.8); --trash-hot:rgba(251,227,225,.88);
   --code-bg:#F7F9FC; --kw:#9B3FC4; --fn:#2563C9; --num:#B7621A; --cm:#6F7B8E;
   --scrim:rgba(14,20,32,.5); --w-red:#E5484D; --w-gnd:#2A2F36; --mid-ink:#8A5300;
   --off:#C9D3DE; --sky:#CFE8FB; --glass:#A9D2F2; --expect:#BCD0F3; --hat:#D1603D; --glow-soft:#FFF6DA;
@@ -35,7 +35,7 @@
   --ok:#4CC38A; --ok-ink:#0F151E; --ok-soft:#173528; --bad:#F07A73; --bad-soft:#3B1F1E;
   --wall:#0B1118; --robot:#6EA2F7; --robot-eye:#0F151E;
   --salon-a:#4A3B2C; --salon-b:#3E3125; --koridor-a:#2A3547; --koridor-b:#233041; --mutfak-a:#2B3442; --mutfak-b:#222A36;
-  --sofa:#7E68C8; --table:#8C6140; --plant:#3E8F5A; --pot:#A65A35; --counter:#566273; --door:#B47645;
+  --sofa:#7E68C8; --table:#8C6140; --plant:#3E8F5A; --pot:#A65A35; --counter:#566273; --door:#B47645; --room-edge:#3A4658; --trash-bg:rgba(23,31,43,.82); --trash-hot:rgba(59,31,30,.88);
   --code-bg:#121A24; --kw:#D09BF0; --fn:#7DB0FF; --num:#F2A65A; --cm:#8E9BB0;
   --scrim:rgba(0,0,0,.6); --w-red:#F0626A; --w-gnd:#C9D1DC; --mid-ink:#FFC86B; --off:#3A4658; --sky:#22405E; --glass:#2F5677; --expect:#2E4A78; --hat:#E8774F; --glow-soft:#3A2F17; color-scheme:dark}}
 :root[data-theme="dark"]{
@@ -46,7 +46,7 @@
   --ok:#4CC38A; --ok-ink:#0F151E; --ok-soft:#173528; --bad:#F07A73; --bad-soft:#3B1F1E;
   --wall:#0B1118; --robot:#6EA2F7; --robot-eye:#0F151E;
   --salon-a:#4A3B2C; --salon-b:#3E3125; --koridor-a:#2A3547; --koridor-b:#233041; --mutfak-a:#2B3442; --mutfak-b:#222A36;
-  --sofa:#7E68C8; --table:#8C6140; --plant:#3E8F5A; --pot:#A65A35; --counter:#566273; --door:#B47645;
+  --sofa:#7E68C8; --table:#8C6140; --plant:#3E8F5A; --pot:#A65A35; --counter:#566273; --door:#B47645; --room-edge:#3A4658; --trash-bg:rgba(23,31,43,.82); --trash-hot:rgba(59,31,30,.88);
   --code-bg:#121A24; --kw:#D09BF0; --fn:#7DB0FF; --num:#F2A65A; --cm:#8E9BB0;
   --scrim:rgba(0,0,0,.6); --w-red:#F0626A; --w-gnd:#C9D1DC; --mid-ink:#FFC86B; --off:#3A4658; --sky:#22405E; --glass:#2F5677; --expect:#2E4A78; --hat:#E8774F; --glow-soft:#3A2F17; color-scheme:dark}
 
@@ -184,7 +184,7 @@ canvas#stage.home{aspect-ratio:5/6;background:var(--bg)}
 .explain p{margin:0;color:var(--ink-2)}
 .snippet{font-family:var(--f-mono);font-size:.82rem;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;overflow-x:auto;white-space:pre;color:var(--ink)}
 .pair{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 10px;align-items:start}
-.pair span{font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding-top:9px}
+.pair>span{font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding-top:9px}
 .lifebox{background:var(--lamp-soft);border-radius:10px;padding:10px 12px;color:var(--ink)}
 .lifebox b{font-family:var(--f-display);font-weight:600}
 .term{font-weight:800;color:var(--ink)}
@@ -339,6 +339,39 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
   .lessonbar{border-radius:14px;flex-wrap:wrap;padding:8px 10px}
   .bubbles{margin-left:0}
 }
+
+/* Logo */
+.brandbot{flex:none;width:48px;height:48px}
+.logo{display:flex;align-items:center;gap:8px;line-height:1;padding-top:.5em}
+.logo-word{font-family:var(--f-display);font-weight:700;font-size:2.05rem;letter-spacing:.06em;color:var(--accent);text-shadow:0 2px 0 var(--accent-soft)}
+.logo-i{position:relative;display:inline-block;width:.19em;height:.71em;margin-left:.07em;border-radius:.05em;background:var(--accent);box-shadow:0 2px 0 var(--accent-soft);vertical-align:baseline}
+.logo-dot{position:absolute;left:50%;top:-.36em;width:.27em;height:.27em;margin-left:-.135em;border-radius:50%;background:var(--lamp);box-shadow:0 0 0 2px var(--panel),0 0 12px var(--lamp-glow)}
+.logo-tag{font-family:var(--f-display);font-weight:700;font-size:.92rem;letter-spacing:.14em;background:var(--lamp);color:#1A2230;border-radius:8px;padding:5px 8px 4px;transform:rotate(-4deg)}
+/* Robot seçimi */
+.robopick{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.rpbtn{border:2px solid var(--line);background:var(--panel-2);border-radius:12px;padding:6px 2px 5px;display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:800;font-size:.74rem;min-width:0}
+.rpbtn img{width:46px;height:46px}
+.rpbtn:hover{border-color:var(--accent)}
+.rpbtn[aria-checked="true"]{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 2px var(--accent-soft)}
+@media (max-width:520px){.robopick{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.pbtn .av img,.chip .av img{width:100%;height:100%;display:block}
+.chip .av{background:var(--accent-soft);overflow:hidden}
+.storybot{flex:none}
+.winrow{display:flex;justify-content:center;align-items:flex-end;gap:6px}
+.winbot{animation:hop .7s ease-in-out infinite alternate}
+@keyframes hop{from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(-10px) rotate(4deg)}}
+/* Çöp kutusu filigranı */
+.trashmark{position:absolute;top:0;left:0;bottom:0;z-index:25;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  background:var(--trash-bg);border-right:3px dashed var(--ink-3);opacity:0;transition:opacity .15s,background-color .15s;color:var(--ink-3);text-align:center;padding:8px}
+.trashmark svg{width:min(64%,96px);height:auto}
+.trashmark span{font-weight:800;font-size:.85rem;line-height:1.2}
+.trashmark.on{opacity:1}
+.trashmark.hot{color:var(--bad);border-right-color:var(--bad);background:var(--trash-hot)}
+.trashmark.hot svg{transform:scale(1.12) rotate(-6deg);transition:transform .12s}
+/* Konfeti */
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:40;overflow:hidden}
+.confetti i{position:absolute;top:-20px;width:10px;height:14px;border-radius:2px;animation:fall 2.6s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -348,13 +381,8 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
 <div class="wrap">
   <header class="top">
     <div class="brand">
-      <svg width="40" height="40" viewBox="0 0 44 44" aria-hidden="true">
-        <rect x="6" y="12" width="32" height="26" rx="9" fill="var(--robot)"/>
-        <circle cx="28" cy="25" r="5" fill="var(--robot-eye)"/>
-        <line x1="22" y1="12" x2="22" y2="5" stroke="var(--robot)" stroke-width="3" stroke-linecap="round"/>
-        <circle cx="22" cy="5" r="4" fill="var(--lamp)"/>
-      </svg>
-      <div><h1 id="appName"><span class="w-afi">afi</span><span class="w-prod">kod</span></h1><p data-t="tagline"></p></div>
+      <img id="brandRobot" class="brandbot" width="48" height="48" alt="">
+      <div><h1 id="appName"></h1><p data-t="tagline"></p></div>
     </div>
 
     <nav class="lessonbar" aria-label="Ders">
@@ -372,7 +400,7 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
         <select class="sel" id="layoutSel"></select>
         <button class="iconbtn round" id="saveLayoutBtn" data-t-title="saveLayout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></svg></button>
       </div>
-      <button class="iconbtn round" id="settingsBtn" data-t-title="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg></button>
+      <button class="iconbtn round" id="settingsBtn" data-t-title="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M19.26 9.75 L22.02 10.07 L22.02 13.93 L19.26 14.25 L18.72 15.55 L20.44 17.72 L17.72 20.44 L15.55 18.72 L14.25 19.26 L13.93 22.02 L10.07 22.02 L9.75 19.26 L8.45 18.72 L6.28 20.44 L3.56 17.72 L5.28 15.55 L4.74 14.25 L1.98 13.93 L1.98 10.07 L4.74 9.75 L5.28 8.45 L3.56 6.28 L6.28 3.56 L8.45 5.28 L9.75 4.74 L10.07 1.98 L13.93 1.98 L14.25 4.74 L15.55 5.28 L17.72 3.56 L20.44 6.28 L18.72 8.45Z"/><circle cx="12" cy="12" r="3.2"/></svg></button>
       <span class="badge-teacher" id="teacherBadge" data-t="teacher" hidden></span>
       <button class="chip" id="profileChip" data-t-title="switchProfile"><span class="av" id="chipAv">?</span><span id="chipName"></span></button>
     </div>
@@ -454,6 +482,8 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
     <p data-t="whoHelp"></p>
     <div class="plist" id="plist"></div>
     <div class="confirm" id="delConfirm" hidden><p id="delText"></p><div class="row"><button class="btn btn-ghost btn-small" id="delNo" data-t="no"></button><button class="btn btn-small" style="background:var(--bad);color:#fff" id="delYes" data-t="yes"></button></div></div>
+    <div class="eyebrow" data-t="pickRobot"></div>
+    <div class="robopick" id="roboPick" role="radiogroup"></div>
     <form class="row" id="addForm" autocomplete="off">
       <input class="input" id="newName" maxlength="24" style="flex:1 1 160px" data-t-ph="newName">
       <button class="btn btn-primary btn-small" type="submit" data-t="add"></button>
@@ -492,7 +522,11 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
       <div class="field"><label for="langSel" data-t="language"></label>
         <select class="sel" id="langSel"><option value="tr">Türkçe</option><option value="en">English</option></select></div>
       <div class="field"><label for="themeSel" data-t="theme"></label><select class="sel" id="themeSel"></select></div>
+      <div class="field"><label for="soundSel" data-t="sounds"></label><select class="sel" id="soundSel"></select></div>
     </div>
+    <div class="sep"></div>
+    <div class="eyebrow" data-t="myRobot"></div>
+    <div class="robopick" id="roboPickSet" role="radiogroup"></div>
     <div class="sep"></div>
     <div class="eyebrow" data-t="progressCode"></div>
     <div class="codeout" id="myCode"></div>
@@ -513,7 +547,7 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
   <div class="card" role="dialog" aria-modal="true" aria-labelledby="storyTitle">
     <div class="eyebrow" id="storyEyebrow"></div>
     <div class="storyart">
-      <svg width="64" height="64" viewBox="0 0 44 44" aria-hidden="true"><rect x="6" y="12" width="32" height="26" rx="9" fill="var(--robot)"/><circle cx="28" cy="25" r="5" fill="var(--robot-eye)"/><line x1="22" y1="12" x2="22" y2="5" stroke="var(--robot)" stroke-width="3" stroke-linecap="round"/><circle cx="22" cy="5" r="4" fill="var(--lamp)"/></svg>
+      <img id="storyRobot" class="storybot" width="72" height="72" alt="">
       <h2 id="storyTitle"></h2>
     </div>
     <p class="storytext" id="storyText"></p>
@@ -533,7 +567,7 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
 <!-- Başarı -->
 <div class="modal" id="win" hidden>
   <div class="card center" role="dialog" aria-modal="true" aria-labelledby="winTitle">
-    <div class="wintrophy" data-ic="trophy"></div>
+    <div class="winrow"><img id="winRobot" class="winbot" width="84" height="84" alt=""><div class="wintrophy" data-ic="trophy"></div></div>
     <div class="stars" id="winStars"></div>
     <h2 id="winTitle" data-t="winTitle"></h2>
     <p id="winText"></p>
@@ -552,20 +586,22 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
 <script>window.BLOCKLY_MSG = { en: Object.assign({}, Blockly.Msg) };</script>
 <script src="lib/msg/tr.js"></script>
 <script>window.BLOCKLY_MSG.tr = Object.assign({}, Blockly.Msg);</script>
-<script src="js/engine.js"></script>
-<script src="js/i18n.js"></script>
-<script src="js/i18n-home.js"></script>
-<script src="js/blocks.js"></script>
-<script src="js/home.js"></script>
-<script src="js/home-blocks.js"></script>
-<script src="js/levels.js"></script>
-<script src="js/levels-extra.js"></script>
-<script src="js/levels-home.js"></script>
-<script src="js/icons.js"></script>
-<script src="js/sensors.js"></script>
-<script src="js/sensor-ui.js"></script>
-<script src="js/home-scene.js"></script>
-<script src="js/app.js"></script>
+<script src="js/engine.js?v=2.1"></script>
+<script src="js/i18n.js?v=2.1"></script>
+<script src="js/i18n-home.js?v=2.1"></script>
+<script src="js/blocks.js?v=2.1"></script>
+<script src="js/home.js?v=2.1"></script>
+<script src="js/home-blocks.js?v=2.1"></script>
+<script src="js/levels.js?v=2.1"></script>
+<script src="js/levels-extra.js?v=2.1"></script>
+<script src="js/levels-home.js?v=2.1"></script>
+<script src="js/icons.js?v=2.1"></script>
+<script src="js/robots.js?v=2.1"></script>
+<script src="js/sensors.js?v=2.1"></script>
+<script src="js/sensor-ui.js?v=2.1"></script>
+<script src="js/sounds.js?v=2.1"></script>
+<script src="js/home-scene.js?v=2.1"></script>
+<script src="js/app.js?v=2.1"></script>
 
 </body>
 </html>

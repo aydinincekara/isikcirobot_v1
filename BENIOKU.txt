@@ -24,6 +24,14 @@ Kurulum, internet, Python veya yönetici izni gerekmez.
 - Başka bilgisayara geçerken Ayarlar > "İlerleme kodum" kısmındaki kodu not alır, yeni bilgisayarda
   "İlerleme kodum var" ile adını ve kodu yazar. Yıldızlar taşınır, dizdiği bloklar eski bilgisayarda kalır.
 
+ROBOT VE SESLER
+- Yeni öğrenci eklerken 6 robottan biri seçilir (afi, Bıcır, Pati, Rover, Zıpzıp, Böcük).
+  Sonradan Ayarlar > Robotum bölümünden değiştirilebilir.
+- Başarıda yıldız sayısına göre müzik, hatada kısa bir ses, bölüm bitince bölüm müziği çalar.
+  Ayarlar > Sesli tepkiler: Ses ve konuşma / Sadece ses efektleri / Kapalı.
+- Blok silmek için bloğu soldaki menüye geri sürükleyin; menüde çöp kutusu belirir.
+- İlerleme kodu yazılırken tireler kendiliğinden eklenir. Kod okunamazsa Ctrl + F5 ile yenileyin.
+
 ÖĞRETMEN MODU
 - Adresin sonuna #ogretmen ekleyip Enter'a basın. Her adımda "Çözümü yükle" düğmesi görünür.
 

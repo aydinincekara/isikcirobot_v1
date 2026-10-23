@@ -62,10 +62,10 @@ const C_ = [];
 const add = (...x) => x.forEach(e => Array.isArray(e) ? e.forEach(y => C_.push(y)) : C_.push(e));
 
 /* ---------- kapak ---------- */
-add(new D.Paragraph({ children: [new D.TextRun({ text: 'afi', bold: true, font: FONT, size: 96, color: ACC }), new D.TextRun({ text: ' kod', font: FONT, size: 96, color: '6F7B8E' })], spacing: { before: 1800, after: 120 } }));
+add(new D.Paragraph({ children: [new D.TextRun({ text: 'AFİ', bold: true, font: FONT, size: 96, color: ACC }), new D.TextRun({ text: ' KOD', bold: true, font: FONT, size: 96, color: 'E89B12' })], spacing: { before: 1800, after: 120 } }));
 add(P("afi'nin blok kodlama serüveni", { size: 32, color: '4A5568' }));
 add(new D.Paragraph({ children: [new D.TextRun({ text: 'Proje Bilgilendirme, Kurulum ve Kullanım Kılavuzu', bold: true, font: FONT, size: 30, color: BLUE })], spacing: { before: 400, after: 300 } }));
-add(P('Sürüm: **2.0 – Tüm bölümler** (' + COURSE.chapters.length + ' bölüm, ' + STEPS.length + ' adım) · 23 Ekim 2026'));
+add(P('Sürüm: **2.1** (' + COURSE.chapters.length + ' bölüm, ' + STEPS.length + ' adım) · 23 Ekim 2026'));
 add(P('Proje sahibi: **Aydın İncekara**'));
 add(P('Canlı adres: ' + SITE));
 add(P('Kaynak kod deposu: ' + REPO));
@@ -102,7 +102,8 @@ add(TABLE(['Tarih', 'Yapılan', 'Sonuç'], [
   ['22 Ekim 2026', 'GitHub Pages yayını: isikcirobot_v1 deposu.', SITE],
   ['23 Ekim 2026', 'Sensör kütüphanesi (15 sensör, Uno/ESP32 şemaları, "Dene ve gör"). Ürün adı "afi kod", robotun adı "afi" oldu. İlk kılavuz.', 'Sürüm 1.1'],
   ['23 Ekim 2026', 'Her bölüme Başlangıç/Orta/Zor düzeyleri (toplam 90 adım), arayüzde ikonlar, daraltılabilir paneller, yükseklik ayarlı blok alanı.', 'Sürüm 1.2'],
-  ['23 Ekim 2026', 'Bölüm 4–10 tamamlandı: akıllı ev motoru, kontrol paneli ve zaman çizelgesi, olay/değişken/karşılaştırma/fonksiyon blokları, Arduino (.ino) ve Python (.py) dışa aktarma, 210 yeni adım. Her adım otomatik doğrulandı. Kılavuz yeniden yazıldı.', 'Sürüm 2.0 (300 adım)']
+  ['23 Ekim 2026', 'Bölüm 4–10 tamamlandı: akıllı ev motoru, kontrol paneli ve zaman çizelgesi, olay/değişken/karşılaştırma/fonksiyon blokları, Arduino (.ino) ve Python (.py) dışa aktarma, 210 yeni adım. Her adım otomatik doğrulandı. Kılavuz yeniden yazıldı.', 'Sürüm 2.0 (300 adım)'],
+  ['23 Ekim 2026', 'Robot seçimi (6 robot), sesli tepkiler, blok alanında çöp kutusu, sayılabilir zemin karoları, yeni eşya çizimleri, AFİ KOD logosu, çark dişli ayar ikonu; ilerleme kodu yazılırken tireler kendiliğinden ekleniyor ve yeni sürüm her bilgisayarda kesin yükleniyor.', 'Sürüm 2.1']
 ], [15, 60, 25]));
 add(H2('2.2 Alınan kararlar'));
 add(TABLE(['Konu', 'Karar', 'Neden'], [
@@ -139,6 +140,7 @@ add(TABLE(['Bölüm', 'Ne var?'], [
 add(H2('4.2 Program yazma ve çalıştırma'));
 add(...NUM(['Soldaki menüden bir bloğu blok alanına sürükle.', 'Sonraki bloğu öncekinin altına yaklaştır; yerine oturunca birbirine bağlanır.',
   'Döngü, koşul, olay ve fonksiyon bloklarının içine başka bloklar konur. Sayıların ve menülerin üstüne tıklayarak değiştirebilirsin.',
+  'Bir bloğu silmek için onu soldaki blok menüsüne geri sürükle. Sürüklerken menünün üstünde büyük bir **çöp kutusu** belirir; blok oraya gelince kırmızıya döner, bırakınca silinir. Sağ alttaki çöp kutusuna bırakmak da siler.',
   'Çalıştır\'a bas. Çalışan blok vurgulanır. Durdurmak için aynı düğmeye bas.', 'Bir hata olursa durum kutusunda nedeni yazar ve ilgili blok vurgulu kalır. Bloğu düzeltince vurgu kalkar.']));
 add(H2('4.3 Yıldızlar'));
 add(P('Her adımda "en fazla … blok" hedefi vardır. Hedefin içinde çözersen 3 yıldız, 2 blok fazlasına kadar 2 yıldız, daha uzun çözümlerde 1 yıldız kazanırsın. Hazır sayılar (blokların içindeki yuvarlak sayı kutuları) sayılmaz. Aynı adımı daha kısa çözerek yıldızını artırabilirsin.'));
@@ -155,14 +157,19 @@ add(H2('4.6 Harita ve sensör kütüphanesi'));
 add(P('Harita düğmesi ' + COURSE.chapters.length + ' bölümün tamamını, düzeylere ayrılmış dersleri ve ' + STEPS.length + ' adımı gösterir; istenen adıma tıklanarak geçilir. Her bölüm kartında o bölümde kullanılan sensörler listelenir; tıklanınca sensör kütüphanesi açılır. Sensörler düğmesi 15 gerçek sensörün ne işe yaradığını, nasıl çalıştığını, Arduino Uno ve ESP32\'ye nasıl bağlandığını, kaç volt istediğini ve ilk Arduino kodunu anlatır (bkz. Bölüm 10).'));
 add(H2('4.7 Başka bilgisayarda devam etmek'));
 add(...NUM(['Eski bilgisayarda Ayarlar\'ı aç ve İlerleme kodum kutusundaki kodu not al.', 'Yeni bilgisayarda "Kim kodluyor?" penceresinde İlerleme kodum var\'a tıkla.', 'Adını ve kodu yaz, Kodla devam et\'e bas. Yıldızlar taşınır ve sıradaki adımdan devam edilir.']));
+add(P('Kodu yazarken tireler kendiliğinden eklenir; küçük harf ya da tiresiz yazmak da olur. Kodlarda I, O, 0 ve 1 harfleri hiç yoktur.'));
 add(NOTE('İlerleme kodu sadece yıldızları taşır; öğrencinin dizdiği bloklar eski bilgisayarda kalır. Sırayla ilerleyen bir öğrencinin kodu kısadır (örneğin ilk 150 adımı 3 yıldızla bitiren öğrencinin kodu 14 harftir). Eski sürümlerin kodları da geçerlidir.'));
-add(H2('4.8 Dil, sesli okuma ve hikâye'));
+add(H2('4.8 Robotunu seç'));
+add(P('Yeni öğrenci eklerken "Robotunu seç" satırından altı robottan biri seçilir: **afi** (mavi), **Bıcır** (yeşil, yuvarlak), **Pati** (kedi), **Rover** (araba), **Zıpzıp** (tavşan) ve **Böcük** (uğur böceği). Seçilen robot evde dolaşır, kontrol panelinde ve hikâye penceresinde görünür. Robot sonradan Ayarlar > Robotum bölümünden istenildiği zaman değiştirilir; ilerleme etkilenmez.'));
+add(H2('4.9 Sesli tepkiler'));
+add(P('Görev başarılınca yıldız sayısına göre farklı bir müzik çalar (3 yıldızda konfeti de yağar), program işe yaramazsa kısa bir "olmadı" sesi duyulur, bir bölümün bütün adımları bitince bölüm müziği, bütün bölümler bitince büyük final çalar. Bilgisayarda Türkçe ses varsa afi kısa bir cümleyle de tepki verir ("Harika! Üç yıldız!", "Olmadı, bir daha deneyelim!"). Ayarlar > Sesli tepkiler: **Ses ve konuşma**, **Sadece ses efektleri** ya da **Kapalı**. Sesler internet gerektirmez.'));
+add(H2('4.10 Dil, sesli okuma ve hikâye'));
 add(B1('Ayarlar > Dil: Türkçe ya da English. Bloklar, metinler ve koddaki adlar birlikte değişir. Değişken adları öğrencinin dizdiği bloklarda olduğu gibi kalır.'));
 add(B1('Sesli oku: Görev metnini tarayıcının sesiyle okur. Türkçe ses en iyi Microsoft Edge\'de çalışır.'));
 add(B1('Hikâye: Bölümün hikâyesini ve gerçek hayat bağlantısını yeniden gösterir.'));
 
 /* blok tabloları */
-add(H2('4.9 Bloklar ve gerçek kod karşılıkları'));
+add(H2('4.11 Bloklar ve gerçek kod karşılıkları'));
 add(H3('Robot blokları (Bölüm 1–3)'));
 add(TABLE(['Blok', 'Ne yapar?', 'Python (Türkçe)', 'Python (English)'], [
   ['↑ ileri git', "afi'yi baktığı yöne bir kare ilerletir.", '`ileri_git()`', '`move_forward()`'],
@@ -284,6 +291,8 @@ add(TABLE(['Dosya', 'Görevi'], [
   ['js/i18n.js, js/i18n-home.js', 'Türkçe ve İngilizce arayüz metinleri, blok yazıları ve blok açıklamaları.'],
   ['js/sensors.js, js/sensor-ui.js', 'Sensör kütüphanesi bilgileri ve ekranı.'],
   ['js/icons.js', 'Arayüzdeki küçük çizgi ikonlar.'],
+  ['js/robots.js', 'Altı robotun çizimi (ev, kontrol paneli, profil resimleri).'],
+  ['js/sounds.js', 'Sesli tepkiler: tarayıcının ses motoruyla üretilen müzikler ve kısa konuşmalar.'],
   ['js/app.js', 'Arayüz: profiller, gezinme, yerleşimler, çizim, animasyon, indirme, pencereler.'],
   ['lib/', 'Blockly 11.2.2 dosyaları, lib/media simgeleri ve lisans notu.'],
   ['tools/gen_home.js, tools/content/', 'Bölüm 4–10 içeriği (ch4.js … ch10.js) ve üretici/doğrulayıcı.'],
@@ -375,6 +384,8 @@ add(TABLE(['Sorun', 'Neden', 'Çözüm'], [
   ['Sayfa boş ya da bloklar gelmiyor', 'Zip\'in içinden açıldı ya da dosyalar eksik.', 'Zip\'i ayıkla; index.html\'in yanında js ve lib klasörleri olduğundan emin ol.'],
   ['Eski sürüm görünüyor', 'Tarayıcı önbelleği.', 'Ctrl + F5 ile yenile.'],
   ['İlerleme kayboldu', 'Tarayıcı verileri silindi ya da gizli pencere kullanıldı.', 'İlerleme kodu ile devam et; gizli pencere kullanma.'],
+  ['"Bu kod okunamadı"', 'Harf yanlış yazıldı ya da bilgisayar sayfanın eski sürümünü açtı.', 'Harfleri kontrol et (I, O, 0, 1 yoktur). Ctrl + F5 ile sayfayı yenileyip tekrar dene.'],
+  ['Ses gelmiyor', 'Ayarlarda kapalı ya da bilgisayarın sesi kısık.', 'Ayarlar > Sesli tepkiler; konuşma için bilgisayarda Türkçe ses olmalı (Edge\'de vardır).'],
   ['Blok alanı dar', 'Ekran küçük.', '"Blok alanını büyüt" düğmesi, panel tutamakları ya da alttaki yükseklik tutamağı.'],
   ['Bir panel kayboldu', 'Panel ince şeride daraltıldı.', 'Şeritteki ok düğmesine bas.'],
   ['"Bazı komutlar hiçbir bloğa bağlı değil"', 'Akıllı ev adımlarında komutlar bir olay, başlangıçta, her saniye ya da fonksiyon bloğunun içinde olmalı.', 'Vurgulanan bloğu uygun bloğun içine sürükle.'],
