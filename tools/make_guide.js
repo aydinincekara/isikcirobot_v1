@@ -106,7 +106,8 @@ add(TABLE(['Tarih', 'Yapılan', 'Sonuç'], [
   ['23 Ekim 2026', 'Bölüm 4–10 tamamlandı: akıllı ev motoru, kontrol paneli ve zaman çizelgesi, olay/değişken/karşılaştırma/fonksiyon blokları, Arduino (.ino) ve Python (.py) dışa aktarma, 210 yeni adım. Her adım otomatik doğrulandı. Kılavuz yeniden yazıldı.', 'Sürüm 2.0 (300 adım)'],
   ['23 Ekim 2026', 'Robot seçimi (6 robot), sesli tepkiler, blok alanında çöp kutusu, sayılabilir zemin karoları, yeni eşya çizimleri, AFİ KOD logosu, çark dişli ayar ikonu; ilerleme kodu yazılırken tireler kendiliğinden ekleniyor ve yeni sürüm her bilgisayarda kesin yükleniyor.', 'Sürüm 2.1'],
   ['23 Ekim 2026', 'Sürüm numarası slogan yanında; sol sütun katlanabilir ve sabit; fare tekerleğiyle yakınlaştırma kapatıldı; Duraklat düğmesi; "Kim kodluyor?" penceresine Kapat. Yeni "sürekli tekrarla" bloğu (mBlock\'taki gibi, Arduino loop()). Yeni bölümler (10\'ar adım): Arduino II, ESP32 akıllı ev, Python Turtle, Python oyun tasarımı, Python yapay zekâ. Turtle, oyun ve yapay zekâ için üç yeni motor; oyunlar tarayıcıda klavyeyle oynanabilir.', 'Sürüm 2.2 (' + STEPS.length + ' adım)'],
-  ['23 Ekim 2026', 'Sınıf sürümü: öğretmen bilgisayarında afi sınıf sunucusu (admin/öğretmen girişi, ağ aralığına göre canlı öğrenci takibi, şu anki blokları görme, mesaj, Excel çıktısı, GitHub\'dan tek tuşla güncelleme ve geri alma) ve öğrenci bilgisayarları için afi istemci (ağ yokken de çalışır, sunucuyu kendisi bulur, güncellemeyi sunucudan alır). Uygulamaya sınıf modu eklendi. Ayrı depo: isikcirobot_offline.', 'Sürüm 2.3 · platform 1.0.0']
+  ['23 Ekim 2026', 'Sınıf sürümü: öğretmen bilgisayarında afi sınıf sunucusu (admin/öğretmen girişi, ağ aralığına göre canlı öğrenci takibi, şu anki blokları görme, mesaj, Excel çıktısı, GitHub\'dan tek tuşla güncelleme ve geri alma) ve öğrenci bilgisayarları için afi istemci (ağ yokken de çalışır, sunucuyu kendisi bulur, güncellemeyi sunucudan alır). Uygulamaya sınıf modu eklendi. Ayrı depo: isikcirobot_offline.', 'Sürüm 2.3 · platform 1.0.0'],
+  ['23 Ekim 2026', 'Tek kurulum dosyası (afi-sinif-kurulum.exe): lisans, öğretmen/öğrenci seçimi, ayarlar, ilerleme ekranında afi robotu, yeniden açınca güncelle/kaldır. Her şey C:\\afikod içinde (kayıtlar: kayitlar\\sunucu, kayitlar\\istemci\\<kullanıcı>). Sunucu penceresiz çalışır, saat yanındaki afi simgesinden yönetilir; bilgileri panelin Ayarlar sekmesinde. Panelde "AFİ KOD\'u aç" düğmesi (öğretmen olarak), öğrencinin IP adresi ve Windows kullanıcı adı.', 'Sürüm 2.4 · platform 1.2.0']
 ], [15, 60, 25]));
 add(H2('2.2 Alınan kararlar'));
 add(TABLE(['Konu', 'Karar', 'Neden'], [
@@ -263,14 +264,16 @@ add(...NUM(['Bölümün hikâyesini tahtada birlikte okuyun (Sunum yerleşimi).'
 add(H2('5.5 Sınıf sürümü: öğretmen paneli'));
 add(P('Sınıf sürümünde öğretmen bilgisayarında **afi-sunucu.exe** çalışır. Öğrenciler AFİ KOD\'u ya bu sunucudan (tarayıcıda `http://ÖĞRETMEN-PC:8000`) ya da kendi bilgisayarlarına kurulan **afi-istemci.exe** ile açar. Uygulama sınıfa bağlı olduğunu kendisi anlar; üst şeritte **Sınıfa bağlı** etiketi görünür. Kurulum adımları 7.5\'tedir.'));
 add(TABLE(['Panel bölümü', 'Ne yapar?'], [
-  ['Sınıf', 'Öğrenciler kart olarak görünür: robotu, adı, bilgisayarı, şu an hangi adımda olduğu, durumu (çalışıyor / başarılı / hata), yıldızı ve bitirdiği adım sayısı. Yeşil nokta şu an bağlı demektir. Karta tıklayınca bölüm bölüm ilerleme, öğrencinin **şu anki blokları** (salt okunur), Python kodu ve son olaylar açılır.'],
+  ['AFİ KOD\'u aç', 'Üstteki düğme AFİ KOD\'u yeni sekmede **öğretmen olarak** açar: "Çözümü yükle" düğmesi görünür, öğretmen öğrenci listesine eklenmez. Uygulamada "Öğretmen paneli" düğmesiyle panele dönülür.'],
+  ['Sınıf', 'Öğrenciler kart olarak görünür: robotu, adı, bilgisayarı, IP adresi, Windows kullanıcı adı (istemci kuruluysa), şu an hangi adımda olduğu, durumu (çalışıyor / başarılı / hata), yıldızı ve bitirdiği adım sayısı. Yeşil nokta şu an bağlı demektir. Karta tıklayınca bölüm bölüm ilerleme, öğrencinin **şu anki blokları** (salt okunur), Python kodu ve son olaylar açılır.'],
   ['Mesaj', '"Herkese mesaj" gördüğünüz bütün öğrencilerin ekranına birkaç saniye içinde düşer; öğrenci kartından tek öğrenciye mesaj gönderilir.'],
   ['Excel (CSV)', 'Sınıf listesini ilerlemeyle birlikte indirir; Excel\'de açılır.'],
   ['Öğretmenler (admin)', 'Öğretmen hesabı açılır. Her öğretmene **ağ aralığı** verilir (ör. `192.168.1.0/24` ya da `192.168.137.2-192.168.137.40`); öğretmen yalnızca o aralıktan bağlanan öğrencileri görür. Boş bırakılırsa herkesi görür.'],
   ['Güncelleme (admin)', '"Güncellemeleri denetle" GitHub\'daki isikcirobot_offline sitesine bakar; yeni sürüm indirilir, doğrulama özeti (SHA-256) kontrol edilir ve kurulur. Öğrencilere "Yeni sürüm hazır" bildirimi gider; istemciler yeni paketi sunucudan kendileri alır. Sorun olursa eski sürüme tek tuşla dönülür. İnternet yoksa paket USB ile getirilip yüklenir.'],
-  ['Ayarlar', 'Öğrencilerin açacağı adresler, parola değiştirme, sunucunun adı, veritabanı yedeği, dönem sonunda öğrenci verilerini silme.']
+  ['Ayarlar', 'Sunucu durumu (ne zamandır çalıştığı, bilgisayar adı, port, öğrenci adresleri, sürümler, kayıt klasörü, son olaylar), "Sunucuyu kapat", parola değiştirme, sunucunun adı, veritabanı yedeği, dönem sonunda öğrenci verilerini silme.']
 ], [24, 76]));
-add(B1('"Çözümü yükle" düğmesi sınıf sürümünde yalnızca panele giriş yapmış öğretmenin tarayıcısında görünür; `#ogretmen` öğrencilere çözüm açmaz.'));
+add(B1('"Çözümü yükle" düğmesi sınıf sürümünde yalnızca panele giriş yapmış öğretmenin tarayıcısında görünür. Sınıfta `#ogretmen` bilerek kapalıdır (yoksa öğrenci de yazıp çözümleri açabilirdi); yazılırsa uygulama öğretmen paneline yönlendirir. İnternetteki (GitHub) sürümde `#ogretmen` çalışmaya devam eder.'));
+add(B1('Sunucu siyah pencere olmadan, arka planda çalışır. Görev çubuğunda saatin yanındaki **afi simgesine** tıklayınca panel açılır; sağ tıkla "AFİ KOD\'u aç (öğretmen)" ve "Sunucuyu kapat" seçilir.'));
 add(B1('Öğrenci kimliği **ad + robot**tur (büyük/küçük harf ve I/İ/ı farkı gözetilmez). Öğrenci başka bilgisayarda aynı adı ve robotu seçince yıldızları ve dizdiği bloklar gelir. Robotunu değiştirirse kaydı yeni kimliğe taşınır.'));
 add(H2('5.6 Bölümlerin kavram sırası'));
 const SEEN = new Set();
@@ -346,7 +349,7 @@ add(TABLE(['Sihirbaz sayfası', 'Ne yapılır?'], [
   ['Kurulum türü', '**Öğretmen bilgisayarı (sunucu)** ya da **Öğrenci bilgisayarı (istemci)**.'],
   ['Ayarlar (öğretmen)', 'Sunucunun adı, port (8000), öğrenci kayıtlarının klasörü, güvenlik duvarı izni ("Ortak ağ" dahil), masaüstü kısayolu, Windows açılınca başlatma.'],
   ['Ayarlar (öğrenci)', 'Öğretmen sunucusunun adresi (boş kalırsa ağda kendisi bulur), Windows açılınca arka planda başlatma, masaüstüne "AFİ KOD" kısayolu.'],
-  ['Kurulum konumu', 'Programın kurulacağı klasör (varsayılan: Program Files\\afi sinif).'],
+  ['Kurulum konumu', 'Programın kurulacağı klasör (varsayılan: **C:\\afikod**). Kayıtlar bunun içinde tutulur: öğretmen bilgisayarında `kayitlar\\sunucu`, öğrenci bilgisayarında `kayitlar\\istemci\\<Windows kullanıcısı>`. Eski sürümlerin kayıtları ilk açılışta buraya taşınır.'],
   ['Kuruluyor', 'İlerleme çubuğu ve blokları dizen afi robotu; "Ayarlar yazılıyor… Güvenlik duvarı ayarlanıyor… afi hazır!" adımları.'],
   ['Bitti', 'Öğretmende "sunucuyu şimdi başlat", öğrencide "AFİ KOD\'u şimdi aç".']
 ], [24, 76]));

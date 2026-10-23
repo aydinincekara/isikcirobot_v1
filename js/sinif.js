@@ -50,6 +50,12 @@
       c.onclick = function () { window.open('/durum', '_blank'); };
     }
   }
+  function panelDugmesi(ad) {
+    if (document.getElementById('sinifPanel')) return;
+    var c = document.getElementById('sinifChip'), b = el('a', 'sinifchip', '◧ ' + esc(T('Öğretmen paneli', 'Teacher panel')));
+    b.id = 'sinifPanel'; b.href = '/panel/'; b.target = '_blank'; b.rel = 'noopener'; b.style.textDecoration = 'none'; b.title = ad || '';
+    if (c && c.parentNode) c.parentNode.insertBefore(b, c.nextSibling);
+  }
   function kutu() {
     var k = document.getElementById('sinifBildirim');
     if (!k) { k = el('div', 'sinifbildirim'); k.id = 'sinifBildirim'; k.setAttribute('role', 'status'); document.body.appendChild(k); }
@@ -70,6 +76,7 @@
 
   /* ---------- veri ---------- */
   function kimlik() {
+    if (S.ogretmen) return null;          /* öğretmen derste gösterirken öğrenci listesine girmez */
     var p = S.api.profil();
     if (!p || p.id === 'guest') return null;
     return { ad: p.name, robot: S.api.robot() };
@@ -121,7 +128,13 @@
       istek('bilgi', null, 2500).then(function (b) {
         if (!b || b.sistem !== 'afi-sinif') return;
         S.aktif = true; S.bilgi = b; rozet(b.rol !== 'istemci' || !!b.sunucu_bagli);
-        istek('ben').then(function (k) { S.ogretmen = !!(k && k.ogretmen); a.ogretmenDegisti(S.ogretmen); }).catch(function () {});
+        istek('ben').then(function (k) {
+          S.ogretmen = !!(k && k.ogretmen); a.ogretmenDegisti(S.ogretmen);
+          if (S.ogretmen) panelDugmesi(k.ad);
+          else if (/^#(ogretmen|teacher)$/i.test(location.hash) && b.rol !== 'istemci')
+            bildir(T('Öğretmen modu', 'Teacher mode'), T('Sınıfta "Çözümü yükle" düğmesi, öğretmen paneline giriş yapınca açılır. Panelde "AFİ KOD\'u aç" düğmesini kullanın.', 'In class, the solution button is available after signing in to the teacher panel. Use "Open AFI CODE" in the panel.'),
+              [{ ad: T('Kapat', 'Close') }, { ad: T('Öğretmen paneli', 'Teacher panel'), ana: true, f: function () { location.href = '/panel/'; } }]);
+        }).catch(function () {});
         if (a.profil()) api.profilAcildi();
         setInterval(nabiz, NABIZ_MS);
         setTimeout(nabiz, 800);
