@@ -338,17 +338,22 @@ add(P('İnternetsiz sürümde yazı tipleri bilgisayarın kendi yazı tipleriyle
 add(H2('7.4 Güncelleme yükleme'));
 add(...NUM(['Depoda Add file > Upload files\'a tıkla.', 'Değişen dosyaları aynı klasör yapısıyla sürükle; aynı adlı dosyaların üzerine yazılır.', 'Commit changes\'e bas, 1–2 dakika bekle.', 'Sitede eski sürüm görünüyorsa tarayıcıda Ctrl + F5 ile sayfayı önbelleksiz yenile.']));
 add(H2('7.5 Sınıf sürümü kurulumu'));
-add(P('İndirme sayfası: ' + 'https://aydinincekara.github.io/isikcirobot_offline/' + ' (Python gerekmez; Windows 8.1, 10 ve 11).'));
-add(H3('Öğretmen bilgisayarı'));
-add(...NUM(['**afi-sunucu.exe** dosyasını indirip kalıcı bir klasöre koyun (ör. `C:\\afi-sinif`). Veriler yanındaki `afi-sunucu-veri` klasöründe tutulur.',
-  'Çift tıklayın. Windows "bilgisayarınızı korudu" derse **Ek bilgi → Yine de çalıştır**. Güvenlik duvarı sorarsa **Özel ağlar** kutusu işaretliyken **Erişime izin ver** deyin (bu bir kez yönetici izni ister).',
-  'Siyah pencerede öğrencilerin açacağı adresler yazar; panel tarayıcıda kendiliğinden açılır. İlk açılışta **admin** hesabı oluşturun (yalnızca bu bilgisayardan yapılabilir).',
-  'Öğretmenler sekmesinden öğretmen hesaplarını ve ağ aralıklarını girin.',
-  'Ders boyunca siyah pencere açık kalmalıdır; kapatılınca sunucu durur.']));
-add(H3('Öğrenci bilgisayarları (iki yol)'));
-add(B1('**Kurulumsuz:** öğrenci tarayıcıda `http://ÖĞRETMEN-PC:8000` adresini açar (ÖĞRETMEN-PC yerine öğretmen bilgisayarının adı ya da siyah pencerede yazan IP adresi). Ağ koparsa sayfa çalışmaya devam eder ama yeni sayfa açılamaz.'));
-add(B1('**Kurulumlu (önerilen):** **afi-istemci.exe** USB\'den bir kez çift tıklanır; yönetici izni istemez. Kendini öğrencinin klasörüne kurar, masaüstüne **AFİ KOD** kısayolu koyar ve Windows açılışında arka planda başlar. AFİ KOD bu bilgisayardan açılır (`http://127.0.0.1:8100`); öğretmen sunucusu kapalıyken ya da ağ yokken de çalışır, kayıtlar bekletilir ve bağlantı gelince gönderilir. Sunucuyu kendisi bulur: son bilinen adres → bilgisayar adı → yerel ağ taraması; öğretmen bilgisayarının IP\'si değişse de bağlanır. Üst şeritteki **Sınıfa bağlı / Sınıf bağlantısı yok** etiketine tıklanınca bağlantı ayarları açılır; sunucu adresi elle de yazılabilir.'));
-add(B1('İstemcinin yeni sürümü için yeni afi-istemci.exe aynı şekilde çift tıklanır; eskisini kapatıp üzerine kurar. AFİ KOD içeriğinin güncellemeleri ise sunucudan kendiliğinden gelir.'));
+add(P('İndirme sayfası: https://aydinincekara.github.io/isikcirobot_offline/ — tek dosya: **afi-sinif-kurulum.exe** (Python gerekmez; Windows 8.1, 10 ve 11, 64 bit). Aynı dosya öğretmen ve öğrenci bilgisayarında çalıştırılır; kurulum türü sihirbazda seçilir.'));
+add(TABLE(['Sihirbaz sayfası', 'Ne yapılır?'], [
+  ['Kimler için?', '**Tüm kullanıcılar için** (yönetici) ya da **Yalnızca benim için** (yönetici gerekmez). Öğretmen bilgisayarında tüm kullanıcılar önerilir: güvenlik duvarı izni kurulumda verilir.'],
+  ['Hoş geldiniz', 'afi görseli ve kısa açıklama.'],
+  ['Lisans', 'Kullanım koşulları okunur; "kabul ediyorum" seçilmeden ilerlenemez.'],
+  ['Kurulum türü', '**Öğretmen bilgisayarı (sunucu)** ya da **Öğrenci bilgisayarı (istemci)**.'],
+  ['Ayarlar (öğretmen)', 'Sunucunun adı, port (8000), öğrenci kayıtlarının klasörü, güvenlik duvarı izni ("Ortak ağ" dahil), masaüstü kısayolu, Windows açılınca başlatma.'],
+  ['Ayarlar (öğrenci)', 'Öğretmen sunucusunun adresi (boş kalırsa ağda kendisi bulur), Windows açılınca arka planda başlatma, masaüstüne "AFİ KOD" kısayolu.'],
+  ['Kurulum konumu', 'Programın kurulacağı klasör (varsayılan: Program Files\\afi sinif).'],
+  ['Kuruluyor', 'İlerleme çubuğu ve blokları dizen afi robotu; "Ayarlar yazılıyor… Güvenlik duvarı ayarlanıyor… afi hazır!" adımları.'],
+  ['Bitti', 'Öğretmende "sunucuyu şimdi başlat", öğrencide "AFİ KOD\'u şimdi aç".']
+], [24, 76]));
+add(B1('Kurulum dosyası ikinci kez açılınca "afi sınıf bu bilgisayarda kurulu" sayfası çıkar: **Güncelle ya da ayarları / kurulum türünü değiştir** veya **Kaldır**. Önceki seçimler hatırlanır. Kaldırırken öğrenci kayıtlarının silinip silinmeyeceği ayrıca sorulur (varsayılan: silinmez). Denetim Masası > Programlar\'dan da kaldırılabilir.'));
+add(B1('İlk açılışta öğretmen paneli tarayıcıda açılır; **admin** hesabı yalnızca öğretmen bilgisayarından oluşturulur. Ders boyunca sunucunun siyah penceresi açık kalmalıdır.'));
+add(H3('Çok bilgisayara tek komutla (sessiz kurulum)'));
+add(P('Yönetici olarak açılmış Komut İstemi\'nde (Başlat\'a `cmd` yazın, sağ tık > Yönetici olarak çalıştır), kurulum dosyasının bulunduğu klasörde tek satır yazılır; pencere açılmadan kurulur: `afi-sinif-kurulum.exe /VERYSILENT /ALLUSERS /ROL=istemci`. Sunucu adresi için sona `/SUNUCU=192.168.1.20:8000`, öğretmen bilgisayarı için `/ROL=sunucu /PORT=8000` eklenir.'));
 add(NOTE('Windows\'un "Mobil etkin nokta" özelliği (192.168.137.x) en fazla 8 cihaz bağlar; kalabalık sınıflarda okulun ağı ya da ayrı bir Wi-Fi modem kullanılmalıdır.', 'FFF4DC', 'E89B12'));
 add(H3('Python ile çalıştırmak (isteğe bağlı)'));
 add(P('Python 3.8 veya yenisi kuruluysa exe yerine kaynak koddan da çalışır. isikcirobot_offline klasöründe Komut İstemi açılıp teker teker yazılır: `python --version` (sürümü gösterir), sonra öğretmen bilgisayarında `python afi-sunucu.py`, öğrenci bilgisayarında `python afi-istemci.py`. Yönetici izni gerekmez.'));
