@@ -2,6 +2,8 @@
 (function () {
   'use strict';
   var B = window.Blockly, E = window.Engine, RB = window.RobotBlocks, C = window.COURSE, T = window.I18N;
+  var HB = window.HomeBlocks, H = window.HOME, HS = window.HomeScene;
+  function isHome(st) { return !!(st && st.kind === 'home'); }
   var $ = function (id) { return document.getElementById(id); };
   var PREFIX = 'isikci2:';
   /* Tarayıcı depolaması yoksa (bazı gizli pencereler) bu oturum için bellekte tutar */
@@ -40,7 +42,7 @@
   };
   var GUEST = { tr: 'Misafir', en: 'Guest' };
 
-  var settings = Object.assign({ lang: 'tr', theme: 'system', layoutName: 'default', layout: null, custom: null, lastProfile: null }, store.get('settings', {}));
+  var settings = Object.assign({ lang: 'tr', theme: 'system', layoutName: 'default', layout: null, custom: null, lastProfile: null, board: 'uno' }, store.get('settings', {}));
   if (!settings.layout || !settings.layout.code) settings.layout = Object.assign({}, PRESETS.default);
   if (!T[settings.lang]) settings.lang = 'tr';
   function saveSettings() { store.set('settings', settings); }
@@ -75,6 +77,8 @@
     if (!('speechSynthesis' in window)) $('readBtn').hidden = true;
     document.querySelectorAll('[data-ic]').forEach(function (el) { el.innerHTML = IC(el.getAttribute('data-ic')); });
     $('openL').innerHTML = IC('chevR'); $('openR').innerHTML = IC('chevL'); $('railRun').innerHTML = IC('play');
+    $('dlPy').innerHTML = IC('download') + '<span>' + esc(t('dl_py')) + '</span>'; $('dlIno').innerHTML = IC('download') + '<span>' + esc(t('dl_ino')) + '</span>';
+    $('boardSel').value = settings.board === 'esp32' ? 'esp32' : 'uno';
     applyWidths();
   }
 
@@ -114,7 +118,7 @@
     $('layoutSel').value = names.indexOf(settings.layoutName) >= 0 ? settings.layoutName : 'default';
   }
   function fillCodeMode() {
-    $('codeMode').innerHTML = ['blocks', 'py', 'js', 'both'].map(function (m) { return '<option value="' + m + '">' + esc(t('mode_' + m)) + '</option>'; }).join('');
+    $('codeMode').innerHTML = ['blocks', 'py', 'js', 'both', 'ino'].map(function (m) { return '<option value="' + m + '">' + esc(t('mode_' + m)) + '</option>'; }).join('');
     $('codeMode').value = settings.layout.code;
     $('codeMode').setAttribute('aria-label', t('view'));
   }
@@ -148,12 +152,18 @@
     if (l.lc == null) { l.lc = false; l.rc = false; }
     applyWidths();
     document.body.setAttribute('data-code', l.code);
-    $('boxPy').hidden = !(l.code === 'py' || l.code === 'both');
-    $('boxJs').hidden = !(l.code === 'js' || l.code === 'both');
+    applyCodeBoxes();
     document.documentElement.style.fontSize = (l.ui || 15) + 'px';
     $('codeMode').value = l.code;
     if (ws) { ws.setScale(l.scale || 0.9); B.svgResize(ws); }
     requestAnimationFrame(function () { if (ws) B.svgResize(ws); draw(); });
+  }
+  function applyCodeBoxes() {
+    var l = settings.layout, home = isHome(STEPS[S.gi] && STEPS[S.gi].st), ino = l.code === 'ino' && home;
+    $('boxPy').hidden = !(l.code === 'py' || l.code === 'both' || (l.code === 'ino' && !home));
+    $('boxJs').hidden = !(l.code === 'js' || l.code === 'both');
+    $('boxIno').hidden = !ino;
+    $('codeTools').hidden = !home;
   }
   function chooseLayout(name) {
     var src = name === 'custom' ? settings.custom : PRESETS[name];
@@ -211,6 +221,7 @@
 
   /* ---------- Blockly ---------- */
   function toolboxFor(st) {
+    if (isHome(st)) { HB.ctx = st; return HB.toolbox(st); }
     return { kind: 'flyoutToolbox', contents: st.tools.map(function (tp) {
       if (tp === 'controls_repeat_ext') return { kind: 'block', type: tp, inputs: { TIMES: { shadow: { type: 'math_number', fields: { NUM: 3 } } } } };
       return { kind: 'block', type: tp };
@@ -220,7 +231,7 @@
   function injectWs() {
     RB.setLang(S.lang);
     ws = B.inject('blocklyDiv', {
-      toolbox: toolboxFor(STEPS[0].st), renderer: 'zelos', theme: isDark() ? darkTheme : lightTheme,
+      toolbox: toolboxFor(STEPS[0].st), renderer: 'zelos', theme: isDark() ? darkTheme : lightTheme, media: 'lib/media/',
       trashcan: false, sounds: false, zoom: { controls: true, wheel: true, startScale: settings.layout.scale || 0.9, minScale: 0.5, maxScale: 1.8 },
       move: { scrollbars: true, drag: true, wheel: false }, grid: { spacing: 28, length: 2, colour: 'rgba(128,140,160,.35)', snap: true }
     });
@@ -313,21 +324,25 @@
     if (!opt.noSave) saveWs();
     gi = clamp(gi, 0, STEPS.length - 1);
     S.gi = gi; S.vi = 0; S.failBlock = null;
-    var cur = STEPS[gi], saved = S.pdata.ws[cur.st.id];
-    S.pdata.last = cur.st.id; savePdata();
+    var cur = STEPS[gi], saved = S.pdata.ws[cur.st.id], prevCi = S.lastCi;
+    S.pdata.last = cur.st.id; savePdata(); S.lastCi = cur.ci;
+    if (isHome(cur.st)) HB.ctx = cur.st;
+    if (cur.st.board && cur.st.board !== settings.board) { settings.board = cur.st.board; saveSettings(); $('boardSel').value = settings.board; }
+    if (cur.ch.view && prevCi !== cur.ci && settings.layout.code !== 'blocks') { settings.layout.code = cur.ch.view; saveSettings(); applyLayout(); }
     B.Events.disable();
     try {
       ws.clear(); refreshToolbox(cur.st);
       if (saved) { try { B.serialization.workspaces.load(saved, ws); } catch (e) { ws.clear(); } }
+      else if (cur.st.starter && isHome(cur.st)) { try { B.serialization.workspaces.load(HB.solution({ sol: cur.st.starter }), ws); } catch (e) { ws.clear(); } }
       else if (cur.st.starter) B.serialization.workspaces.load({ blocks: { languageVersion: 0, blocks: [{ type: 'robot_ileri', x: 40, y: 40 }] } }, ws);
     } finally { B.Events.enable(); }
     ws.scrollCenter();
     renderAll();
-    setStatus(cur.st.starter && !saved ? t('st_first') : t('st_ready'));
+    setStatus(isHome(cur.st) ? t('st_h_ready') : cur.st.starter && !saved ? t('st_first') : t('st_ready'));
     if (!opt.noStory && !S.pdata.seen[cur.ch.id]) { S.pdata.seen[cur.ch.id] = true; savePdata(); openStory(cur.ch); }
   }
 
-  function renderAll() { renderTop(); renderTask(); resetView(); updateCode(); showConcept(); }
+  function renderAll() { renderTop(); renderTask(); resetView(); applyCodeBoxes(); updateCode(); showConcept(); }
 
   function bubbleHTML(s, sug) {
     var stars = starsOf(s.gi), cls = 'bub' + (stars ? ' done' : '') + (s.gi === sug ? ' sug' : '');
@@ -353,30 +368,43 @@
     $('solutionBtn').hidden = !S.teacher;
     $('teacherBadge').hidden = !S.teacher;
   }
+  function nVariants(st) { return isHome(st) ? st.scen.length : E.variantsOf(st).length; }
   function renderVariant() {
-    var nv = E.variantsOf(STEPS[S.gi].st).length;
+    var st = STEPS[S.gi].st, nv = nVariants(st);
     $('variantBox').hidden = nv < 2;
-    $('variantLabel').innerHTML = esc(t('variantNote')) + ' <b>' + esc(t('variantLabel', { n: S.vi + 1, m: nv })) + '</b>';
+    $('variantLabel').innerHTML = esc(isHome(st) ? t('h_variantNote', { m: nv }) : t('variantNote')) + ' <b>' + esc(t('variantLabel', { n: S.vi + 1, m: nv })) + '</b>';
   }
 
   /* ---------- Kod paneli ---------- */
-  var KW = { py: ['for', 'in', 'range', 'while', 'not', 'if', 'else', 'from', 'import', 'pass', 'True', 'False'], js: ['for', 'var', 'while', 'if', 'else', 'let', 'const', 'true', 'false'] };
+  var KW = { py: ['for', 'in', 'range', 'while', 'not', 'if', 'else', 'elif', 'from', 'import', 'pass', 'True', 'False', 'def', 'global', 'and', 'or'],
+    js: ['for', 'var', 'while', 'if', 'else', 'let', 'const', 'true', 'false', 'function'],
+    ino: ['for', 'while', 'if', 'else', 'const', 'true', 'false', 'void', 'int', 'long', 'float', 'bool', 'byte', 'unsigned', 'return', 'HIGH', 'LOW', 'INPUT', 'OUTPUT', 'INPUT_PULLUP', '#include'] };
   function colorize(src, lang) {
-    var kw = KW[lang], kwRe = new RegExp('\\b(' + kw.join('|') + ')\\b', 'g');
+    var kw = KW[lang], kwRe = new RegExp('(^|[^\\w#])(' + kw.join('|') + ')\\b', 'g');
     return src.split('\n').map(function (line) {
       var m = line.match(lang === 'py' ? /^(\s*)(#.*)$/ : /^(\s*)(\/\/.*)$/);
+      if (!m && lang !== 'py') { var mm = line.match(/^(.*?)(\s\/\/.*)$/); if (mm && mm[1].indexOf('"') < 0) return colorize(mm[1], lang) + '<span class="cm">' + esc(mm[2]) + '</span>'; }
       if (m) return m[1] + '<span class="cm">' + esc(m[2]) + '</span>';
       var out = esc(line);
       out = out.replace(/\b(\d+)\b/g, '<span class="num">$1</span>');
       out = out.replace(/\b([A-Za-z_][A-Za-z0-9_]*)(?=\()/g, function (w, n) { return kw.indexOf(n) >= 0 ? w : '<span class="fn">' + n + '</span>'; });
-      out = out.replace(kwRe, '<span class="kw">$1</span>');
+      out = out.replace(kwRe, '$1<span class="kw">$2</span>');
       return out;
     }).join('\n');
   }
   function updateCode() {
-    var py = RB.toPython(ws).trim(), js = RB.toJS(ws).trim();
-    $('codePy').innerHTML = colorize(t('pyHeader') + '\n' + (py || t('noBlocksPy')), 'py');
-    $('codeJs').innerHTML = colorize(t('jsHeader') + '\n' + (js || t('noBlocksJs')), 'js');
+    var st = STEPS[S.gi].st;
+    if (isHome(st)) {
+      HB.ctx = st;
+      var hjs = HB.toJS(ws);
+      $('codePy').innerHTML = colorize(HB.toPython(ws), 'py');
+      $('codeJs').innerHTML = colorize(t('jsHeader') + '\n' + (hjs || t('noBlocksJs')), 'js');
+      if (!$('boxIno').hidden) $('codeIno').innerHTML = colorize(HB.toIno(ws, st, settings.board), 'ino');
+    } else {
+      var py = RB.toPython(ws).trim(), js = RB.toJS(ws).trim();
+      $('codePy').innerHTML = colorize(t('pyHeader') + '\n' + (py || t('noBlocksPy')), 'py');
+      $('codeJs').innerHTML = colorize(t('jsHeader') + '\n' + (js || t('noBlocksJs')), 'js');
+    }
     var n = countBlocks(); $('used').textContent = n;
     $('used').className = n > STEPS[S.gi].st.max ? 'over' : '';
   }
@@ -408,8 +436,8 @@
   function showBlock(b) {
     var info = T[S.lang].info[b.type] || T.tr.info[b.type];
     if (!info) { showConcept(); return; }
-    var sn = snippets(b), cond = '';
-    if (b.type === 'robot_if' || b.type === 'robot_ifelse') cond = '<p>' + t('condNote', { q: esc(B.Msg['ROBOT_C_' + b.getFieldValue('COND')] || '') }) + '</p>';
+    var home = isHome(STEPS[S.gi].st), sn = home ? { py: HB.snippet(b, 'py'), js: HB.snippet(b, 'js') } : snippets(b), cond = '';
+    if (!home && (b.type === 'robot_if' || b.type === 'robot_ifelse')) cond = '<p>' + t('condNote', { q: esc(B.Msg['ROBOT_C_' + b.getFieldValue('COND')] || '') }) + '</p>';
     $('explain').innerHTML = '<div class="eyebrow">' + IC('code') + esc(t('selected')) + '</div><h3>' + esc(info.name) + '</h3>' +
       '<div class="pair"><span>Python</span><div class="snippet">' + colorize(sn.py, 'py') + '</div>' +
       '<span>JS</span><div class="snippet">' + colorize(sn.js, 'js') + '</div></div>' +
@@ -421,13 +449,22 @@
   function tok(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
   function resetView() {
     var st = STEPS[S.gi].st;
+    cv.classList.toggle('home', isHome(st));
+    cv.style.aspectRatio = isHome(st) ? '1 / ' + HS.aspect(st).toFixed(3) : '';
+    if (isHome(st)) {
+      grid = null;
+      var nsc = H.normalize(st.scen[S.vi]);
+      view = { home: true, tm: 0, res: null, chk: null, nsc: nsc, marks: H.eventMarks(nsc, st.events || []) };
+      draw(); return;
+    }
     grid = E.parseMap(E.variantsOf(st)[S.vi]);
     view = { x: grid.start.x, y: grid.start.y, a: st.dir * 90, lit: {}, opened: {}, shake: 0, flash: 0, miss: 0 };
     draw();
   }
   function fitCanvas() {
     var r = cv.getBoundingClientRect(), d = window.devicePixelRatio || 1, s = Math.max(200, Math.round(r.width * d));
-    if (cv.width !== s) { cv.width = s; cv.height = s; }
+    var hh = view && view.home ? Math.round(s * HS.aspect(STEPS[S.gi].st)) : s;
+    if (cv.width !== s || cv.height !== hh) { cv.width = s; cv.height = hh; }
   }
   function rr(x, y, w, h, r) {
     ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
@@ -476,7 +513,20 @@
       ctx.fill(); ctx.globalAlpha = 1;
     }
   }
+  function homeTokens() {
+    return { bg: tok('--bg'), panel: tok('--panel'), panel2: tok('--panel-2'), line: tok('--line'), ink: tok('--ink'), ink2: tok('--ink-2'), ink3: tok('--ink-3'),
+      accent: tok('--accent'), accentSoft: tok('--accent-soft'), ok: tok('--ok'), okInk: tok('--ok'), bad: tok('--bad'), badSoft: tok('--bad-soft'),
+      lamp: tok('--lamp'), glow: tok('--lamp-glow'), glowSoft: tok('--glow-soft'), off: tok('--off'), robot: tok('--robot'), eye: tok('--robot-eye'),
+      door: tok('--door'), sky: tok('--sky'), glass: tok('--glass'), expect: tok('--expect'), hat: tok('--hat'), varBg: '#A55B80', varInk: '#FFFFFF' };
+  }
+  function drawHome() {
+    fitCanvas();
+    var st = STEPS[S.gi].st;
+    HS.draw(ctx, cv.width, cv.height, { step: st, nsc: view.nsc, res: view.res, chk: view.chk, tm: view.tm, K: homeTokens(), lang: S.lang, t: t,
+      anim: (window.performance ? performance.now() : Date.now()) / 1000, vi: S.vi, nv: st.scen.length, marks: view.marks });
+  }
   function draw() {
+    if (view && view.home) { drawHome(); return; }
     if (!grid || !view) return;
     fitCanvas();
     var W = cv.width, n = Math.max(grid.w, grid.h), pad = W * 0.05;
@@ -568,8 +618,62 @@
     if (r.outcome === 'done') return t('st_partial', { lit: r.litCount, total: r.lampCount });
     return t('st_' + r.outcome) || t('st_error');
   }
+  function speedHome() { return [0, 1000, 720, 500, 320, 170][+$('speed').value] || 500; }
+  function playHome(res, end) {
+    return new Promise(function (resolve) {
+      var ms = speedHome(), t0 = null, lastId = null;
+      if (reduce) { view.tm = end; draw(); return resolve(true); }
+      function frame(now) {
+        if (S.cancel) { resolve(false); return; }
+        if (t0 == null) t0 = now;
+        view.tm = Math.min(end, (now - t0) / ms);
+        var a = null; view.res.actions.forEach(function (x) { if (x.t <= view.tm + 1e-9) a = x; });
+        var id = a && a.block && view.tm - a.t < 1.2 ? a.block : null;
+        if (id !== lastId) { ws.highlightBlock(id); lastId = id; }
+        draw();
+        if (view.tm >= end) resolve(true); else requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    });
+  }
+  async function runHome() {
+    var gi = S.gi, st = STEPS[gi].st;
+    var tops = ws.getTopBlocks(false).filter(function (b) { return !b.isShadow(); });
+    if (!tops.length) { setStatus(t('st_needBlock'), 'bad'); return; }
+    var loose = HB.looseBlocks(ws);
+    if (loose.length) { ws.highlightBlock(loose[0].id); S.failBlock = loose[0].id; setStatus(t(tops.length === loose.length ? 'st_h_noHat' : 'st_h_loose'), 'bad'); return; }
+    ws.highlightBlock(null); S.failBlock = null;
+    HB.ctx = st;
+    var results = H.runAll(st, HB.runCode(ws));
+    var fail = -1; for (var i = 0; i < results.length; i++) if (!results[i].check.ok) { fail = i; break; }
+    var show = fail >= 0 ? fail : S.vi;
+    S.vi = show; renderVariant(); resetView();
+    var res = results[show]; view.res = res; view.chk = res.check;
+    var f = res.check.fail, end = res.outcome !== 'done' ? 0 : f ? Math.min(res.dur, f.t + 0.75) : res.dur;
+    S.running = true; S.cancel = false; setRunBtn(); setStatus(t('st_h_running'));
+    var anim = setInterval(function () { if (!S.running) clearInterval(anim); }, 1000);
+    var finished = await playHome(res, end);
+    S.running = false; S.cancel = false; setRunBtn();
+    if (gi !== S.gi) return;
+    if (!finished) { ws.highlightBlock(null); setStatus(t('st_stopped')); return; }
+    if (res.outcome === 'loop') { setStatus(t('st_h_loop'), 'bad'); return; }
+    if (res.outcome === 'error') { setStatus(t('st_h_error', { e: res.err || '' }), 'bad'); return; }
+    if (fail >= 0 && f) {
+      var last = null; res.actions.forEach(function (x) { if (x.dev === f.dev && x.t <= f.t + 0.5) last = x; });
+      if (last && last.block) { ws.highlightBlock(last.block); S.failBlock = last.block; } else ws.highlightBlock(null);
+      var dn = L(H.DEVICES[f.dev].name);
+      setStatus((results.length > 1 ? t('st_variantFail', { n: show + 1 }) : '') + t('st_h_fail', { t: f.t, dev: dn, want: HS.stateText(f.dev, f.want, S.lang), got: HS.stateText(f.dev, f.got, S.lang) }), 'bad');
+      return;
+    }
+    ws.highlightBlock(null);
+    var n = countBlocks(), stars = n <= st.max ? 3 : (n <= st.max + 2 ? 2 : 1);
+    S.pdata.stars[st.id] = Math.max(S.pdata.stars[st.id] || 0, stars); savePdata(); renderTop();
+    setStatus(results.length > 1 ? t('st_h_successAll', { m: results.length }) : t('st_h_success', { n: res.dur }), 'ok');
+    openWin(n, stars, st.max);
+  }
   async function run() {
     if (S.running) { S.cancel = true; return; }
+    if (isHome(STEPS[S.gi].st)) return runHome();
     var tops = ws.getTopBlocks(false).filter(function (b) { return !b.isShadow(); });
     if (!tops.length) { setStatus(t('st_needBlock'), 'bad'); return; }
     if (tops.length > 1) { setStatus(t('st_separate'), 'bad'); return; }
@@ -596,6 +700,7 @@
     openWin(n, stars, st.max);
   }
   function openWin(n, stars, max) {
+    $('winTitle').textContent = isHome(STEPS[S.gi].st) ? t('winTitleHome') : t('winTitle');
     $('winStars').innerHTML = [1, 2, 3].map(function (k) { return k <= stars ? '★' : '<span class="off">★</span>'; }).join('');
     var txt = n <= max ? t('winGood', { n: n, max: max }) : t('winLong', { n: n, max: max }), nx = S.gi + 1;
     if (nx >= STEPS.length) { $('winNext').hidden = true; txt += ' ' + t('courseDone'); }
@@ -675,7 +780,7 @@
     $('explain').addEventListener('click', function (e) { var sn = e.target.closest('[data-sensor]'); if (sn) SUI.open(sn.getAttribute('data-sensor')); });
     $('sensorBtn').onclick = function () { SUI.open(); };
     $('mapBtn').onclick = function () { renderMap(); showModal('mapModal'); };
-    $('variantBtn').onclick = function () { if (S.running) return; var nv = E.variantsOf(STEPS[S.gi].st).length; S.vi = (S.vi + 1) % nv; renderVariant(); resetView(); };
+    $('variantBtn').onclick = function () { if (S.running) return; var nv = nVariants(STEPS[S.gi].st); S.vi = (S.vi + 1) % nv; renderVariant(); resetView(); };
     $('storyBtn').onclick = function () { openStory(STEPS[S.gi].ch); };
     $('storyStart').onclick = function () { closeModal('storyModal'); };
     $('readBtn').onclick = function () {
@@ -685,7 +790,10 @@
     };
     $('solutionBtn').onclick = function () {
       if (S.running) return; ws.clear();
-      B.serialization.workspaces.load(E.solutionWorkspace(STEPS[S.gi].st.sol), ws); ws.scrollCenter(); setStatus(t('st_solution'));
+      var sst = STEPS[S.gi].st;
+      if (isHome(sst)) { HB.ctx = sst; B.serialization.workspaces.load(HB.solution(sst), ws); ws.cleanUp(); }
+      else B.serialization.workspaces.load(E.solutionWorkspace(sst.sol), ws);
+      ws.scrollCenter(); setStatus(t('st_solution'));
     };
     $('winStay').onclick = function () { closeModal('win'); };
     $('winNext').onclick = function () { closeModal('win'); goStep(S.gi + 1); };
@@ -695,7 +803,17 @@
     $('saveLayoutBtn').onclick = function () {
       settings.custom = Object.assign({}, settings.layout); settings.layoutName = 'custom'; saveSettings(); fillLayoutSel(); setStatus(t('layoutSaved'), 'ok');
     };
-    $('codeMode').onchange = function () { settings.layout.code = this.value; saveSettings(); applyLayout(); };
+    $('codeMode').onchange = function () { settings.layout.code = this.value; saveSettings(); applyLayout(); updateCode(); };
+    $('boardSel').onchange = function () { settings.board = this.value; saveSettings(); updateCode(); };
+    function download(name, text) {
+      try {
+        var blob = new Blob([text], { type: 'text/plain;charset=utf-8' }), a = document.createElement('a');
+        a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+        setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+      } catch (e) {}
+    }
+    $('dlPy').onclick = function () { var st = STEPS[S.gi].st; if (!isHome(st)) return; HB.ctx = st; download(st.id + '.py', HB.toPyFile(ws, st)); };
+    $('dlIno').onclick = function () { var st = STEPS[S.gi].st; if (!isHome(st)) return; HB.ctx = st; download(st.id.replace(/-/g, '_') + '.ino', HB.toIno(ws, st, settings.board)); };
     initSplit($('splitL'), 'L'); initSplit($('splitR'), 'R'); initHGrip();
     $('colL').onclick = function () { setCollapsed('L', !settings.layout.lc); };
     $('colR').onclick = function () { setCollapsed('R', !settings.layout.rc); };

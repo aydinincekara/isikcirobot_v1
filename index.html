@@ -21,6 +21,7 @@
   --sofa:#8B6FD6; --table:#B07A4A; --plant:#3E9B5F; --pot:#C46A3D; --counter:#8C99A8; --door:#9A5B2E;
   --code-bg:#F7F9FC; --kw:#9B3FC4; --fn:#2563C9; --num:#B7621A; --cm:#6F7B8E;
   --scrim:rgba(14,20,32,.5); --w-red:#E5484D; --w-gnd:#2A2F36; --mid-ink:#8A5300;
+  --off:#C9D3DE; --sky:#CFE8FB; --glass:#A9D2F2; --expect:#BCD0F3; --hat:#D1603D; --glow-soft:#FFF6DA;
   --f-display:"Fredoka","Nunito",ui-rounded,"Segoe UI",system-ui,sans-serif;
   --f-body:"Nunito","Segoe UI",system-ui,-apple-system,sans-serif;
   --f-mono:"JetBrains Mono",Consolas,ui-monospace,"Courier New",monospace;
@@ -36,7 +37,7 @@
   --salon-a:#4A3B2C; --salon-b:#3E3125; --koridor-a:#2A3547; --koridor-b:#233041; --mutfak-a:#2B3442; --mutfak-b:#222A36;
   --sofa:#7E68C8; --table:#8C6140; --plant:#3E8F5A; --pot:#A65A35; --counter:#566273; --door:#B47645;
   --code-bg:#121A24; --kw:#D09BF0; --fn:#7DB0FF; --num:#F2A65A; --cm:#8E9BB0;
-  --scrim:rgba(0,0,0,.6); --w-red:#F0626A; --w-gnd:#C9D1DC; --mid-ink:#FFC86B; color-scheme:dark}}
+  --scrim:rgba(0,0,0,.6); --w-red:#F0626A; --w-gnd:#C9D1DC; --mid-ink:#FFC86B; --off:#3A4658; --sky:#22405E; --glass:#2F5677; --expect:#2E4A78; --hat:#E8774F; --glow-soft:#3A2F17; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0F151E; --panel:#171F2B; --panel-2:#1D2735; --line:#2B3747;
   --ink:#E7EDF5; --ink-2:#B3BFCE; --ink-3:#8E9BB0;
@@ -47,7 +48,7 @@
   --salon-a:#4A3B2C; --salon-b:#3E3125; --koridor-a:#2A3547; --koridor-b:#233041; --mutfak-a:#2B3442; --mutfak-b:#222A36;
   --sofa:#7E68C8; --table:#8C6140; --plant:#3E8F5A; --pot:#A65A35; --counter:#566273; --door:#B47645;
   --code-bg:#121A24; --kw:#D09BF0; --fn:#7DB0FF; --num:#F2A65A; --cm:#8E9BB0;
-  --scrim:rgba(0,0,0,.6); --w-red:#F0626A; --w-gnd:#C9D1DC; --mid-ink:#FFC86B; color-scheme:dark}
+  --scrim:rgba(0,0,0,.6); --w-red:#F0626A; --w-gnd:#C9D1DC; --mid-ink:#FFC86B; --off:#3A4658; --sky:#22405E; --glass:#2F5677; --expect:#2E4A78; --hat:#E8774F; --glow-soft:#3A2F17; color-scheme:dark}
 
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -150,6 +151,7 @@ h2 .ic{color:var(--accent);margin-right:6px}
 /* Sahne */
 .stage-wrap{padding:12px;display:flex;flex-direction:column;gap:10px}
 canvas#stage{width:100%;aspect-ratio:1/1;max-width:100%;display:block;border-radius:10px;background:var(--wall)}
+canvas#stage.home{aspect-ratio:5/6;background:var(--bg)}
 .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .btn{border:0;border-radius:12px;padding:10px 16px;font-weight:800;font-size:.95rem;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 .btn-run{background:var(--ok);color:var(--ok-ink);flex:1 1 auto;font-size:1.02rem}
@@ -187,6 +189,11 @@ canvas#stage{width:100%;aspect-ratio:1/1;max-width:100%;display:block;border-rad
 .lifebox b{font-family:var(--f-display);font-weight:600}
 .term{font-weight:800;color:var(--ink)}
 body[data-code="blocks"] #codePanel .codegrid{display:none}
+.codetools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 12px;border-top:1px solid var(--line);background:var(--panel)}
+.codetools label{font-size:.78rem;font-weight:800;color:var(--ink-3)}
+.codetools .sel{padding:4px 8px;font-size:.82rem}
+.dlbtn{border:1px solid var(--line);background:var(--panel-2);border-radius:999px;padding:4px 12px;font-size:.82rem;font-weight:800;display:inline-flex;align-items:center;gap:6px}
+.dlbtn:hover{border-color:var(--accent)} .dlbtn svg{width:14px;height:14px}
 body[data-code="blocks"] #codePanel .panel-h{border-bottom:0}
 
 /* ---------- Pencereler ---------- */
@@ -426,6 +433,13 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
         <div class="codegrid">
           <div class="codebox" id="boxPy"><div class="lang">Python</div><div class="scroll"><pre id="codePy"></pre></div></div>
           <div class="codebox" id="boxJs"><div class="lang">JavaScript</div><div class="scroll"><pre id="codeJs"></pre></div></div>
+          <div class="codebox" id="boxIno" hidden><div class="lang">Arduino (C++)</div><div class="scroll"><pre id="codeIno"></pre></div></div>
+        </div>
+        <div class="codetools" id="codeTools" hidden>
+          <label for="boardSel" data-t="board"></label>
+          <select class="sel" id="boardSel"><option value="uno">Arduino Uno</option><option value="esp32">ESP32</option></select>
+          <button class="dlbtn" id="dlPy" type="button" data-t-title="dl_pyTip"></button>
+          <button class="dlbtn" id="dlIno" type="button" data-t-title="dl_inoTip"></button>
         </div>
       </div>
       <div class="panel explain" id="explain"></div>
@@ -453,7 +467,7 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
     <button class="linkbtn" id="haveCodeBtn" data-t="haveCode"></button>
     <form id="codeForm" class="row" hidden autocomplete="off">
       <div class="field"><label for="codeNameIn" data-t="codeName"></label><input class="input" id="codeNameIn" maxlength="24"></div>
-      <div class="field"><label for="codeIn" data-t="codeInput"></label><input class="input" id="codeIn" maxlength="64" style="font-family:var(--f-mono)"></div>
+      <div class="field"><label for="codeIn" data-t="codeInput"></label><input class="input" id="codeIn" maxlength="400" style="font-family:var(--f-mono)"></div>
       <button class="btn btn-primary btn-small" type="submit" data-t="codeContinue" style="align-self:flex-end"></button>
       <p class="err" id="codeErr" hidden style="flex-basis:100%"></p>
     </form>
@@ -485,7 +499,7 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
     <p data-t="progressHelp"></p>
     <div class="row"><button class="btn btn-ghost btn-small" id="copyCode" data-t="copy"></button></div>
     <form class="row" id="mergeForm" autocomplete="off">
-      <div class="field"><label for="mergeIn" data-t="enterCode"></label><input class="input" id="mergeIn" maxlength="64" style="font-family:var(--f-mono)"></div>
+      <div class="field"><label for="mergeIn" data-t="enterCode"></label><input class="input" id="mergeIn" maxlength="400" style="font-family:var(--f-mono)"></div>
       <button class="btn btn-primary btn-small" type="submit" data-t="load" style="align-self:flex-end"></button>
     </form>
     <p class="err" id="mergeMsg" hidden></p>
@@ -540,12 +554,17 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
 <script>window.BLOCKLY_MSG.tr = Object.assign({}, Blockly.Msg);</script>
 <script src="js/engine.js"></script>
 <script src="js/i18n.js"></script>
+<script src="js/i18n-home.js"></script>
 <script src="js/blocks.js"></script>
+<script src="js/home.js"></script>
+<script src="js/home-blocks.js"></script>
 <script src="js/levels.js"></script>
 <script src="js/levels-extra.js"></script>
+<script src="js/levels-home.js"></script>
 <script src="js/icons.js"></script>
 <script src="js/sensors.js"></script>
 <script src="js/sensor-ui.js"></script>
+<script src="js/home-scene.js"></script>
 <script src="js/app.js"></script>
 
 </body>

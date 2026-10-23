@@ -164,8 +164,40 @@
     body += ALPHA[sum];
     return body.match(/.{1,4}/g).join('-');
   }
+  /* B sürümü: aynı yıldızlı ardışık adımlar tek harfle yazılır (çok adım olunca kod kısa kalır).
+   * Her harf: 2 bit yıldız + 3 bit (tekrar - 1). Tekrar 8 ise sonraki harf fazlasını (0-31) söyler. */
+  function encodeRuns(stars) {
+    var last = -1; stars.forEach(function (s, i) { if (s > 0) last = i; });
+    stars = stars.slice(0, last + 1);
+    var body = 'B', i = 0;
+    while (i < stars.length) {
+      var v = Math.max(0, Math.min(3, stars[i] | 0)), n = 1;
+      while (i + n < stars.length && (stars[i + n] | 0) === v && n < 39) n++;
+      if (n < 8) body += ALPHA[(v << 3) | (n - 1)];
+      else body += ALPHA[(v << 3) | 7] + ALPHA[n - 8];
+      i += n;
+    }
+    var sum = 0; for (var j = 0; j < body.length; j++) sum = (sum + ALPHA.indexOf(body[j]) * (j + 1)) % 32;
+    body += ALPHA[sum];
+    return body.match(/.{1,4}/g).join('-');
+  }
+  function encodeBest(stars) { var a = encodeProgress(stars), b = encodeRuns(stars); return b.length < a.length ? b : a; }
   function decodeProgress(code, count) {
     var s = String(code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (s.length >= 2 && s[0] === 'B') {
+      for (var q = 0; q < s.length; q++) if (ALPHA.indexOf(s[q]) < 0) return null;
+      var bb = s.slice(0, -1), sm = 0;
+      for (var w = 0; w < bb.length; w++) sm = (sm + ALPHA.indexOf(bb[w]) * (w + 1)) % 32;
+      if (ALPHA[sm] !== s.slice(-1)) return null;
+      var res = [], p = 1;
+      while (p < bb.length) {
+        var c = ALPHA.indexOf(bb[p++]), v = c >> 3, n = (c & 7) + 1;
+        if (n === 8) { if (p >= bb.length) return null; n = 8 + ALPHA.indexOf(bb[p++]); }
+        for (var r = 0; r < n; r++) res.push(v);
+      }
+      var outB = []; for (var z = 0; z < count; z++) outB.push(res[z] || 0);
+      return outB;
+    }
     if (s.length < 2 || s[0] !== 'A') return null;
     for (var k = 0; k < s.length; k++) if (ALPHA.indexOf(s[k]) < 0) return null;
     var body = s.slice(0, -1), chk = s.slice(-1), sum = 0;
@@ -180,5 +212,5 @@
 
   root.Engine = { NAMES: NAMES, DX: DX, DY: DY, parseMap: parseMap, variantsOf: variantsOf, simulate: simulate, runAll: runAll,
     parseDSL: parseDSL, countNodes: countNodes, solutionWorkspace: solutionWorkspace,
-    encodeProgress: encodeProgress, decodeProgress: decodeProgress };
+    encodeProgress: encodeBest, encodeA: encodeProgress, encodeB: encodeRuns, decodeProgress: decodeProgress };
 })(typeof window !== 'undefined' ? window : this);
