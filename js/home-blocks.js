@@ -36,6 +36,7 @@
   }
   hat('h_start', '%{BKY_H_START}');
   hat('h_every', '%{BKY_H_EVERY}');
+  hat('h_forever', '%{BKY_H_FOREVER}');
   hat('h_event', '%{BKY_H_EVENT}', { type: 'field_dropdown', name: 'EVT', options: evOpts });
   hat('h_fn_def', '%{BKY_H_FN_DEF}', { type: 'field_dropdown', name: 'FN', options: fnOpts }, COL.fn);
   def('h_switch', Object.assign({ message0: '%{BKY_H_SWITCH}', args0: [{ type: 'field_dropdown', name: 'DEV', options: devOpts('power') },
@@ -48,8 +49,8 @@
   def('h_sensor', { message0: '%1', args0: [{ type: 'field_dropdown', name: 'SENS', options: numOpts }], output: 'Number', colour: COL.sensor, tooltip: '%{BKY_H_SENSOR_TIP}' });
   def('h_digital', { message0: '%1', args0: [{ type: 'field_dropdown', name: 'SENS', options: digOpts }], output: 'Boolean', colour: COL.digital, tooltip: '%{BKY_H_DIGITAL_TIP}' });
 
-  var HOME_TYPES = ['h_start', 'h_every', 'h_event', 'h_fn_def', 'h_switch', 'h_move', 'h_wait', 'h_show', 'h_fn_call', 'h_sensor', 'h_digital'];
-  var HAT_TYPES = ['h_start', 'h_every', 'h_event', 'h_fn_def'];
+  var HOME_TYPES = ['h_start', 'h_every', 'h_forever', 'h_event', 'h_fn_def', 'h_switch', 'h_move', 'h_wait', 'h_show', 'h_fn_call', 'h_sensor', 'h_digital'];
+  var HAT_TYPES = ['h_start', 'h_every', 'h_forever', 'h_event', 'h_fn_def'];
 
   /* ---------- Adlar ---------- */
   function lg() { return HB.lang === 'en' ? 'en' : 'tr'; }
@@ -61,6 +62,7 @@
     var n;
     if (b.type === 'h_start') n = H.HATS.start[lg()];
     else if (b.type === 'h_every') n = H.HATS.every[lg()];
+    else if (b.type === 'h_forever') n = H.HATS.forever[lg()];
     else n = (EV[b.getFieldValue('EVT')] || EV.motion).py[lg()];
     return js ? camel(n) : n;
   }
@@ -80,7 +82,7 @@
 
   /* ---------- Python ---------- */
   function pyBody(b) { return PY.statementToCode(b, 'DO') || PY.INDENT + 'pass\n'; }
-  ['h_start', 'h_every', 'h_event'].forEach(function (tp) {
+  ['h_start', 'h_every', 'h_forever', 'h_event'].forEach(function (tp) {
     PY.forBlock[tp] = function (b) {
       PY.__hatN = (PY.__hatN || 0) + 1;
       return '@' + hatName(b) + '\ndef ' + taskName(PY.__hatN) + '():\n' + globalsOf(b, PY) + pyBody(b) + '\n';
@@ -101,7 +103,7 @@
 
   /* ---------- JavaScript (görünüm ve simülasyon) ---------- */
   function jsBody(b) { return JS.statementToCode(b, 'DO'); }
-  ['h_start', 'h_every', 'h_event'].forEach(function (tp) {
+  ['h_start', 'h_every', 'h_forever', 'h_event'].forEach(function (tp) {
     JS.forBlock[tp] = function (b) { return hatName(b, true) + '(function () {\n' + jsBody(b) + '});\n'; };
   });
   JS.forBlock.h_fn_def = function (b) { return 'function ' + fnName(b.getFieldValue('FN'), true) + '() {\n' + jsBody(b) + '}\n'; };
@@ -126,7 +128,7 @@
   };
 
   /* ---------- Kodun bütünü ---------- */
-  function rank(b) { return b.type === 'h_fn_def' ? 0 : b.type === 'h_start' ? 1 : b.type === 'h_event' ? 2 : b.type === 'h_every' ? 3 : 4; }
+  function rank(b) { return b.type === 'h_fn_def' ? 0 : b.type === 'h_start' ? 1 : b.type === 'h_event' ? 2 : b.type === 'h_every' || b.type === 'h_forever' ? 3 : 4; }
   function topsSorted(ws) {
     return ws.getTopBlocks(true).filter(function (b) { return !b.isShadow(); }).map(function (b, i) { return [b, i]; })
       .sort(function (a, c) { return rank(a[0]) - rank(c[0]) || a[1] - c[1]; }).map(function (x) { return x[0]; });
@@ -180,6 +182,7 @@
     switch (k) {
       case 'start': return { kind: 'block', type: 'h_start' };
       case 'every': return { kind: 'block', type: 'h_every' };
+      case 'forever': return { kind: 'block', type: 'h_forever' };
       case 'event': return p[1] ? { kind: 'block', type: 'h_event', fields: { EVT: p[1] } } : { kind: 'block', type: 'h_event' };
       case 'switch': case 'move': {
         var o = { kind: 'block', type: k === 'switch' ? 'h_switch' : 'h_move', fields: {} };
@@ -246,11 +249,11 @@
     return [parts.length ? parts.join(' + ') : '""', JO.ADDITION];
   };
   INO.forBlock.h_fn_def = function (b, g) { return 'void ' + fnName(b.getFieldValue('FN'), true) + '() {\n' + g.statementToCode(b, 'DO') + '}\n'; };
-  ['h_start', 'h_every', 'h_event'].forEach(function (tp) {
+  ['h_start', 'h_every', 'h_forever', 'h_event'].forEach(function (tp) {
     INO.forBlock[tp] = function (b, g) {
       g.__hatN = (g.__hatN || 0) + 1; var name = NM('task') + g.__hatN;
       g.__tasks.push({ name: name, type: tp, ev: tp === 'h_event' ? b.getFieldValue('EVT') : null });
-      return '// ' + (tp === 'h_event' ? L(EV[b.getFieldValue('EVT')].label) : tp === 'h_start' ? T('startNote') : T('everyNote')) + '\nvoid ' + name + '() {\n' + g.statementToCode(b, 'DO') + '}\n';
+      return '// ' + (tp === 'h_event' ? L(EV[b.getFieldValue('EVT')].label) : tp === 'h_start' ? T('startNote') : tp === 'h_forever' ? T('foreverNote') : T('everyNote')) + '\nvoid ' + name + '() {\n' + g.statementToCode(b, 'DO') + '}\n';
     };
   });
   INO.forBlock.h_fn_call = function (b) { return fnName(b.getFieldValue('FN'), true) + '();\n'; };
@@ -479,7 +482,9 @@
       every.forEach(function (tk) { line('    ' + tk.name + '();'); });
       line('  }');
     }
-    line('  delay(20);');
+    var forever = INO.__tasks.filter(function (tk) { return tk.type === 'h_forever'; });
+    forever.forEach(function (tk) { line('  ' + tk.name + '();'); });
+    if (!forever.length) line('  delay(20);');
     line('}');
     return out.join('\n') + '\n';
   };
@@ -584,7 +589,7 @@
     '    adim = 0',
     '    senaryo = None',
     '    kayit = []',
-    '    gorevler = {"start": [], "every": [], "ev": []}',
+    '    gorevler = {"start": [], "every": [], "forever": [], "ev": []}',
     '',
     'class _Dongu(Exception):',
     '    pass',
@@ -655,6 +660,7 @@
     '',
     'baslangicta = when_started = _kaydedici("start")',
     'her_saniye = every_second = _kaydedici("every")',
+    'surekli_tekrarla = forever = _kaydedici("forever")',
     'for _k, _e in _EVS.items():',
     '    for _ad in _e["py"]:',
     '        globals()[_ad] = _kaydedici("ev", _k)',
@@ -683,6 +689,7 @@
     '    for _, f in _Ev.gorevler["start"]:',
     '        _calistir_gorev(f, 0)',
     '    sonraki = [0.0 for _ in _Ev.gorevler["every"]]',
+    '    surekli = [0.0 for _ in _Ev.gorevler["forever"]]',
     '    for t in range(sc["dur"]):',
     '        for olay, f in _Ev.gorevler["ev"]:',
     '            if _oldu_mu(sc, olay, t):',
@@ -691,6 +698,11 @@
     '            while sonraki[i] <= t + 1e-9 and sonraki[i] < sc["dur"]:',
     '                _calistir_gorev(f, sonraki[i])',
     '                sonraki[i] = _Ev.saat + 1',
+    '        for i, (_, f) in enumerate(_Ev.gorevler["forever"]):',
+    '            while surekli[i] <= t + 1e-9 and surekli[i] < sc["dur"]:',
+    '                bas = surekli[i]',
+    '                _calistir_gorev(f, bas)',
+    '                surekli[i] = _Ev.saat if _Ev.saat > bas + 1e-9 else bas + 1',
     '    _Ev.kayit.sort(key=lambda x: (x[0], x[1]))',
     '    return list(_Ev.kayit)',
     '',

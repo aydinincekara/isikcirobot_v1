@@ -58,6 +58,7 @@
     var base = (root.BLOCKLY_MSG && root.BLOCKLY_MSG[lang]) || {};
     Object.assign(B.Msg, base, root.I18N[lang].blocks);
     if (root.HomeBlocks) root.HomeBlocks.lang = lang;
+    root.KINDS_LANG = lang;
   };
   /* Çalıştırma kodu: her komuttan önce hangi bloğun çalıştığını bildirir */
   api.runCode = function (ws) {

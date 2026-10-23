@@ -36,10 +36,14 @@
     hand: '<path d="M9 12V5.5a1.5 1.5 0 0 1 3 0V11M12 10.5V4.5a1.5 1.5 0 0 1 3 0v7M15 10a1.5 1.5 0 0 1 3 0v4a7 7 0 0 1-7 7h-.5A5.5 5.5 0 0 1 5 15.5V13a1.5 1.5 0 0 1 3 0v1"/>',
     expand: '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
     shrink: '<path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/>',
+    chevUp: '<path d="M6 15l6-6 6 6"/>',
     chevL: '<path d="M15 5l-7 7 7 7"/>',
     chevR: '<path d="M9 5l7 7-7 7"/>',
     map: '<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>',
     trash: '<path d="M4 7h16"/><path d="M9 7V4.5h6V7"/><path d="M6 7l1.2 13h9.6L18 7"/><path d="M10 11v5.5M14 11v5.5"/>',
+    pen: '<path d="M4 20l4-1L19 8l-3-3L5 16z"/><path d="M14 7l3 3"/>',
+    gamepad: '<path d="M7 9h10a4 4 0 0 1 4 4v1a3 3 0 0 1-5.4 1.8L14.5 14h-5l-1.1 1.8A3 3 0 0 1 3 14v-1a4 4 0 0 1 4-4z"/><path d="M8 11v3M6.5 12.5h3"/><circle cx="15.5" cy="12" r=".6" fill="currentColor"/><circle cx="17.5" cy="13.5" r=".6" fill="currentColor"/>',
+    brain: '<path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 6 1V6a2 2 0 0 0-3-2z"/><path d="M15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-6 1"/><path d="M12 9h2.5M12 14h3"/>',
     flag: '<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
     download: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>'
   };
@@ -53,5 +57,5 @@
     var bars = h.map(function (hh, i) { return '<rect x="' + (4 + i * 6) + '" y="' + (19 - hh) + '" width="4" height="' + hh + '" rx="1" fill="currentColor" opacity="' + (i < n ? 1 : 0.25) + '" stroke="none"/>'; }).join('');
     return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + bars + '</svg>';
   };
-  root.ROOM_ICON = { salon: 'sofa', koridor: 'door', mutfak: 'pot', 4: 'key', 5: 'car', 6: 'leaf', 7: 'star', 8: 'homeSignal', 9: 'chip', 10: 'terminal' };
+  root.ROOM_ICON = { salon: 'sofa', koridor: 'door', mutfak: 'pot', 4: 'key', 5: 'car', 6: 'leaf', 7: 'star', 8: 'homeSignal', 9: 'chip', 10: 'terminal', 11: 'chip', 12: 'homeSignal', 13: 'pen', 14: 'gamepad', 15: 'brain' };
 })(typeof window !== 'undefined' ? window : this);

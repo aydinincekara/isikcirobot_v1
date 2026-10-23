@@ -340,6 +340,20 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
   .bubbles{margin-left:0}
 }
 
+
+.tagline{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap}
+.ver{font-size:.72rem;font-weight:800;color:var(--ink-3);background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:0 7px;font-variant-numeric:tabular-nums}
+.stagebar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:-2px 0 -2px}
+.fold .ic{transition:transform .15s}
+.fold[aria-expanded="false"] .ic{transform:rotate(180deg)}
+body[data-tfold] #taskText, body[data-tfold] #variantBox{display:none}
+body[data-sfold] canvas#stage{display:none}
+#pauseBtn{min-width:48px;padding:10px 12px;font-size:1.05rem} #pauseBtn[disabled]{opacity:.45;cursor:default}
+@media (min-width:1101px){
+  #leftCol{position:sticky;top:10px;max-height:calc(100vh - 20px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+}
+.boardwrap{display:inline-flex;align-items:center;gap:8px}
+.btn-play{background:var(--lamp);color:#1A2230} .btn-play[data-on]{background:var(--bad);color:#fff}
 /* Logo */
 .brandbot{flex:none;width:48px;height:48px}
 .logo{display:flex;align-items:center;gap:8px;line-height:1;padding-top:.5em}
@@ -382,7 +396,7 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
   <header class="top">
     <div class="brand">
       <img id="brandRobot" class="brandbot" width="48" height="48" alt="">
-      <div><h1 id="appName"></h1><p data-t="tagline"></p></div>
+      <div><h1 id="appName"></h1><p class="tagline"><span data-t="tagline"></span> <span class="ver" id="verTag"></span></p></div>
     </div>
 
     <nav class="lessonbar" aria-label="Ders">
@@ -415,6 +429,7 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
           <div class="mini">
             <button class="minibtn" id="storyBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M4 5c3-1.5 5.5-1.5 8 0v14c-2.5-1.5-5-1.5-8 0zM20 5c-3-1.5-5.5-1.5-8 0v14c2.5-1.5 5-1.5 8 0z"/></svg><span data-t="story"></span></button>
             <button class="minibtn" id="readBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 010 7"/></svg><span data-t="read"></span></button>
+            <button class="minibtn fold" id="foldTask" type="button" aria-expanded="true"></button>
           </div>
         </div>
         <h2 id="taskTitle"></h2>
@@ -427,13 +442,16 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
         <button class="teacherbtn" id="solutionBtn" data-t="showSolution" hidden></button>
       </div>
       <div class="panel stage-wrap">
+        <div class="stagebar"><span class="eyebrow" data-t="stageTitle"></span><button class="minibtn fold" id="foldStage" type="button" aria-expanded="true"></button></div>
         <canvas id="stage" width="600" height="600"></canvas>
         <div class="controls">
           <button class="btn btn-run" id="runBtn" data-mode="run"></button>
+          <button class="btn btn-ghost" id="pauseBtn" disabled></button>
           <button class="btn btn-ghost" id="resetBtn"></button>
         </div>
         <div class="controls" style="justify-content:space-between">
           <label class="speed" for="speed"><span data-t="speed"></span> <input type="range" id="speed" min="1" max="5" value="3"></label>
+          <button class="btn btn-small btn-play" id="liveBtn" type="button" hidden></button>
           <button class="btn btn-ghost btn-small" id="clearBtn" data-t="clear"></button>
         </div>
         <div class="status" id="status" role="status"></div>
@@ -464,8 +482,8 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
           <div class="codebox" id="boxIno" hidden><div class="lang">Arduino (C++)</div><div class="scroll"><pre id="codeIno"></pre></div></div>
         </div>
         <div class="codetools" id="codeTools" hidden>
-          <label for="boardSel" data-t="board"></label>
-          <select class="sel" id="boardSel"><option value="uno">Arduino Uno</option><option value="esp32">ESP32</option></select>
+          <span class="boardwrap" id="boardWrap"><label for="boardSel" data-t="board"></label>
+          <select class="sel" id="boardSel"><option value="uno">Arduino Uno</option><option value="esp32">ESP32</option></select></span>
           <button class="dlbtn" id="dlPy" type="button" data-t-title="dl_pyTip"></button>
           <button class="dlbtn" id="dlIno" type="button" data-t-title="dl_inoTip"></button>
         </div>
@@ -478,7 +496,7 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
 <!-- Kim kodluyor? -->
 <div class="modal" id="profileModal" hidden>
   <div class="card" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
-    <h2 id="pmTitle"><span data-ic="users"></span><span data-t="who"></span></h2>
+    <div class="row" style="justify-content:space-between"><h2 id="pmTitle"><span data-ic="users"></span><span data-t="who"></span></h2><button class="btn btn-ghost btn-small" id="profClose" type="button" data-t="close"></button></div>
     <p data-t="whoHelp"></p>
     <div class="plist" id="plist"></div>
     <div class="confirm" id="delConfirm" hidden><p id="delText"></p><div class="row"><button class="btn btn-ghost btn-small" id="delNo" data-t="no"></button><button class="btn btn-small" style="background:var(--bad);color:#fff" id="delYes" data-t="yes"></button></div></div>
@@ -586,22 +604,28 @@ pre.acode{margin:0;font-family:var(--f-mono);font-size:.82rem;line-height:1.6;ba
 <script>window.BLOCKLY_MSG = { en: Object.assign({}, Blockly.Msg) };</script>
 <script src="lib/msg/tr.js"></script>
 <script>window.BLOCKLY_MSG.tr = Object.assign({}, Blockly.Msg);</script>
-<script src="js/engine.js?v=2.1"></script>
-<script src="js/i18n.js?v=2.1"></script>
-<script src="js/i18n-home.js?v=2.1"></script>
-<script src="js/blocks.js?v=2.1"></script>
-<script src="js/home.js?v=2.1"></script>
-<script src="js/home-blocks.js?v=2.1"></script>
-<script src="js/levels.js?v=2.1"></script>
-<script src="js/levels-extra.js?v=2.1"></script>
-<script src="js/levels-home.js?v=2.1"></script>
-<script src="js/icons.js?v=2.1"></script>
-<script src="js/robots.js?v=2.1"></script>
-<script src="js/sensors.js?v=2.1"></script>
-<script src="js/sensor-ui.js?v=2.1"></script>
-<script src="js/sounds.js?v=2.1"></script>
-<script src="js/home-scene.js?v=2.1"></script>
-<script src="js/app.js?v=2.1"></script>
+<script src="js/version.js?v=2.2"></script>
+<script src="js/engine.js?v=2.2"></script>
+<script src="js/i18n.js?v=2.2"></script>
+<script src="js/i18n-home.js?v=2.2"></script>
+<script src="js/i18n-py.js?v=2.2"></script>
+<script src="js/blocks.js?v=2.2"></script>
+<script src="js/home.js?v=2.2"></script>
+<script src="js/home-blocks.js?v=2.2"></script>
+<script src="js/kind-turtle.js?v=2.2"></script>
+<script src="js/kind-game.js?v=2.2"></script>
+<script src="js/kind-ai.js?v=2.2"></script>
+<script src="js/levels.js?v=2.2"></script>
+<script src="js/levels-extra.js?v=2.2"></script>
+<script src="js/levels-home.js?v=2.2"></script>
+<script src="js/levels-py.js?v=2.2"></script>
+<script src="js/icons.js?v=2.2"></script>
+<script src="js/robots.js?v=2.2"></script>
+<script src="js/sensors.js?v=2.2"></script>
+<script src="js/sensor-ui.js?v=2.2"></script>
+<script src="js/sounds.js?v=2.2"></script>
+<script src="js/home-scene.js?v=2.2"></script>
+<script src="js/app.js?v=2.2"></script>
 
 </body>
 </html>

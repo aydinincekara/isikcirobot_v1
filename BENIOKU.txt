@@ -6,10 +6,13 @@ Canlı adres : https://aydinincekara.github.io/isikcirobot_v1/
 Ayrıntılı bilgi, kurulum ve kullanım için: afi-kod-kilavuz.docx
 
 İÇERİK
-10 bölüm, 300 adım. Her bölümde Başlangıç, Orta ve Zor düzeyleri (10'ar adım).
+15 bölüm, 350 adım. Bölüm 1-10: Başlangıç, Orta ve Zor (10'ar adım); Bölüm 11-15: Başlangıç (10'ar adım).
  1 Salon (sıralama)  2 Koridor (döngüler)  3 Mutfak (koşullar)  4 Giriş kapısı (olaylar)
  5 Garaj (değişken)  6 Bahçe (eşik değerler)  7 Çocuk odası (fonksiyonlar)
  8 Kontrol merkezi (proje)  9 Arduino atölyesi  10 Python atölyesi
+ 11 Arduino II (sürekli tekrarla)  12 ESP32 akıllı ev  13 Python Turtle
+ 14 Python oyun tasarımı (🎮 Oyna ile klavyeyle oynanır)  15 Python yapay zekâ
+Sürüm numarası ekranda sloganın yanında yazar (js/version.js).
 Bölüm 4-10'da sahne akıllı ev kontrol panelidir: program birkaç senaryoda saniye saniye
 test edilir; alttaki zaman çizelgesinde beklenen (açık mavi) ve programın yaptığı (yeşil) görünür.
 
@@ -66,7 +69,10 @@ DOSYALAR
 - index.html         : uygulama
 - js/levels.js       : Bölüm 1-3 (yeni adımlar SADECE sona eklenmeli)
 - js/levels-extra.js : Bölüm 1-3 Orta/Zor düzeyleri
-- js/levels-home.js  : Bölüm 4-10 (elle düzenlenmez; tools/gen_home.js ile üretilir)
+- js/levels-home.js  : Bölüm 4-12 (elle düzenlenmez; tools/gen_home.js ile üretilir)
+- js/levels-py.js    : Bölüm 13-15 (elle düzenlenmez; tools/gen_py.js ile üretilir)
+- js/kind-turtle.js, kind-game.js, kind-ai.js : Python bölümlerinin motorları
+- js/version.js      : sürüm numarası (python tools/set_version.py 2.3 ile değiştirilir)
 - js/home.js         : akıllı ev motoru (senaryolar, saniye saniye test)
 - js/home-blocks.js  : akıllı ev blokları; Python, JavaScript ve Arduino kod üreteçleri
 - js/home-scene.js   : kontrol paneli ve zaman çizelgesi çizimi

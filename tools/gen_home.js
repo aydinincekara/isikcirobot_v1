@@ -1,4 +1,4 @@
-/* afi kod - Bölüm 4-10 üretici ve doğrulayıcı
+/* afi kod - Bölüm 4-12 üretici ve doğrulayıcı
  * Kullanım:  node tools/gen_home.js            ->  js/levels-home.js dosyasını yazar
  *            node tools/gen_home.js --py       ->  ayrıca her adımın .py dosyasını gerçek Python ile çalıştırır
  * İçerik tools/content/ch4.js ... ch10.js dosyalarındadır. Her adım için:
@@ -15,7 +15,7 @@ global.__HOME = H;
 const K = require('./content/kit.js');
 
 const CH = (process.argv.find(a => a.startsWith('--ch=')) || '').slice(5);
-const FILES = CH ? CH.split(',') : ['ch4', 'ch5', 'ch6', 'ch7', 'ch8', 'ch9', 'ch10'];
+const FILES = CH ? CH.split(',') : ['ch4', 'ch5', 'ch6', 'ch7', 'ch8', 'ch9', 'ch10', 'ch11', 'ch12'];
 const RUN_PY = process.argv.includes('--py');
 const ONLY = (process.argv.find(a => a.startsWith('--only=')) || '').slice(7);
 const PYDIR = path.join(ROOT, 'tools', '.pytest');

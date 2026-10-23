@@ -12,6 +12,7 @@ const K = {};
 K.ev = (id, ...b) => node('h_event', { EVT: id }, { DO: b });
 K.start = (...b) => node('h_start', {}, { DO: b });
 K.every = (...b) => node('h_every', {}, { DO: b });
+K.forever = (...b) => node('h_forever', {}, { DO: b });
 K.fn = (id, ...b) => node('h_fn_def', { FN: id }, { DO: b });
 K.call = id => node('h_fn_call', { FN: id });
 K.on = d => node('h_switch', { DEV: d, STATE: '1' });

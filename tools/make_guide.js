@@ -4,7 +4,8 @@
 const fs = require('fs'), path = require('path');
 const { load, ROOT, NM } = require('./env.js');
 const D = require(NM + 'docx');
-const C = load(['engine.js', 'i18n.js', 'i18n-home.js', 'blocks.js', 'home.js', 'home-blocks.js', 'levels.js', 'levels-extra.js', 'levels-home.js', 'sensors.js']);
+const C = load(['version.js', 'engine.js', 'i18n.js', 'i18n-home.js', 'i18n-py.js', 'blocks.js', 'home.js', 'home-blocks.js', 'kind-turtle.js', 'kind-game.js', 'kind-ai.js', 'levels.js', 'levels-extra.js', 'levels-home.js', 'levels-py.js', 'sensors.js']);
+const VER = C.AFI_VERSION;
 const { COURSE, SENSORS, HOME, HomeBlocks: HB, RobotBlocks: RB, Blockly: B, Engine } = C;
 const OUT = process.argv[2] || path.join(ROOT, 'afi-kod-kilavuz.docx');
 
@@ -65,7 +66,7 @@ const add = (...x) => x.forEach(e => Array.isArray(e) ? e.forEach(y => C_.push(y
 add(new D.Paragraph({ children: [new D.TextRun({ text: 'AFİ', bold: true, font: FONT, size: 96, color: ACC }), new D.TextRun({ text: ' KOD', bold: true, font: FONT, size: 96, color: 'E89B12' })], spacing: { before: 1800, after: 120 } }));
 add(P("afi'nin blok kodlama serüveni", { size: 32, color: '4A5568' }));
 add(new D.Paragraph({ children: [new D.TextRun({ text: 'Proje Bilgilendirme, Kurulum ve Kullanım Kılavuzu', bold: true, font: FONT, size: 30, color: BLUE })], spacing: { before: 400, after: 300 } }));
-add(P('Sürüm: **2.1** (' + COURSE.chapters.length + ' bölüm, ' + STEPS.length + ' adım) · 23 Ekim 2026'));
+add(P('Sürüm: **' + VER + '** (' + COURSE.chapters.length + ' bölüm, ' + STEPS.length + ' adım) · 23 Ekim 2026'));
 add(P('Proje sahibi: **Aydın İncekara**'));
 add(P('Canlı adres: ' + SITE));
 add(P('Kaynak kod deposu: ' + REPO));
@@ -103,7 +104,9 @@ add(TABLE(['Tarih', 'Yapılan', 'Sonuç'], [
   ['23 Ekim 2026', 'Sensör kütüphanesi (15 sensör, Uno/ESP32 şemaları, "Dene ve gör"). Ürün adı "afi kod", robotun adı "afi" oldu. İlk kılavuz.', 'Sürüm 1.1'],
   ['23 Ekim 2026', 'Her bölüme Başlangıç/Orta/Zor düzeyleri (toplam 90 adım), arayüzde ikonlar, daraltılabilir paneller, yükseklik ayarlı blok alanı.', 'Sürüm 1.2'],
   ['23 Ekim 2026', 'Bölüm 4–10 tamamlandı: akıllı ev motoru, kontrol paneli ve zaman çizelgesi, olay/değişken/karşılaştırma/fonksiyon blokları, Arduino (.ino) ve Python (.py) dışa aktarma, 210 yeni adım. Her adım otomatik doğrulandı. Kılavuz yeniden yazıldı.', 'Sürüm 2.0 (300 adım)'],
-  ['23 Ekim 2026', 'Robot seçimi (6 robot), sesli tepkiler, blok alanında çöp kutusu, sayılabilir zemin karoları, yeni eşya çizimleri, AFİ KOD logosu, çark dişli ayar ikonu; ilerleme kodu yazılırken tireler kendiliğinden ekleniyor ve yeni sürüm her bilgisayarda kesin yükleniyor.', 'Sürüm 2.1']
+  ['23 Ekim 2026', 'Robot seçimi (6 robot), sesli tepkiler, blok alanında çöp kutusu, sayılabilir zemin karoları, yeni eşya çizimleri, AFİ KOD logosu, çark dişli ayar ikonu; ilerleme kodu yazılırken tireler kendiliğinden ekleniyor ve yeni sürüm her bilgisayarda kesin yükleniyor.', 'Sürüm 2.1'],
+  ['23 Ekim 2026', 'Sürüm numarası slogan yanında; sol sütun katlanabilir ve sabit; fare tekerleğiyle yakınlaştırma kapatıldı; Duraklat düğmesi; "Kim kodluyor?" penceresine Kapat. Yeni "sürekli tekrarla" bloğu (mBlock\'taki gibi, Arduino loop()). Yeni bölümler (10\'ar adım): Arduino II, ESP32 akıllı ev, Python Turtle, Python oyun tasarımı, Python yapay zekâ. Turtle, oyun ve yapay zekâ için üç yeni motor; oyunlar tarayıcıda klavyeyle oynanabilir.', 'Sürüm 2.2 (' + STEPS.length + ' adım)'],
+  ['23 Ekim 2026', 'Sınıf sürümü planı: öğretmen bilgisayarında yerel sunucu (NetSupport benzeri canlı takip, öğretmen/admin girişi, ağ aralığına göre öğrenciler, GitHub\'dan tek tuşla güncelleme). Ayrı depo: isikcirobot_offline.', 'Planlandı']
 ], [15, 60, 25]));
 add(H2('2.2 Alınan kararlar'));
 add(TABLE(['Konu', 'Karar', 'Neden'], [
@@ -119,7 +122,13 @@ add(TABLE(['Konu', 'Karar', 'Neden'], [
   ['Değişkenler', 'Hazır adlı değişkenler, ilk değer 0', 'Türkçe karakter ve boşluk sorunlarını önler; "değişken adında Türkçe harf kullanılmaz" kuralını öğretir.'],
   ['Python çıktısı', 'İndirilen .py dosyası küçük bir benzetim kütüphanesi içerir', 'Öğrenci evde ek kurulum yapmadan programını çalıştırır ve testi görür.'],
   ['İçerik üretimi', 'Adımlar tools/content dosyalarında yazılır, üretici araç doğrular', 'Her adımda: çözüm iki dilde çalışıyor mu, her blok gerekli mi, boş program başarısız mı, .py dosyası gerçek Python\'da geçiyor mu.'],
-  ['Yayın', 'GitHub Pages + çevrimdışı zip', 'İnternet olan sınıflar için bağlantı, internetsiz sınıflar için USB.']
+  ['Yayın', 'GitHub Pages + çevrimdışı zip', 'İnternet olan sınıflar için bağlantı, internetsiz sınıflar için USB.'],
+  ['"her saniye" ve "sürekli tekrarla"', 'İkisi de var', '"her saniye" araya kendiliğinden 1 saniye koyar (Arduino\'da millis() ile); "sürekli tekrarla" mBlock\'taki blok ve Arduino\'daki loop()\'un kendisidir, ritmi bekle blokları belirler.'],
+  ['Python bölümleri', 'Turtle, oyun ve yapay zekâ için ayrı motorlar', 'Her biri gerçek Python koduna çevrilir; indirilen dosyalar ek kurulum istemez (turtle Python ile gelir).'],
+  ['Oyun testi', 'Senaryodaki tuş basışları adım adım uygulanır', 'Rastgelelik testte sabit sırayla, oynarken gerçekten rastgele; beklenen değerler örnek çözümden.'],
+  ['Yapay zekâ testi', 'Gizli test verisinde doğruluk', 'Öğrenci "ezberlemenin" yetmediğini, görmediği örneklerde doğru bilmenin (genelleme) önemli olduğunu görür. Bazı adımlarda iki veri seti vardır: eşik veriden hesaplanmalıdır.'],
+  ['Sınıf sürümü', 'Ayrı paket: aynı uygulama + öğretmen bilgisayarında yerel sunucu', 'Aynı ağdaki öğrencileri izlemek ancak yerel sunucuyla mümkün; internet gerekmez, veriler kurumda kalır. Öğrenci bilgisayarına kurulum gerekmez.'],
+  ['Sürüm numarası', 'js/version.js tek yerde; python tools/set_version.py 2.3', 'Ekranda slogan yanında görünür; dosya etiketleri (?v=) eski sürümün önbellekten açılmasını önler.']
 ], [17, 40, 43]));
 
 /* ---------- 3 ---------- */
@@ -141,7 +150,8 @@ add(H2('4.2 Program yazma ve çalıştırma'));
 add(...NUM(['Soldaki menüden bir bloğu blok alanına sürükle.', 'Sonraki bloğu öncekinin altına yaklaştır; yerine oturunca birbirine bağlanır.',
   'Döngü, koşul, olay ve fonksiyon bloklarının içine başka bloklar konur. Sayıların ve menülerin üstüne tıklayarak değiştirebilirsin.',
   'Bir bloğu silmek için onu soldaki blok menüsüne geri sürükle. Sürüklerken menünün üstünde büyük bir **çöp kutusu** belirir; blok oraya gelince kırmızıya döner, bırakınca silinir. Sağ alttaki çöp kutusuna bırakmak da siler.',
-  'Çalıştır\'a bas. Çalışan blok vurgulanır. Durdurmak için aynı düğmeye bas.', 'Bir hata olursa durum kutusunda nedeni yazar ve ilgili blok vurgulu kalır. Bloğu düzeltince vurgu kalkar.']));
+  'Çalıştır\'a bas. Çalışan blok vurgulanır. **❚❚** düğmesi duraklatır, **▶** devam ettirir; durdurmak için Çalıştır düğmesine (Durdur) bas.', 'Bir hata olursa durum kutusunda nedeni yazar ve ilgili blok vurgulu kalır. Bloğu düzeltince vurgu kalkar.']));
+add(NOTE('Blok alanında fare tekerleği sayfayı kaydırır, blokları büyütüp küçültmez; büyütmek ve küçültmek için sağ alttaki **+**, **−** ve ortalama düğmeleri kullanılır. Sol sütundaki görev ve sahne kutuları **Gizle / Göster** düğmeleriyle katlanır; sol sütun sayfa kaydırılsa da ekranda kalır.'));
 add(H2('4.3 Yıldızlar'));
 add(P('Her adımda "en fazla … blok" hedefi vardır. Hedefin içinde çözersen 3 yıldız, 2 blok fazlasına kadar 2 yıldız, daha uzun çözümlerde 1 yıldız kazanırsın. Hazır sayılar (blokların içindeki yuvarlak sayı kutuları) sayılmaz. Aynı adımı daha kısa çözerek yıldızını artırabilirsin.'));
 add(H2('4.4 Düzeyler, ev düzenleri ve senaryolar'));
@@ -153,6 +163,10 @@ add(B1('**afi (orta):** sensörden gelen bilgi ve cihaza giden komut çizgilerde
 add(B1('**Cihaz kartları (sağ):** lamba, LED, alarm, vantilatör, ısıtıcı, pompa, kapı, pencere, perde, vana ve ekran. Çalışırken canlanır (fan döner, alarm titreşir).'));
 add(B1('**Zaman çizelgesi (alt):** en üstte her saniye için bir test noktası (yeşil ✓ doğru, kırmızı ✗ yanlış). Sensör satırları ne zaman ne olacağını, turuncu üçgenler olayları gösterir. Cihaz satırlarında açık mavi şerit **beklenen**, yeşil şerit **programın yaptığı**; uyuşmayan saniyeler kırmızıya boyanır.'));
 add(B1('Hata olursa program o saniyede durur, ilgili cihaz kırmızı çerçeveyle "olmalı: AÇIK" gibi bir etiket gösterir ve durum kutusunda "5. saniyede Giriş lambası AÇIK olmalıydı, ama programında KAPALI." gibi bir mesaj yazar.'));
+add(H2('4.5b Python bölümleri (Bölüm 13–15)'));
+add(B1('**Turtle:** Sahne bir çizim kâğıdıdır. Soluk renkli çizgiler hedef çizimdir; afi blokları uygularken çizer. Eksik yerler kırmızı kesik, fazla çizgiler kırmızı gösterilir.'));
+add(B1('**Oyun:** Sahnede oyuncu (seçilen robot), elma ve puan görünür. Alttaki şeritte testte hangi adımda hangi tuşa basılacağı ve her adımın test sonucu vardır. Program geçince **🎮 Oyna** düğmesiyle ok tuşları ve boşlukla gerçekten oynanır.'));
+add(B1('**Yapay zekâ:** Üstte eğitim verisi (bilinen örnekler), altta afi\'nin hiç görmediği test verisi (? işaretli) vardır. Çalıştırınca afi test örneklerini tek tek tahmin eder; ✓ ve ✗ işaretleri ile Eğitim/Test doğruluk çubukları görünür. Dikey çizgi istenen doğruluktur.'));
 add(H2('4.6 Harita ve sensör kütüphanesi'));
 add(P('Harita düğmesi ' + COURSE.chapters.length + ' bölümün tamamını, düzeylere ayrılmış dersleri ve ' + STEPS.length + ' adımı gösterir; istenen adıma tıklanarak geçilir. Her bölüm kartında o bölümde kullanılan sensörler listelenir; tıklanınca sensör kütüphanesi açılır. Sensörler düğmesi 15 gerçek sensörün ne işe yaradığını, nasıl çalıştığını, Arduino Uno ve ESP32\'ye nasıl bağlandığını, kaç volt istediğini ve ilk Arduino kodunu anlatır (bkz. Bölüm 10).'));
 add(H2('4.7 Başka bilgisayarda devam etmek'));
@@ -195,8 +209,36 @@ add(TABLE(['Blok', 'Ne yapar?', 'Python', 'Arduino'], [
   ['ƒ fonksiyon / ƒ … çalıştır', 'Adlı komut paketi tanımlar ve çağırır.', '`def gece_modu():` / `gece_modu()`', '`void geceModu()`'],
   ['değişken, artır', 'Değer saklar, değiştirir.', '`sayac = 0`, `sayac += 1`', '`long sayac = 0;`'],
   ['karşılaştır, ve/veya, değil', 'Koşul kurar.', '`<  >  ==  and  or  not`', '`<  >  ==  &&  ||  !`'],
-  ['işlem, yuvarla, metin, birleştir', 'Hesap ve yazı.', '`+ - * /`, `round()`, `str(a) + "°C"`', '`round()`, `String(a) + "°C"`']
+  ['işlem, yuvarla, metin, birleştir', 'Hesap ve yazı.', '`+ - * /`, `round()`, `str(a) + "°C"`', '`round()`, `String(a) + "°C"`'],
+  ['⟳ sürekli tekrarla', 'Bitince hemen baştan başlar (mBlock\'taki gibi).', '`@surekli_tekrarla`', '`loop()` içinde']
 ], [26, 28, 24, 22], true));
+add(H3('Python Turtle blokları (Bölüm 13)'));
+add(TABLE(['Blok', 'Ne yapar?', 'Python'], [
+  ['↑ ileri git / ↓ geri git', 'Baktığı yöne gider, kalem inikse çizer.', '`afi.forward(100)` / `afi.backward(50)`'],
+  ['↺ sola dön / ↻ sağa dön', 'Derece kadar döner.', '`afi.left(90)` / `afi.right(144)`'],
+  ['✎ kalemi kaldır / indir', 'Çizmeden yürür / yeniden çizer.', '`afi.penup()` / `afi.pendown()`'],
+  ['🎨 kalem rengi, kalınlık', 'Çizginin rengi ve kalınlığı.', '`afi.color("red")`, `afi.pensize(4)`'],
+  ['◯ daire çiz', 'Yarıçapı verilen daire.', '`afi.circle(80)`']
+], [30, 35, 35], true));
+add(H3('Python oyun blokları (Bölüm 14)'));
+add(TABLE(['Blok', 'Ne yapar?', 'Python'], [
+  ['▶ oyun başlayınca', 'Başta bir kez çalışır.', '`def baslangic():`'],
+  ['⌨ tuşa basılınca', 'Tuş olayı.', '`ekran.onkey(sag_ok, "Right")`'],
+  ['⏱ her adımda', 'Oyun döngüsü.', '`ekran.ontimer(dongu, 160)`'],
+  ['konumunu değiştir / git', 'x sağa, y yukarı.', '`oyuncu.setx(oyuncu.xcor() + 20)`, `oyuncu.goto(0, -160)`'],
+  ['elmayı rastgele taşı', 'Rastgele yeni konum.', '`elma.goto(random.randint(-9, 9) * 20, 180)`'],
+  ['★ puanı artır, 💬 ekrana yaz, ⏹ oyunu bitir', 'Puan, mesaj, bitiş.', '`puan = puan + 1`, `oyun_bitti = True`'],
+  ['oyuncu elmaya değdi mi?', 'Çarpışma kontrolü.', '`oyuncu.distance(elma) < 20`']
+], [30, 30, 40], true));
+add(H3('Python yapay zekâ blokları (Bölüm 15)'));
+add(TABLE(['Blok', 'Ne yapar?', 'Python'], [
+  ['🧠 afi\'nin tahmini', 'Model: her örnek için cevap veren fonksiyon.', '`def tahmin(ornek):`'],
+  ['✔ cevap', 'Tahmini verir.', '`return "elma"`'],
+  ['örneğin özelliği', 'Örneğin bir sayısı.', '`ornek["cap"]`'],
+  ['eğitim verisinde ortalama', 'Veriden öğrenilen değer.', '`ortalama("elma", "cap")`'],
+  ['mesajda … geçiyor mu?', 'Kelime arama.', '`"bedava" in mesaj`'],
+  ['mesajdaki … sayısı', 'Listeden kaç kelime var.', '`kelime_say(mesaj, OLUMLU)`']
+], [30, 35, 35], true));
 
 /* ---------- 5 ---------- */
 add(H1('5. Kullanım kılavuzu: öğretmen'), H2('5.1 Öğretmen modu'));
@@ -221,9 +263,13 @@ add(H2('5.5 Bölümlerin kavram sırası'));
 const SEEN = new Set();
 add(TABLE(['Bölüm', 'Kavram', 'Yeni bloklar', 'Sensörler'], COURSE.chapters.map(ch => {
   const tools = new Set(); ch.lessons.forEach(ls => ls.steps.forEach(st => (st.tools || []).forEach(t => tools.add(typeof t === 'string' ? t.split(':')[0] : t))));
-  const names = { start: 'başlangıçta', every: 'her saniye', event: 'olay', switch: 'aç/kapat', move: 'kapı/pencere', wait: 'bekle', show: 'ekrana yaz', sensor: 'sensör değeri', digital: 'sensör sorusu', if: 'eğer', ifelse: 'eğer/değilse', compare: 'karşılaştır', and: 've', or: 'veya', not: 'değil', set: 'değişken', change: 'artır', repeat: 'tekrarla', fn: 'fonksiyon', arith: 'işlem', round: 'yuvarla', text: 'metin', join: 'birleştir' };
+  const KN = { turtle: { fwd: 'ileri git', left: 'sola dön', right: 'sağa dön', penup: 'kalemi kaldır', pendown: 'kalemi indir', color: 'kalem rengi', circle: 'daire', repeat: 'tekrarla' },
+    game: { start: 'oyun başlayınca', key: 'tuşa basılınca', tick: 'her adımda', change: 'konum değiştir', goto: 'git', random: 'rastgele taşı', score: 'puan', say: 'ekrana yaz', stop: 'oyunu bitir', touch: 'değdi mi', pos: 'konum', if: 'eğer', compare: 'karşılaştır' },
+    ai: { predict: 'tahmin (model)', answer: 'cevap', feat: 'özellik', mean: 'ortalama', has: 'kelime var mı', count: 'kelime sayısı', ife: 'eğer/değilse', compare: 'karşılaştır', compare2: 'karşılaştır', and: 've', or: 'veya', arith: 'işlem' } };
+  const ckind = (ch.lessons[0].steps[0] || {}).kind;
+  const names = KN[ckind] || { forever: 'sürekli tekrarla', start: 'başlangıçta', every: 'her saniye', event: 'olay', switch: 'aç/kapat', move: 'kapı/pencere', wait: 'bekle', show: 'ekrana yaz', sensor: 'sensör değeri', digital: 'sensör sorusu', if: 'eğer', ifelse: 'eğer/değilse', compare: 'karşılaştır', and: 've', or: 'veya', not: 'değil', set: 'değişken', change: 'artır', repeat: 'tekrarla', fn: 'fonksiyon', arith: 'işlem', round: 'yuvarla', text: 'metin', join: 'birleştir' };
   const list = [...tools].map(t => names[t] || ({ robot_ileri: 'ileri git', robot_sola: 'dön', robot_isik: 'ışık', robot_kapi: 'kapı', controls_repeat_ext: 'tekrarla', robot_until: 'ışığa kadar', robot_until_all: 'tüm ışıklar', robot_if: 'eğer', robot_ifelse: 'eğer/değilse' })[t]).filter(Boolean);
-  const fresh = [...new Set(list)].filter(x => !SEEN.has(x)); fresh.forEach(x => SEEN.add(x));
+  const fresh = [...new Set(list)].filter(x => KN[ckind] || !SEEN.has(x)); fresh.forEach(x => SEEN.add(x));
   return [ch.num + '. ' + L(ch.name), L(ch.concept), fresh.join(', ') || '—', (ch.sensors || []).map(id => { const s = SENSORS.list.find(x => x.id === id); return s ? L(s.name) : id; }).join(', ')];
 }), [18, 18, 34, 30], true));
 
@@ -255,6 +301,12 @@ add(CODE(['C:\\Users\\ogrenci> python --version', 'Python 3.12.4', 'C:\\Users\\o
 add(B1('Dosyanın başındaki `HIZ = 0.4` sayısı benzetimin hızını belirler (0 = beklemeden). `SENARYO = 1` hangi senaryonun ekranda gösterileceğini seçer.'));
 add(B1('Öğrenciler dosyanın en altındaki kendi programlarını bir metin düzenleyiciyle (Not Defteri, IDLE, VS Code, Thonny) değiştirip yeniden çalıştırabilir; test sonucunun nasıl değiştiğini görmek iyi bir alıştırmadır.'));
 add(B1('Bu dosyada `round()` 0,5\'i her zaman yukarı yuvarlar (uygulamadaki JavaScript ile aynı sonucu vermesi için); dosyanın başında açıklaması yazar.'));
+add(H2('6.4 Turtle, oyun ve yapay zekâ dosyaları'));
+add(P('Bölüm 13–15\'te **.py indir** düğmesi gerçek bir Python programı verir; yukarıdaki gibi Komut İstemi\'nde `python dosya.py` ile çalıştırılır. Ek kurulum gerekmez: turtle modülü Windows\'taki Python kurulumuyla birlikte gelir (kurulumda "tcl/tk and IDLE" seçeneği varsayılan olarak işaretlidir).'));
+add(B1('**Turtle** dosyası bir çizim penceresi açar ve afi\'nin çizimini adım adım gösterir; pencere kapatılınca program biter.'));
+add(B1('**Oyun** dosyası oynanabilir bir oyun penceresi açar: pencereye bir kez tıklayıp ok tuşları ve boşlukla oynanır. Elma oyunlarda gerçekten rastgele yerlere düşer.'));
+add(B1('**Yapay zekâ** dosyası verileri ve öğrencinin modelini birlikte içerir; çalışınca her veri setinde eğitim ve test doğruluğunu ve her test örneğinin tahminini yazar.'));
+add(NOTE('Python dersi önerisi: önce dosyayı olduğu gibi çalıştırın, sonra öğrenciler kendi modelindeki sayıyı (eşiği) ya da çizimdeki açıyı Not Defteri veya IDLE ile değiştirip yeniden çalıştırsın. Blok → kod → değişiklik → sonuç döngüsü metin tabanlı programlamaya geçişi kolaylaştırır.'));
 
 /* ---------- 7 kurulum ---------- */
 add(H1('7. Kurulum: sıfırdan yayınlama ve güncelleme'), H2('7.1 Gereksinimler'));
@@ -291,11 +343,16 @@ add(TABLE(['Dosya', 'Görevi'], [
   ['js/i18n.js, js/i18n-home.js', 'Türkçe ve İngilizce arayüz metinleri, blok yazıları ve blok açıklamaları.'],
   ['js/sensors.js, js/sensor-ui.js', 'Sensör kütüphanesi bilgileri ve ekranı.'],
   ['js/icons.js', 'Arayüzdeki küçük çizgi ikonlar.'],
+  ['js/version.js', 'Sürüm numarası (ekranda gösterilir). Değiştirmek için: `python tools/set_version.py 2.3`.'],
+  ['js/kind-turtle.js, js/kind-game.js, js/kind-ai.js', 'Python bölümlerinin motorları: bloklar, kod üreteçleri, benzetim, çizim, indirilebilir .py.'],
+  ['js/levels-py.js, js/i18n-py.js', 'Bölüm 13–15 adımları (tools/gen_py.js ile üretilir) ve metinleri.'],
   ['js/robots.js', 'Altı robotun çizimi (ev, kontrol paneli, profil resimleri).'],
   ['js/sounds.js', 'Sesli tepkiler: tarayıcının ses motoruyla üretilen müzikler ve kısa konuşmalar.'],
   ['js/app.js', 'Arayüz: profiller, gezinme, yerleşimler, çizim, animasyon, indirme, pencereler.'],
   ['lib/', 'Blockly 11.2.2 dosyaları, lib/media simgeleri ve lisans notu.'],
   ['tools/gen_home.js, tools/content/', 'Bölüm 4–10 içeriği (ch4.js … ch10.js) ve üretici/doğrulayıcı.'],
+  ['tools/gen_py.js, tools/content/py_*.js', 'Bölüm 13–15 içeriği ve üretici/doğrulayıcı; tools/pymock/turtle.py ekran açmadan turtle testi yapar.'],
+  ['tools/set_version.py, tools/build_preview.py', 'Sürüm numarasını günceller; tek dosyalık önizleme sayfası üretir.'],
   ['tools/make_guide.js', 'Bu kılavuzu üretir.'],
   ['tools/arduino_mock/', 'Arduino kodlarını bilgisayarda derleme denemesi için küçük taklit dosyalar.']
 ], [30, 70], true));
@@ -328,21 +385,24 @@ add(B1('`sensors`, `devices`: o adımdaki sensör ve cihaz kimlikleri (js/home.j
 add(B1('`scen`: senaryolar. `d(\'0011\')` her saniyenin dijital değeri; `ramp(12, [0,120], [8,10])` doğrusal değişen sayı; `K.vals(…)` saniye saniye sayılar. Kart okuyucuda 1 kayıtlı, 2 yabancı karttır.'));
 add(B1('`sol`: örnek çözüm (ev, start, every, fn, call, on, off, open, close, wait, show, iff, ife, rep, set, chg, get, sens, dig, cmp, and, or, not, ar, txt, join, round). Blok sınırı çözümün blok sayısıdır.'));
 add(B1('İsteğe bağlı: `thresholds` (zaman çizelgesindeki kırmızı eşik çizgileri), `dupe` (kısayolsuz çözüm sınıra sığmamalı), `wrong` (geçmemesi gereken yanlış çözümler), `starter` (adım başında hazır bloklar), `board` (uno/esp32).'));
-add(P('Komut İstemi\'nde, proje klasöründe (Node.js 18+ ve bir kez `npm i blockly@11.2.2 docx@9` gerekir): `node tools/gen_home.js` adımları üretir ve doğrular; `--py` eklenirse her adımın Python dosyası gerçek Python ile çalıştırılır.'));
+add(P('Komut İstemi\'nde, proje klasöründe (Node.js 18+ ve bir kez `npm i blockly@11.2.2 docx@9` gerekir): `node tools/gen_home.js` Bölüm 4–12\'yi, `node tools/gen_py.js` Bölüm 13–15\'i üretir ve doğrular; `--py` eklenirse her adımın Python dosyası gerçek Python ile çalıştırılır. Komutlar teker teker çalıştırılır, yönetici izni gerekmez.'));
+add(P('Python bölümlerinde adım yazımı benzerdir (tools/content/py_turtle.js, py_game.js, py_ai.js): turtle adımında yalnızca `sol` (çözüm) yazılır, hedef çizim çözümden çıkar; oyun adımında `scen: [{ dur, keys: \'.RR.L\', rand: [...] }]`, yapay zekâ adımında `features`, `labels`, `sets: [{ train, test }]` ve gerekirse `need` (istenen doğruluk) verilir.'));
 add(H2('8.7 Otomatik testler'));
 add(TABLE(['Test', 'Sonuç (bu sürüm)'], [
   ['Bölüm 1–3: her adımın çözümü, iki dilde, her ev düzeninde', '90 adım × 2 dil, hatasız'],
-  ['Bölüm 4–10: çözüm Türkçe ve İngilizce kodla bütün senaryolarda doğru mu?', '210 adım, hatasız'],
+  ['Bölüm 4–12: çözüm Türkçe ve İngilizce kodla bütün senaryolarda doğru mu?', '230 adım, hatasız'],
+  ['Bölüm 13–15: çözüm geçiyor mu, boş program ve her blok silinmiş hali başarısız mı, yanlış örnek çözümler başarısız mı?', '30 adım, hatasız'],
+  ['Bölüm 13–15: indirilen .py gerçek Python\'da aynı sonucu veriyor mu? (turtle çizimi, oyun adımları, model tahminleri)', '30 adım × 2 dil, hepsi geçti'],
   ['Çözümden herhangi bir komut ya da olay bloğu silinince program başarısız oluyor mu? (her blok gerekli mi)', 'Tüm adımlarda evet'],
   ['Boş program başarısız mı, senaryoların beklenen sonuçları farklı mı, her cihaz en az bir kez değişiyor mu?', 'Tüm adımlarda evet'],
-  ['İndirilen .py dosyası gerçek Python 3\'te çalışıp kendi testini geçiyor mu?', '210 adım × 2 dil, hepsi geçti'],
-  ['Arduino kodları derleniyor mu? (taklit Arduino başlıklarıyla g++)', '840 dosya (Uno + ESP32, TR + EN), hatasız'],
+  ['İndirilen .py dosyası gerçek Python 3\'te çalışıp kendi testini geçiyor mu?', '230 adım × 2 dil, hepsi geçti'],
+  ['Arduino kodları derleniyor mu? (taklit Arduino başlıklarıyla g++)', '920 dosya (Uno + ESP32, TR + EN), hatasız'],
   ['Tarayıcıda: örnek çözümleri yükleyip Çalıştır, yanlış program mesajı, indirme, dil değiştirme, görünüm değiştirme', 'Hatasız']
 ], [65, 35]));
 
 /* ---------- 9 ders içeriği (özet) ---------- */
 add(H1('9. Ders içeriği'));
-add(P('Uygulamada ' + COURSE.chapters.length + ' bölüm, ' + COURSE.chapters.reduce((a, c) => a + c.lessons.length, 0) + ' ders ve ' + STEPS.length + ' adım vardır. Her bölümde Başlangıç, Orta ve Zor düzeylerinde 10\'ar adım bulunur. Tüm adımların tam listesi Ek A\'dadır.'));
+add(P('Uygulamada ' + COURSE.chapters.length + ' bölüm, ' + COURSE.chapters.reduce((a, c) => a + c.lessons.length, 0) + ' ders ve ' + STEPS.length + ' adım vardır. Bölüm 1–10\'da Başlangıç, Orta ve Zor düzeylerinde 10\'ar adım, Bölüm 11–15\'te Başlangıç düzeyinde 10\'ar adım bulunur. Tüm adımların tam listesi Ek A\'dadır.'));
 COURSE.chapters.forEach(ch => {
   add(H2('Bölüm ' + ch.num + ' · ' + L(ch.name) + ' (' + L(ch.concept) + ')'));
   add(P(L(ch.story)));
@@ -367,8 +427,8 @@ SENSORS.list.forEach(s => {
 
 /* ---------- 11-13 ---------- */
 add(H1('11. Yol haritası ve bilinen sınırlar'), H2('11.1 Tamamlananlar'));
-add(B1('10 bölümün hepsi: sıralama, döngüler, koşullar, olaylar, değişken ve karşılaştırma, eşik değerler, fonksiyonlar, proje, Arduino atölyesi, Python atölyesi.'));
-add(B1('Her bölümde Başlangıç / Orta / Zor; toplam ' + STEPS.length + ' adım.'));
+add(B1('15 bölüm: sıralama, döngüler, koşullar, olaylar, değişken ve karşılaştırma, eşik değerler, fonksiyonlar, proje, Arduino atölyesi, Python atölyesi, Arduino II, ESP32 akıllı ev, Python Turtle, Python oyun tasarımı, Python yapay zekâ.'));
+add(B1('Bölüm 1–10\'da Başlangıç / Orta / Zor, Bölüm 11–15\'te şimdilik Başlangıç; toplam ' + STEPS.length + ' adım.'));
 add(B1('Arduino (.ino, Uno ve ESP32) ve Python (.py) dışa aktarma; sensör kütüphanesi; TR/EN; öğretmen modu; çevrimdışı kullanım.'));
 add(H2('11.2 Bilinen sınırlar'));
 add(B1('İlerleme kodu sadece yıldızları taşır; dizilen bloklar bilgisayarda kalır.'));
@@ -376,6 +436,9 @@ add(B1('Python ve Arduino kodları tarayıcıda çalıştırılmaz; tarayıcıda
 add(B1('Arduino kodundaki "bekle" `delay()` olduğu için gerçek kartta bekleme sırasında başka olaylar dinlenmez; benzetimde olaylar beklemeden çalışır.'));
 add(B1('Olay blokları yalnızca o adımda tanımlı sensörlerin olaylarını gösterir; sensör değerleri senaryodan gelir (gerçek karta bağlı canlı veri yoktur).'));
 add(H2('11.3 Gelecek fikirleri'));
+add(B1('**Sınıf sürümü (planlandı):** öğretmen bilgisayarında yerel sunucu; admin ve öğretmen girişi, öğretmenin kendi ağ aralığındaki öğrencileri canlı izlemesi (hangi adımda, kaç yıldız, şu anki blokları), öğrencilere mesaj, "Çözümü yükle" yalnızca öğretmene, GitHub\'daki isikcirobot_offline deposundan tek tuşla güncelleme, Python kurmadan çalışan .exe. Öğrenci bilgisayarlarına kurulum gerekmez; öğrenciler sunucunun adresini açar.'));
+add(NOTE('Windows\'un "Mobil etkin nokta" özelliği (192.168.137.x) en fazla 8 cihaz bağlar; kalabalık sınıflarda sınıfın kendi ağı ya da ayrı bir Wi-Fi modem kullanılmalıdır.', 'FFF4DC', 'E89B12'));
+add(B1('Bölüm 11–15 için Orta ve Zor düzeyleri.'));
 add(B1('ESP32 ile Wi-Fi bölümü: telefondan bildirim, web sayfasından lamba açma.'));
 add(B1('Öğrencinin bloklarını da taşıyan dışa/içe aktarma (dosya olarak).'));
 add(B1('Öğretmen için sınıf ilerleme özeti (ilerleme kodlarını toplu okuma).'));
@@ -405,8 +468,10 @@ add(B1('Yazı tipleri (Fredoka, Nunito, JetBrains Mono) Google Fonts üzerinden 
 
 /* ---------- Ek A ---------- */
 add(H1('Ek A. Tüm adımlar'));
-add(P('Sınır: 3 yıldız için en fazla blok sayısı. Senaryo/düzen: programın test edildiği farklı durum sayısı. Bölüm 1–3\'te çözüm kısa çözüm dilinde (8.5), Bölüm 4–10\'da çözümde kullanılan bloklar yazılmıştır; tam çözüm öğretmen modunda "Çözümü yükle" ile görülür.'));
-const BLK = { h_start: 'başlangıçta', h_every: 'her saniye', h_event: 'olay', h_fn_def: 'fonksiyon', h_fn_call: 'çağır', h_switch: 'aç/kapat', h_move: 'kapı/pencere', h_wait: 'bekle', h_show: 'ekrana yaz', h_sensor: 'sensör', h_digital: 'sensör sorusu',
+add(P('Sınır: 3 yıldız için en fazla blok sayısı. Senaryo/düzen: programın test edildiği farklı durum sayısı. Bölüm 1–3\'te çözüm kısa çözüm dilinde (8.5), Bölüm 4–15\'te çözümde kullanılan bloklar yazılmıştır; tam çözüm öğretmen modunda "Çözümü yükle" ile görülür.'));
+const BLK = { h_forever: 'sürekli tekrarla', t_fwd: 'ileri', t_back: 'geri', t_left: 'sola dön', t_right: 'sağa dön', t_penup: 'kalem kaldır', t_pendown: 'kalem indir', t_color: 'renk', t_width: 'kalınlık', t_circle: 'daire',
+  g_start: 'başlayınca', g_key: 'tuş', g_tick: 'her adımda', g_change: 'konum değiştir', g_goto: 'git', g_random: 'rastgele', g_score: 'puan', g_say: 'yaz', g_stop: 'bitir', g_touch: 'değdi mi', g_pos: 'konum', g_scorev: 'puan',
+  ai_predict: 'tahmin', ai_answer: 'cevap', ai_feat: 'özellik', ai_mean: 'ortalama', ai_has: 'kelime var mı', ai_count: 'kelime sayısı', h_start: 'başlangıçta', h_every: 'her saniye', h_event: 'olay', h_fn_def: 'fonksiyon', h_fn_call: 'çağır', h_switch: 'aç/kapat', h_move: 'kapı/pencere', h_wait: 'bekle', h_show: 'ekrana yaz', h_sensor: 'sensör', h_digital: 'sensör sorusu',
   controls_if: 'eğer', controls_ifelse: 'eğer/değilse', logic_compare: 'karşılaştır', logic_operation: 've/veya', logic_negate: 'değil', math_arithmetic: 'işlem', variables_set: 'değişken', variables_get: 'değişken', math_change: 'artır', controls_repeat_ext: 'tekrarla', text: 'metin', text_join: 'birleştir', math_round: 'yuvarla', math_number: 'sayı' };
 COURSE.chapters.forEach(ch => {
   add(H2('Bölüm ' + ch.num + ' · ' + L(ch.name)));
@@ -416,6 +481,11 @@ COURSE.chapters.forEach(ch => {
       if (s.st.kind === 'home') {
         const used = new Set(); (function walk(bs) { bs.forEach(b => { if (!b) return; used.add(BLK[b.type] || b.type); Object.keys(b.inputs || {}).forEach(k => b.inputs[k].block && walk([b.inputs[k].block])); if (b.next) walk([b.next.block]); }); })(s.st.sol.blocks.blocks);
         return [s.st.id, (s.li + 1) + '. ' + L(s.ls.title), g, String(s.st.max), String(s.st.scen.length), [...used].join(', ')];
+      }
+      if (s.st.kind && s.st.kind !== 'home') {
+        const used = new Set(); (function walk(bs) { bs.forEach(b => { if (!b) return; used.add(BLK[b.type] || b.type); Object.keys(b.inputs || {}).forEach(k => b.inputs[k].block && walk([b.inputs[k].block])); if (b.next) walk([b.next.block]); }); })(s.st.sol.blocks.blocks);
+        const nv = s.st.kind === 'game' ? s.st.scen.length : s.st.kind === 'ai' ? s.st.sets.length : 1;
+        return [s.st.id, (s.li + 1) + '. ' + L(s.ls.title), g, String(s.st.max), String(nv), [...used].join(', ')];
       }
       return [s.st.id, (s.li + 1) + '. ' + L(s.ls.title), g, String(s.st.max), String(Engine.variantsOf(s.st).length), '`' + s.st.sol + '`'];
     });

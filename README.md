@@ -6,7 +6,7 @@
 - **Öğretmen modu:** https://aydinincekara.github.io/isikcirobot_v1/#ogretmen
 - **Kılavuz (Word):** [afi-kod-kilavuz.docx](afi-kod-kilavuz.docx) — proje bilgisi, yapılanlar, sıfırdan kurulum, kullanım ve teknik yapı
 
-Ev robotu afi, Deniz'in ailesinin evini adım adım akıllı hale getirir. **10 bölüm, 300 adım**; her bölümde Başlangıç, Orta ve Zor düzeyleri (10'ar adım):
+Ev robotu afi, Deniz'in ailesinin evini adım adım akıllı hale getirir. **15 bölüm, 350 adım**. Bölüm 1–10'da Başlangıç, Orta ve Zor düzeyleri (10'ar adım), Bölüm 11–15'te Başlangıç düzeyi (10'ar adım):
 
 | # | Bölüm | Kavram |
 |---|---|---|
@@ -20,7 +20,12 @@ Ev robotu afi, Deniz'in ailesinin evini adım adım akıllı hale getirir. **10 
 | 8 | Kontrol merkezi | Proje |
 | 9 | Arduino atölyesi | Gerçek donanım (Uno, ESP32) |
 | 10 | Python atölyesi | Gerçek kod |
+| 11 | Arduino II | Sürekli tekrarla (loop) |
+| 12 | ESP32 akıllı ev | Gerçek akıllı ev |
+| 13 | Python Turtle | Kaplumbağa grafikleri |
+| 14 | Python oyun tasarımı | Oyun döngüsü |
+| 15 | Python yapay zekâ | Veriden öğrenme |
 
-Bölüm 1–3'te afi evin içinde dolaşır. Bölüm 4–10'da afi evin akıllı sistemine bağlanır: sensörlere göre lambaları, kapıları, alarmı ve pompayı yönetir; program birkaç senaryoda saniye saniye test edilir ve zaman çizelgesinde beklenen ile gerçekleşen yan yana görünür. Öğrenciler blokları dizdikçe programın Python, JavaScript ve Arduino (C++) hali yanında görünür. Her akıllı ev adımı **.ino** (Arduino Uno / ESP32) ve kendi testini yapan, ek kütüphane istemeyen **.py** dosyası olarak indirilebilir. Öğrenciler 6 robottan birini seçer; başarı ve hatalarda sesli tepki verilir. Sensör kütüphanesi 15 gerçek sensörün Arduino Uno ve ESP32'ye nasıl bağlandığını anlatır.
+Bölüm 1–3'te afi evin içinde dolaşır. Bölüm 4–10'da afi evin akıllı sistemine bağlanır: sensörlere göre lambaları, kapıları, alarmı ve pompayı yönetir; program birkaç senaryoda saniye saniye test edilir ve zaman çizelgesinde beklenen ile gerçekleşen yan yana görünür. Öğrenciler blokları dizdikçe programın Python, JavaScript ve Arduino (C++) hali yanında görünür. Her akıllı ev adımı **.ino** (Arduino Uno / ESP32) ve kendi testini yapan, ek kütüphane istemeyen **.py** dosyası olarak indirilebilir. Python bölümlerinde turtle ile çizim yapılır, tarayıcıda klavyeyle oynanan oyunlar tasarlanır ve verilerden öğrenen basit yapay zekâ modelleri yazılır; hepsi gerçek Python dosyası olarak indirilir. Öğrenciler 6 robottan birini seçer; başarı ve hatalarda sesli tepki verilir. Sensör kütüphanesi 15 gerçek sensörün Arduino Uno ve ESP32'ye nasıl bağlandığını anlatır.
 
 Blockly (Apache 2.0) üzerine kuruludur. Kurulum gerektirmez; internetsiz kullanım için depoyu ZIP olarak indirip ayıklayın ve `index.html` dosyasına çift tıklayın.

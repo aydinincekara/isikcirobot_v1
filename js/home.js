@@ -61,7 +61,7 @@
     rain:       { s: 'rain', edge: 'rise', label: W('yağmur başlayınca', 'it starts raining'), py: W('yagmur_baslayinca', 'on_rain') },
     quake:      { s: 'tilt', edge: 'above', th: 30, label: W('sarsıntı olunca', 'shaking is detected'), py: W('sarsinti_olunca', 'on_quake') }
   };
-  var HATS = { start: W('baslangicta', 'when_started'), every: W('her_saniye', 'every_second') };
+  var HATS = { start: W('baslangicta', 'when_started'), every: W('her_saniye', 'every_second'), forever: W('surekli_tekrarla', 'forever') };
 
   /* ---------- Cihazlar ----------
    * kind: power (aç/kapat), open (aç/kapat: kapı, pencere...), screen (ekrana yaz)
@@ -127,7 +127,7 @@
       Object.keys(SENSORS).forEach(function (k) { out.sensor[camel(SENSORS[k].py[lg])] = k; });
       Object.keys(EVENTS).forEach(function (k) { out.event[camel(EVENTS[k].py[lg])] = k; });
       Object.keys(DEVICES).forEach(function (k) { out.device[camel(DEVICES[k].py[lg])] = k; });
-      out.hat[camel(HATS.start[lg])] = 'start'; out.hat[camel(HATS.every[lg])] = 'every';
+      out.hat[camel(HATS.start[lg])] = 'start'; out.hat[camel(HATS.every[lg])] = 'every'; out.hat[camel(HATS.forever[lg])] = 'forever';
     });
     return out;
   }
@@ -170,7 +170,7 @@
   /* ---------- Simülasyon ---------- */
   function simulate(step, code, vi) {
     var nsc = normalize(step.scen[vi || 0]), dur = nsc.dur;
-    var reg = { start: [], every: [], ev: [] }, actions = [], vars = [], seq = 0;
+    var reg = { start: [], every: [], forever: [], ev: [] }, actions = [], vars = [], seq = 0;
     var clock = 0, cur = null, budget = 0, phase = 'reg', total = 0;
     function tick() { total++; if (--budget < 0 || total > 60000) throw { home: 'loop' }; }
     function act(dev, v) {
@@ -216,7 +216,7 @@
       phase = 'run';
       /* Zaman sırası: başlangıç (t=0) -> her saniye olaylar -> "her saniye" görevleri */
       reg.start.forEach(function (h) { runHandler(h.fn, 0); });
-      var next = reg.every.map(function () { return 0; });
+      var next = reg.every.map(function () { return 0; }), nextF = reg.forever.map(function () { return 0; });
       for (var t = 0; t < dur; t++) {
         reg.ev.forEach(function (h) { if (fired(nsc, h.ev, t)) runHandler(h.fn, t); });
         for (var i = 0; i < reg.every.length; i++) {
@@ -225,13 +225,21 @@
             next[i] = clock + 1;     /* gövde bitti, 1 saniye sonra tekrar */
           }
         }
+        /* "sürekli tekrarla": gövde biter bitmez yeniden başlar (Arduino loop()). Gövdede bekleme yoksa
+           bir sonraki saniyeye geçer; sensörler saniyede bir değiştiği için sonuç aynıdır. */
+        for (var j = 0; j < reg.forever.length; j++) {
+          while (nextF[j] <= t + 1e-9 && nextF[j] < dur) {
+            var sf = nextF[j]; runHandler(reg.forever[j].fn, sf);
+            nextF[j] = clock > sf + 1e-9 ? clock : sf + 1;
+          }
+        }
       }
     } catch (e) {
       if (e && e.home) outcome = e.home; else { outcome = 'error'; err = String(e && e.message || e); }
     }
     actions.sort(function (a, b) { return a.t - b.t || a.seq - b.seq; });
     vars.sort(function (a, b) { return a.t - b.t || a.seq - b.seq; });
-    return { nsc: nsc, dur: dur, actions: actions, vars: vars, outcome: outcome, err: err, handlers: reg.start.length + reg.every.length + reg.ev.length };
+    return { nsc: nsc, dur: dur, actions: actions, vars: vars, outcome: outcome, err: err, handlers: reg.start.length + reg.every.length + reg.forever.length + reg.ev.length };
   }
 
   /* Cihazın tm anındaki durumu */
